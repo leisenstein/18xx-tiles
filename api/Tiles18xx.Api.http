@@ -1,0 +1,6 @@
+@Tiles18xx.Api_HostAddress = http://localhost:5010
+
+GET {{Tiles18xx.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
