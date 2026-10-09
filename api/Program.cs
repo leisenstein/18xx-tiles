@@ -42,6 +42,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Serve the built React app (index.html, JavaScript, CSS) from the wwwroot folder.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 
 app.MapGet("/api/health", (SqliteConnectionFactory db) =>
 {
@@ -52,24 +56,14 @@ app.MapGet("/api/health", (SqliteConnectionFactory db) =>
 });
 
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+// If an /api address does not exist, return "404 Not Found".
+app.MapFallback("/api/{**rest}", () => Results.NotFound());
+
+// Any other unknown address loads the React app, so pages like /tiles/42 work on refresh.
+app.MapFallbackToFile("index.html");
+
+
 
 app.Run();
 

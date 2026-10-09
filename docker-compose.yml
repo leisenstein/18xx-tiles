@@ -1,0 +1,28 @@
+# Runs the app with one command: docker compose up
+services:
+  app:
+    # Build the image from the Dockerfile in this folder.
+    build: .
+    image: tiles18xx:latest
+
+    # Make the app available at http://localhost:8080 on your PC.
+    # Format: "PC port:container port"
+    ports:
+      - "8080:8080"
+
+    # Settings passed to the app.
+    # This replaces the database path from appsettings.json.
+    environment:
+      ConnectionStrings__Tiles: "Data Source=/data/tiles.db"
+
+    # Store /data (the database) on a Docker volume so it is kept
+    # when the container is stopped, removed, or rebuilt.
+    volumes:
+      - tiles-data:/data
+
+    # Restart automatically if the app crashes or the PC restarts.
+    restart: unless-stopped
+
+# Declare the volume used above.
+volumes:
+  tiles-data:
