@@ -32,6 +32,7 @@ builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString
 
 var app = builder.Build();
 DatabaseMigrator.Upgrade(sqliteBuilder.ToString());
+DataSeeder.SeedIfEmpty(app.Services.GetRequiredService<SqliteConnectionFactory>(), app.Logger);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

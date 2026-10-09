@@ -488,3 +488,12 @@ $RECYCLE.BIN/
 *.db-shm
 /data/
 
+# Seed data snapshots (regenerated as needed; see DESIGN.md 6.4)
+/reference/games.json
+/reference/tiles.json
+/api/Db/Seed/games.json
+/api/Db/Seed/tiles.json
+
+# Rendered reference PDF from the planning session
+/reference/18xx_Generic_Tile_Reference.pdf
+
