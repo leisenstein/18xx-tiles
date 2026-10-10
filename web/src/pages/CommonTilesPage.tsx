@@ -19,10 +19,7 @@ export default function CommonTilesPage() {
   const urlValue = params.get('minGames') ?? String(MIN_GAMES_DEFAULT)
   const [text, setText] = useState(urlValue)
   const minGames = Number(text)
-  const valid =
-    Number.isInteger(minGames) &&
-    minGames >= MIN_GAMES_LOWEST &&
-    minGames <= MIN_GAMES_HIGHEST
+  const valid = Number.isInteger(minGames) && minGames >= MIN_GAMES_LOWEST && minGames <= MIN_GAMES_HIGHEST
 
   // The last result, tagged with the N it was loaded for.
   const [data, setData] = useState<{
@@ -53,11 +50,7 @@ export default function CommonTilesPage() {
   const onChange = (value: string) => {
     setText(value)
     const n = Number(value)
-    if (
-      Number.isInteger(n) &&
-      n >= MIN_GAMES_LOWEST &&
-      n <= MIN_GAMES_HIGHEST
-    ) {
+    if (Number.isInteger(n) && n >= MIN_GAMES_LOWEST && n <= MIN_GAMES_HIGHEST) {
       setParams({ minGames: String(n) }, { replace: true })
     }
   }
@@ -97,35 +90,22 @@ export default function CommonTilesPage() {
       )}
 
       <p className="text-sm text-muted-foreground">
-        Game counts include variants and scenarios as separate titles (for
-        example the 1822 family), so the number of distinct published games may
-        be lower.
+        Game counts include variants and scenarios as separate titles (for example the 1822 family), so the number of distinct published games may be lower.
       </p>
 
-      {error && (
-        <p className="text-destructive">Could not load tiles. {error}</p>
-      )}
-      {!data && !error && valid && (
-        <p className="text-muted-foreground">Loading tiles…</p>
-      )}
+      {error && <p className="text-destructive">Could not load tiles. {error}</p>}
+      {!data && !error && valid && <p className="text-muted-foreground">Loading tiles…</p>}
 
       {data && (
         <div className={loading ? 'space-y-6 opacity-50' : 'space-y-6'}>
           <p className="text-sm text-muted-foreground">
             {data.tiles.length} {data.tiles.length === 1 ? 'tile' : 'tiles'}
           </p>
-          {data.tiles.length === 0 && (
-            <p className="text-muted-foreground">
-              No tiles are used by that many games.
-            </p>
-          )}
+          {data.tiles.length === 0 && <p className="text-muted-foreground">No tiles are used by that many games.</p>}
           {groups.map((group) => (
             <section key={group.color} className="space-y-2">
               <h2 className="text-lg font-semibold capitalize">
-                {group.color}{' '}
-                <span className="text-sm font-normal text-muted-foreground">
-                  ({group.tiles.length})
-                </span>
+                {group.color} <span className="text-sm font-normal text-muted-foreground">({group.tiles.length})</span>
               </h2>
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 {group.tiles.map((tile) => (

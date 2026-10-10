@@ -19,15 +19,13 @@ public sealed class GamesRepository(SqliteConnectionFactory db)
     public IReadOnlyList<GameSummaryDto> GetAll()
     {
         using var connection = db.Open();
-        return connection.Query<GameSummaryDto>(
-            SelectGames + " GROUP BY g.Id ORDER BY g.Title COLLATE NOCASE;").ToList();
+        return connection.Query<GameSummaryDto>(SelectGames + " GROUP BY g.Id ORDER BY g.Title COLLATE NOCASE;").ToList();
     }
 
     // One game, or null if the id does not exist.
     public GameSummaryDto? GetById(long id)
     {
         using var connection = db.Open();
-        return connection.QuerySingleOrDefault<GameSummaryDto>(
-            SelectGames + " WHERE g.Id = @id GROUP BY g.Id;", new { id });
+        return connection.QuerySingleOrDefault<GameSummaryDto>(SelectGames + " WHERE g.Id = @id GROUP BY g.Id;", new { id });
     }
 }

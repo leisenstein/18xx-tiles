@@ -7,9 +7,8 @@ using Tiles18xx.Api.Data.Seeding.SeedModels;
 
 namespace Tiles18xx.Api.Data.Seeding;
 
-// Loads games and tiles from the embedded seed files into an empty database.
-// Runs only when Tiles has no rows. To re-seed in development, stop the API
-// and delete data/tiles.db* so DbUp and this seeder start from scratch.
+// Loads games and tiles from the embedded seed files into an empty database. Runs only when Tiles has no rows. To re-seed in development, stop the API and
+// delete data/tiles.db* so DbUp and this seeder start from scratch.
 public static class DataSeeder
 {
     private const string SourceRef = "18xx.games commit 46a592e40494368390c9a731978a577ac4ecb1e0";
@@ -36,9 +35,7 @@ public static class DataSeeder
             return;
         }
 
-        var games = ReadResource<Dictionary<string, SeedGame>>("Seed.games.json")
-            .OrderBy(g => g.Key, StringComparer.Ordinal)
-            .ToList();
+        var games = ReadResource<Dictionary<string, SeedGame>>("Seed.games.json").OrderBy(g => g.Key, StringComparer.Ordinal).ToList();
         var genericTiles = ReadResource<List<SeedGenericTile>>("Seed.tiles.json");
 
         var (tiles, links) = BuildPlan(games, genericTiles, logger);
@@ -56,12 +53,7 @@ public static class DataSeeder
                 VALUES (@Title, @SourceKey, @CreatedUtc)
                 RETURNING Id;
                 """,
-                new
-                {
-                    game.Title,
-                    SourceKey = game.Dir,
-                    CreatedUtc = now,
-                },
+                new { game.Title, SourceKey = game.Dir, CreatedUtc = now },
                 transaction);
         }
 
@@ -70,10 +62,8 @@ public static class DataSeeder
             var partNames = PartNames(tile.DefinitionCode).ToHashSet(StringComparer.Ordinal);
             tile.Id = connection.ExecuteScalar<long>(
                 """
-                INSERT INTO Tiles (Number, Color, DefinitionCode, DisplayName, HasCity, HasTown,
-                                   Source, SourceRef, CreatedUtc)
-                VALUES (@Number, @Color, @DefinitionCode, @DisplayName, @HasCity, @HasTown,
-                        @Source, @SourceRef, @CreatedUtc)
+                INSERT INTO Tiles (Number, Color, DefinitionCode, DisplayName, HasCity, HasTown, Source, SourceRef, CreatedUtc)
+                VALUES (@Number, @Color, @DefinitionCode, @DisplayName, @HasCity, @HasTown, @Source, @SourceRef, @CreatedUtc)
                 RETURNING Id;
                 """,
                 new
@@ -99,15 +89,11 @@ public static class DataSeeder
 
         transaction.Commit();
 
-        logger.LogInformation(
-            "Seeded {Games} games, {Tiles} tiles, {Links} game-tile links.",
-            games.Count, tiles.Count, links.Count);
+        logger.LogInformation("Seeded {Games} games, {Tiles} tiles, {Links} game-tile links.", games.Count, tiles.Count, links.Count);
     }
 
     private static (List<PlannedTile> Tiles, List<(string GameKey, PlannedTile Tile)> Links) BuildPlan(
-        List<KeyValuePair<string, SeedGame>> games,
-        List<SeedGenericTile> genericTiles,
-        ILogger logger)
+        List<KeyValuePair<string, SeedGame>> games, List<SeedGenericTile> genericTiles, ILogger logger)
     {
         var tiles = new List<PlannedTile>();
         var tilesByKey = new Dictionary<(string Number, string Color, string SortedCode), PlannedTile>();
@@ -138,9 +124,7 @@ public static class DataSeeder
                 {
                     if (!genericByNumber.TryGetValue(number, out tile))
                     {
-                        logger.LogWarning(
-                            "Seed: {Game} refers to generic tile '{Number}', which does not exist. Skipped.",
-                            gameKey, number);
+                        logger.LogWarning("Seed: {Game} refers to generic tile '{Number}', which does not exist. Skipped.", gameKey, number);
                         continue;
                     }
                 }
@@ -148,8 +132,7 @@ public static class DataSeeder
                 {
                     if (entry.Code is null || entry.Color is null)
                     {
-                        throw new InvalidOperationException(
-                            $"Custom tile '{number}' in {gameKey} is missing its code or color.");
+                        throw new InvalidOperationException($"Custom tile '{number}' in {gameKey} is missing its code or color.");
                     }
                     RequireKnownColor(entry.Color, $"tile '{number}' in {gameKey}");
 
@@ -171,13 +154,10 @@ public static class DataSeeder
         return (tiles, links);
     }
 
-    // "#N" when the number has one row (or for the generic tile);
-    // "#N (Game)" for a version used by one game; "#N (variant k)" for a version shared by several.
+    // "#N" when the number has one row (or for the generic tile); "#N (Game)" for a version used by one game; "#N (variant k)" for a version shared by several.
     private static void AssignDisplayNames(List<PlannedTile> tiles)
     {
-        var rowsPerNumber = tiles
-            .GroupBy(t => t.Number, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
+        var rowsPerNumber = tiles.GroupBy(t => t.Number, StringComparer.Ordinal).ToDictionary(g => g.Key, g => g.Count(), StringComparer.Ordinal);
         var variantCounters = new Dictionary<string, int>(StringComparer.Ordinal);
 
         foreach (var tile in tiles)
@@ -203,12 +183,10 @@ public static class DataSeeder
     private static (string, string, string) Key(string number, string color, string code) =>
         (number, color, string.Join(";", SplitParts(code).Order(StringComparer.Ordinal)));
 
-    private static string[] SplitParts(string code) =>
-        code.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    private static string[] SplitParts(string code) => code.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     // Part type is the text before '=' ("city=revenue:30" -> "city"; "junction" -> "junction").
-    private static IEnumerable<string> PartNames(string code) =>
-        SplitParts(code).Select(p => p.IndexOf('=') is var i and >= 0 ? p[..i] : p);
+    private static IEnumerable<string> PartNames(string code) => SplitParts(code).Select(p => p.IndexOf('=') is var i and >= 0 ? p[..i] : p);
 
     private static void RequireKnownColor(string color, string context)
     {
@@ -222,8 +200,7 @@ public static class DataSeeder
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(name)
             ?? throw new InvalidOperationException($"Embedded seed file '{name}' was not found.");
-        return JsonSerializer.Deserialize<T>(stream, JsonOptions)
-            ?? throw new InvalidOperationException($"Embedded seed file '{name}' is empty.");
+        return JsonSerializer.Deserialize<T>(stream, JsonOptions) ?? throw new InvalidOperationException($"Embedded seed file '{name}' is empty.");
     }
 
     private sealed class PlannedTile(string number, string color, string definitionCode, string source)

@@ -1,0 +1,8 @@
+# Editor settings shared by Visual Studio, VS Code, and other editors (https://editorconfig.org).
+root = true
+
+[*]
+# Keep lines to 160 characters or fewer.
+# Web files: Prettier wraps them automatically (printWidth in web/.prettierrc).
+# C# and other files: wrap by hand; editors use this value for their line-length guide.
+max_line_length = 160

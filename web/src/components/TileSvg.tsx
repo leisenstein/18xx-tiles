@@ -11,30 +11,16 @@ interface TileSvgProps {
 // Drawing size in SVG units. The SVG scales to whatever width className gives it.
 const SIZE = 100
 
-const toPoints = (points: Point[]) =>
-  points.map(([x, y]) => `${x},${y}`).join(' ')
+const toPoints = (points: Point[]) => points.map(([x, y]) => `${x},${y}`).join(' ')
 
 // Draws one tile as inline SVG from its definition string (DESIGN.md section 10).
 // The geometry lives in buildTileDrawing; this component only turns shapes into SVG elements.
-export default function TileSvg({
-  definitionCode,
-  color,
-  number,
-  className,
-}: TileSvgProps) {
+export default function TileSvg({ definitionCode, color, number, className }: TileSvgProps) {
   // Recalculate only when the tile changes, not on every render.
-  const drawing = useMemo(
-    () => buildTileDrawing(definitionCode, color, SIZE, number),
-    [definitionCode, color, number],
-  )
+  const drawing = useMemo(() => buildTileDrawing(definitionCode, color, SIZE, number), [definitionCode, color, number])
 
   return (
-    <svg
-      viewBox={`0 0 ${drawing.width} ${drawing.height}`}
-      className={className}
-      role="img"
-      aria-label={number ? `Tile ${number}, ${color}` : `${color} tile`}
-    >
+    <svg viewBox={`0 0 ${drawing.width} ${drawing.height}`} className={className} role="img" aria-label={number ? `Tile ${number}, ${color}` : `${color} tile`}>
       {drawing.shapes.map((shape, i) => {
         switch (shape.kind) {
           case 'polygon':

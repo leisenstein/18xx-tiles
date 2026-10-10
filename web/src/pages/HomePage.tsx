@@ -52,14 +52,9 @@ export default function HomePage() {
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {games.map((game) => (
           <li key={game.id}>
-            <Link
-              to={`/tiles?game=${game.id}`}
-              className="flex items-center justify-between rounded-lg border px-4 py-3 hover:bg-muted"
-            >
+            <Link to={`/tiles?game=${game.id}`} className="flex items-center justify-between rounded-lg border px-4 py-3 hover:bg-muted">
               <span className="font-medium">{game.title}</span>
-              <span className="text-sm text-muted-foreground">
-                {game.tileCount} tiles
-              </span>
+              <span className="text-sm text-muted-foreground">{game.tileCount} tiles</span>
             </Link>
           </li>
         ))}

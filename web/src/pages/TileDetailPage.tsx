@@ -16,9 +16,7 @@ export default function TileDetailPage() {
   const validId = Number.isInteger(id) && id > 0
 
   // The loaded tile, tagged with its id so a stale tile is never shown for a new URL.
-  const [data, setData] = useState<{ id: number; tile: TileDetail } | null>(
-    null,
-  )
+  const [data, setData] = useState<{ id: number; tile: TileDetail } | null>(null)
   const [notFound, setNotFound] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -64,12 +62,7 @@ export default function TileDetailPage() {
     <div className="space-y-8">
       {/* Drawing beside the facts on wide screens; stacked on phones. */}
       <div className="flex flex-col gap-6 sm:flex-row">
-        <TileSvg
-          definitionCode={tile.definitionCode}
-          color={tile.color}
-          number={tile.number}
-          className="w-full max-w-80 shrink-0"
-        />
+        <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="w-full max-w-80 shrink-0" />
         <div className="min-w-0 space-y-3">
           <h1 className="text-2xl font-semibold">{tile.displayName}</h1>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
@@ -78,28 +71,21 @@ export default function TileDetailPage() {
             <dt className="text-muted-foreground">Color</dt>
             <dd>{tile.color}</dd>
             <dt className="text-muted-foreground">Has</dt>
-            <dd>
-              {[tile.hasCity && 'city', tile.hasTown && 'town']
-                .filter(Boolean)
-                .join(', ') || 'no city or town'}
-            </dd>
+            <dd>{[tile.hasCity && 'city', tile.hasTown && 'town'].filter(Boolean).join(', ') || 'no city or town'}</dd>
             <dt className="text-muted-foreground">Source</dt>
             <dd>{tile.source}</dd>
           </dl>
           <div>
             <div className="text-sm text-muted-foreground">Definition</div>
             {/* break-all: definitions are long strings without spaces. */}
-            <code className="block rounded-md bg-muted p-2 text-xs break-all">
-              {tile.definitionCode || '(empty)'}
-            </code>
+            <code className="block rounded-md bg-muted p-2 text-xs break-all">{tile.definitionCode || '(empty)'}</code>
           </div>
         </div>
       </div>
 
       <section className="space-y-2">
         <h2 className="text-lg font-semibold">
-          Used in {tile.games.length}{' '}
-          {tile.games.length === 1 ? 'game' : 'games'}
+          Used in {tile.games.length} {tile.games.length === 1 ? 'game' : 'games'}
         </h2>
         {tile.games.length === 0 ? (
           <p className="text-sm text-muted-foreground">
@@ -125,9 +111,7 @@ export default function TileDetailPage() {
 
       {tile.otherVersions.length > 0 && (
         <section className="space-y-2">
-          <h2 className="text-lg font-semibold">
-            Other versions of #{tile.number}
-          </h2>
+          <h2 className="text-lg font-semibold">Other versions of #{tile.number}</h2>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {tile.otherVersions.map((other) => (
               <li key={other.id}>

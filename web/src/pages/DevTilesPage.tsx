@@ -61,12 +61,7 @@ export default function DevTilesPage() {
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
         {tiles.map((tile, i) => (
           <li key={tile.id} className="space-y-1 text-center text-xs">
-            <TileSvg
-              definitionCode={tile.definitionCode}
-              color={tile.color}
-              number={tile.number}
-              className="w-full"
-            />
+            <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="w-full" />
             <div className="font-medium">{tile.displayName}</div>
             <div className="text-muted-foreground">{SAMPLES[i].feature}</div>
           </li>

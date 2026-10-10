@@ -74,12 +74,8 @@ export default function TilesPage() {
       <h1 className="text-2xl font-semibold">Tiles</h1>
       <FilterBar filters={filters} games={games} onChange={setFilter} />
 
-      {error && (
-        <p className="text-destructive">Could not load tiles. {error}</p>
-      )}
-      {!result && !error && (
-        <p className="text-muted-foreground">Loading tiles…</p>
-      )}
+      {error && <p className="text-destructive">Could not load tiles. {error}</p>}
+      {!result && !error && <p className="text-muted-foreground">Loading tiles…</p>}
 
       {result && (
         // Dim the old results while new ones load, instead of blanking the page.
@@ -89,9 +85,7 @@ export default function TilesPage() {
           </p>
 
           {result.items.length === 0 ? (
-            <p className="text-muted-foreground">
-              No tiles match these filters.
-            </p>
+            <p className="text-muted-foreground">No tiles match these filters.</p>
           ) : (
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {result.items.map((tile) => (
@@ -104,23 +98,13 @@ export default function TilesPage() {
 
           {result.totalPages > 1 && (
             <div className="mt-4 flex items-center justify-center gap-3 text-sm">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => goToPage(page - 1)}
-              >
+              <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => goToPage(page - 1)}>
                 Previous
               </Button>
               <span>
                 Page {result.page} of {result.totalPages}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= result.totalPages}
-                onClick={() => goToPage(page + 1)}
-              >
+              <Button variant="outline" size="sm" disabled={page >= result.totalPages} onClick={() => goToPage(page + 1)}>
                 Next
               </Button>
             </div>

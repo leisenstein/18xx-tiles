@@ -8,8 +8,7 @@ public static class TileColors
 
     private static readonly HashSet<string> Known = new(StringComparer.Ordinal)
     {
-        "yellow", "green", "brown", "gray", "greenbrown", "browngray", "brownsepia", "none",
-        "red", "blue", "purple", "white", "orange",
+        "yellow", "green", "brown", "gray", "greenbrown", "browngray", "brownsepia", "none", "red", "blue", "purple", "white", "orange",
     };
 
     public static bool IsKnown(string color) => Known.Contains(color);

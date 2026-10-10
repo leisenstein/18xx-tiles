@@ -15,6 +15,5 @@ public sealed class GamesController(GamesRepository repo) : ControllerBase
 
     // GET /api/games/5 -> one game, or 404 if it does not exist
     [HttpGet("{id:long}")]
-    public ActionResult<GameSummaryDto> GetById(long id) =>
-        repo.GetById(id) is { } game ? Ok(game) : NotFound();
+    public ActionResult<GameSummaryDto> GetById(long id) => repo.GetById(id) is { } game ? Ok(game) : NotFound();
 }

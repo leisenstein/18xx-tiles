@@ -30,19 +30,16 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
         var pattern = search is null ? null : "%" + EscapeLike(search) + "%";
 
         using var connection = db.Open();
-        var rows = connection.Query<TileSummaryDto>(
-            SearchSql, new { query.Game, query.Color, query.Kind, Pattern = pattern });
+        var rows = connection.Query<TileSummaryDto>(SearchSql, new { query.Game, query.Color, query.Kind, Pattern = pattern });
 
-        // Sort in C# (numeric-part ordering is awkward in SQL). At about 2,000 tiles,
-        // loading all matches and then paging is fast enough.
+        // Sort in C# (numeric-part ordering is awkward in SQL). At about 2,000 tiles, loading all matches and then paging is fast enough.
         var sorted = TileSort.Apply(rows).ToList();
         var items = sorted.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList();
 
         return new PagedResultDto<TileSummaryDto>(items, query.Page, query.PageSize, sorted.Count);
     }
 
-    // Live tiles used by at least minGames games, in the shared tile sort order (DESIGN.md 9.3).
-    // Input is already validated by the controller.
+    // Live tiles used by at least minGames games, in the shared tile sort order (DESIGN.md 9.3). Input is already validated by the controller.
     public IReadOnlyList<TileSummaryDto> GetCommon(int minGames)
     {
         using var connection = db.Open();
@@ -94,6 +91,5 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
     }
 
     // Make %, _ and \ in user input match literally in LIKE.
-    private static string EscapeLike(string text) =>
-        text.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_");
+    private static string EscapeLike(string text) => text.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_");
 }

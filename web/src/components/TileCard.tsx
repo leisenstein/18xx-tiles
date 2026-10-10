@@ -12,20 +12,11 @@ interface TileCardProps {
 // One tile in the grid: drawing, name, color, and game count. Links to the tile detail page.
 export default function TileCard({ tile, showCountInGame }: TileCardProps) {
   return (
-    <Link
-      to={`/tiles/${tile.id}`}
-      className="block rounded-lg border p-2 text-center hover:bg-muted"
-    >
-      <TileSvg
-        definitionCode={tile.definitionCode}
-        color={tile.color}
-        number={tile.number}
-        className="mx-auto w-full max-w-40"
-      />
+    <Link to={`/tiles/${tile.id}`} className="block rounded-lg border p-2 text-center hover:bg-muted">
+      <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="mx-auto w-full max-w-40" />
       <div className="mt-1 text-sm font-medium">{tile.displayName}</div>
       <div className="text-xs text-muted-foreground">
-        {tile.color} · {tile.gameCount}{' '}
-        {tile.gameCount === 1 ? 'game' : 'games'}
+        {tile.color} · {tile.gameCount} {tile.gameCount === 1 ? 'game' : 'games'}
         {showCountInGame && ` · ${countText(tile.countInGame)}`}
       </div>
     </Link>

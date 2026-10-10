@@ -30,5 +30,4 @@ export const getTile = (id: number) => getJson<TileDetail>(`/api/tiles/${id}`)
 
 // Tiles used by at least minGames games (GET /api/tiles/common?minGames=).
 // The API accepts 2 to 200; outside that it returns 400.
-export const getCommonTiles = (minGames: number) =>
-  getJson<TileSummary[]>(`/api/tiles/common?minGames=${minGames}`)
+export const getCommonTiles = (minGames: number) => getJson<TileSummary[]>(`/api/tiles/common?minGames=${minGames}`)

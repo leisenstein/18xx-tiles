@@ -20,20 +20,10 @@ const KINDS: { value: 'city' | 'town' | undefined; label: string }[] = [
 
 // Filters for the tile list: game, color, city/town, and number search.
 // It only shows the current filters and reports changes; useTileFilters stores them in the URL.
-export default function FilterBar({
-  filters,
-  games,
-  onChange,
-}: FilterBarProps) {
+export default function FilterBar({ filters, games, onChange }: FilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <NativeSelect
-        aria-label="Game"
-        value={filters.game ?? ''}
-        onChange={(e) =>
-          onChange('game', e.target.value ? Number(e.target.value) : undefined)
-        }
-      >
+      <NativeSelect aria-label="Game" value={filters.game ?? ''} onChange={(e) => onChange('game', e.target.value ? Number(e.target.value) : undefined)}>
         <NativeSelectOption value="">All games</NativeSelectOption>
         {games.map((game) => (
           <NativeSelectOption key={game.id} value={game.id}>
@@ -42,11 +32,7 @@ export default function FilterBar({
         ))}
       </NativeSelect>
 
-      <NativeSelect
-        aria-label="Color"
-        value={filters.color ?? ''}
-        onChange={(e) => onChange('color', e.target.value || undefined)}
-      >
+      <NativeSelect aria-label="Color" value={filters.color ?? ''} onChange={(e) => onChange('color', e.target.value || undefined)}>
         <NativeSelectOption value="">All colors</NativeSelectOption>
         {TILE_COLORS.map((color) => (
           <NativeSelectOption key={color} value={color}>

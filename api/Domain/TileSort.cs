@@ -1,8 +1,7 @@
 namespace Tiles18xx.Api.Domain;
 
-// Shared tile sort order (DESIGN.md section 8):
-// color group, then the leading number ("57" in "57A"), then the rest ("A"), then Id.
-// Numbers without a leading digit (e.g. "X20") sort after numbered ones.
+// Shared tile sort order (DESIGN.md section 8): color group, then the leading number ("57" in "57A"), then the rest ("A"), then Id. Numbers without a leading
+// digit (e.g. "X20") sort after numbered ones.
 public static class TileSort
 {
     public static IEnumerable<T> Apply<T>(IEnumerable<T> tiles) where T : ISortableTile =>

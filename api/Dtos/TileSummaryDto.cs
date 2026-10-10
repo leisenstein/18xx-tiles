@@ -2,8 +2,7 @@ using Tiles18xx.Api.Domain;
 
 namespace Tiles18xx.Api.Dtos;
 
-// One tile in a list. Init properties (not a positional record) so Dapper can
-// convert SQLite integers to bool and int?.
+// One tile in a list. Init properties (not a positional record) so Dapper can convert SQLite integers to bool and int?.
 public sealed record TileSummaryDto : ISortableTile
 {
     public long Id { get; init; }

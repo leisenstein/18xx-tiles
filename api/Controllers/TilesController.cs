@@ -51,15 +51,14 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
     public const int MinGamesLowest = 2;
     public const int MinGamesHighest = 200;
 
-    // GET /api/tiles/common?minGames=10 -> tiles used by at least minGames games
-    // (non-numeric minGames is rejected with a 400 by [ApiController] before this runs).
+    // GET /api/tiles/common?minGames=10 -> tiles used by at least minGames games.
+    // A non-numeric minGames is rejected with a 400 by [ApiController] before this runs.
     [HttpGet("common")]
     public ActionResult<IReadOnlyList<TileSummaryDto>> GetCommon([FromQuery] int minGames = 10)
     {
         if (minGames is < MinGamesLowest or > MinGamesHighest)
         {
-            ModelState.AddModelError(
-                "minGames", $"minGames must be a whole number from {MinGamesLowest} to {MinGamesHighest}.");
+            ModelState.AddModelError("minGames", $"minGames must be a whole number from {MinGamesLowest} to {MinGamesHighest}.");
             return ValidationProblem();
         }
 
@@ -68,6 +67,5 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
 
     // GET /api/tiles/60 -> one tile, or 404 if it does not exist
     [HttpGet("{id:long}")]
-    public ActionResult<TileDetailDto> GetById(long id) =>
-        tiles.GetById(id) is { } tile ? Ok(tile) : NotFound();
+    public ActionResult<TileDetailDto> GetById(long id) => tiles.GetById(id) is { } tile ? Ok(tile) : NotFound();
 }

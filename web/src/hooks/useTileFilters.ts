@@ -35,10 +35,7 @@ export function useTileFilters() {
   }
 
   // Set or clear one filter. Changing anything other than the page goes back to page 1.
-  const setFilter = (
-    key: TileFilterKey,
-    value: string | number | undefined,
-  ) => {
+  const setFilter = (key: TileFilterKey, value: string | number | undefined) => {
     setParams(
       (previous) => {
         const next = new URLSearchParams(previous)

@@ -16,9 +16,7 @@ function App() {
         <Route path="tiles/common" element={<CommonTilesPage />} />
         <Route path="tiles/:id" element={<TileDetailPage />} />
         {/* Development-only page for checking tile drawings (not in production builds). */}
-        {import.meta.env.DEV && (
-          <Route path="dev/tiles" element={<DevTilesPage />} />
-        )}
+        {import.meta.env.DEV && <Route path="dev/tiles" element={<DevTilesPage />} />}
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -29,12 +29,7 @@ export default function Layout() {
                 key={item.to}
                 to={item.to}
                 end
-                className={({ isActive }) =>
-                  cn(
-                    'text-muted-foreground hover:text-foreground',
-                    isActive && 'font-medium text-foreground',
-                  )
-                }
+                className={({ isActive }) => cn('text-muted-foreground hover:text-foreground', isActive && 'font-medium text-foreground')}
               >
                 {item.label}
               </NavLink>

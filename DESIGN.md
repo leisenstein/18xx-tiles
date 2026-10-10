@@ -56,7 +56,7 @@ A public web app for browsing 18xx track tiles with pictures. Users can browse t
 | Database | SQLite, single file, WAL mode |
 | Data access | Dapper with `Microsoft.Data.Sqlite` |
 | App schema changes | Versioned SQL scripts run by DbUp (`dbup-sqlite`), embedded in the API assembly |
-| Auth | ASP.NET Core Identity with its EF Core store, used only for Identity tables (`AspNet*`). All app data uses Dapper. `Admin` role seeded at startup |
+| Auth | ASP.NET Core Identity with its EF Core store, used only for Identity tables (`AspNet*`). All app data uses Dapper. `Admin` role seeded at startup. Endpoints: built-in `MapIdentityApi` under `/api/auth` with cookie sign-in (framework-provided Minimal API endpoints; our own endpoints stay controllers). First admin account seeded at startup from secrets (user-secrets in development, environment variables in Docker), never stored in code or the image. Emails (confirmation, password reset) are written to the API log in development; a real provider is chosen in Phase 5 |
 | Audience | Public. Email confirmation at registration, rate limiting on login and submissions |
 | Tile versions | Separate tile rows (option A). The same number with a different definition is its own tile, linked to games through GameTiles |
 | Changes | ChangeRequests table (Add, Edit, Delete). User requests wait for admin approval; admin requests apply immediately |
@@ -514,7 +514,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 ## 12. Open items
 
 1. **Licensing:** confirm what may be published publicly for game titles and tile data.
-2. **Email service:** choose a provider for confirmation and password-reset emails.
+2. **Email service:** choose a provider for confirmation and password-reset emails. Until then, development writes emails to the API log (Phase 3 decision).
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
 4. **Display names:** scheme defined in section 7; confirm it reads well in the UI during Phase 2.
 5. **Import refresh:** decide whether to re-import when tobymao/18xx changes, and how to treat rows users have edited.

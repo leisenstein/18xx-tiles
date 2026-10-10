@@ -67,35 +67,20 @@ const rad = (deg: number) => (deg * Math.PI) / 180
 const edgeAngle = (edge: number) => rad(-90 - 60 * edge)
 
 // Point on a cubic Bezier curve at t (0..1).
-function bezier(
-  [p0, p1, p2, p3]: [Point, Point, Point, Point],
-  t: number,
-): Point {
+function bezier([p0, p1, p2, p3]: [Point, Point, Point, Point], t: number): Point {
   const u = 1 - t
   return [
-    u ** 3 * p0[0] +
-      3 * u * u * t * p1[0] +
-      3 * u * t * t * p2[0] +
-      t ** 3 * p3[0],
-    u ** 3 * p0[1] +
-      3 * u * u * t * p1[1] +
-      3 * u * t * t * p2[1] +
-      t ** 3 * p3[1],
+    u ** 3 * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t ** 3 * p3[0],
+    u ** 3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t ** 3 * p3[1],
   ]
 }
 
 const isNodeRef = (ref: string) => ref.startsWith('_')
 
 // Rough text width; SVG cannot measure text before it is drawn.
-const textWidth = (text: string, size: number, bold: boolean) =>
-  text.length * size * (bold ? 0.6 : 0.55)
+const textWidth = (text: string, size: number, bold: boolean) => text.length * size * (bold ? 0.6 : 0.55)
 
-export function buildTileDrawing(
-  code: string,
-  color: string,
-  size: number,
-  number?: string,
-): TileDrawing {
+export function buildTileDrawing(code: string, color: string, size: number, number?: string): TileDrawing {
   const R = size / 2 - 1 // corner radius
   const a = (R * Math.sqrt(3)) / 2 // center to edge midpoint
   const width = size
@@ -107,18 +92,13 @@ export function buildTileDrawing(
   // Convert from y-up math to SVG coordinates.
   const flip = ([x, y]: Point): Point => [x, height - y]
   const add = (shape: Shape) => {
-    if (shape.kind === 'circle')
-      shapes.push({ ...shape, center: flip(shape.center) })
-    else if (shape.kind === 'text')
-      shapes.push({ ...shape, at: flip(shape.at) })
+    if (shape.kind === 'circle') shapes.push({ ...shape, center: flip(shape.center) })
+    else if (shape.kind === 'text') shapes.push({ ...shape, at: flip(shape.at) })
     else shapes.push({ ...shape, points: shape.points.map(flip) })
   }
 
   // Hex corners (flat top: corners at 0, 60, ... degrees).
-  const corners: Point[] = Array.from({ length: 6 }, (_, i) => [
-    cx + R * Math.cos(rad(60 * i)),
-    cy + R * Math.sin(rad(60 * i)),
-  ])
+  const corners: Point[] = Array.from({ length: 6 }, (_, i) => [cx + R * Math.cos(rad(60 * i)), cy + R * Math.sin(rad(60 * i))])
 
   // Background: one fill, or two halves (left first color, right second).
   const fills = tileFills(color)
@@ -180,27 +160,16 @@ export function buildTileDrawing(
     } else if (type === 'icon') {
       extras.push('icon:' + (values.image ?? '?').split('/').pop())
     } else if (type === 'future_label') {
-      extras.push(
-        'future ' +
-          (values.label ?? '?') +
-          (values.color ? ` (${values.color})` : ''),
-      )
+      extras.push('future ' + (values.label ?? '?') + (values.color ? ` (${values.color})` : ''))
     }
     // Other part types are ignored (DESIGN.md: unknown parts must not break the tile).
   }
 
-  const nodeAt = (ref: string): TileNode | undefined =>
-    nodes[Number.parseInt(ref.slice(1), 10)]
+  const nodeAt = (ref: string): TileNode | undefined => nodes[Number.parseInt(ref.slice(1), 10)]
   const edgeOf = (ref: string) => Math.trunc(Number.parseFloat(ref))
-  const edgeMidpoint = (edge: number): Point => [
-    cx + a * Math.cos(edgeAngle(edge)),
-    cy + a * Math.sin(edgeAngle(edge)),
-  ]
+  const edgeMidpoint = (edge: number): Point => [cx + a * Math.cos(edgeAngle(edge)), cy + a * Math.sin(edgeAngle(edge))]
   // Move a point toward the center by k.
-  const inward = ([x, y]: Point, k: number): Point => [
-    x + ((cx - x) / a) * k,
-    y + ((cy - y) / a) * k,
-  ]
+  const inward = ([x, y]: Point, k: number): Point => [x + ((cx - x) / a) * k, y + ((cy - y) / a) * k]
 
   // Record what each node connects to.
   for (const path of paths) {
@@ -223,24 +192,13 @@ export function buildTileDrawing(
     } else if (loc !== undefined && loc !== '') {
       // Integer loc: toward that edge. "x.5": toward that corner.
       const f = Number.parseFloat(loc)
-      const [angle, r] = Number.isInteger(f)
-        ? [edgeAngle(f), 0.55 * a]
-        : [rad(-90 - 60 * f), 0.55 * R]
+      const [angle, r] = Number.isInteger(f) ? [edgeAngle(f), 0.55 * a] : [rad(-90 - 60 * f), 0.55 * R]
       node.pos = [cx + r * Math.cos(angle), cy + r * Math.sin(angle)]
-    } else if (
-      node.kind === 'town' &&
-      node.edges.length === 2 &&
-      node.neighbors.length === 0
-    ) {
+    } else if (node.kind === 'town' && node.edges.length === 2 && node.neighbors.length === 0) {
       // A town on a curve between two edges sits in the middle of the curve.
       const p0 = edgeMidpoint(node.edges[0])
       const p3 = edgeMidpoint(node.edges[1])
-      const curve: [Point, Point, Point, Point] = [
-        p0,
-        inward(p0, 0.5 * a),
-        inward(p3, 0.5 * a),
-        p3,
-      ]
+      const curve: [Point, Point, Point, Point] = [p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]
       node.pos = bezier(curve, 0.5)
       const q1 = bezier(curve, 0.45)
       const q2 = bezier(curve, 0.55)
@@ -252,19 +210,14 @@ export function buildTileDrawing(
       const vx = node.edges.reduce((s, e) => s + Math.cos(edgeAngle(e)), 0)
       const vy = node.edges.reduce((s, e) => s + Math.sin(edgeAngle(e)), 0)
       const length = Math.hypot(vx, vy)
-      node.pos =
-        length < 1e-6
-          ? [cx, cy]
-          : [cx + (vx / length) * 0.5 * a, cy + (vy / length) * 0.5 * a]
+      node.pos = length < 1e-6 ? [cx, cy] : [cx + (vx / length) * 0.5 * a, cy + (vy / length) * 0.5 * a]
     }
   }
 
   // Nodes with no edges and no loc: spread opposite the placed ones.
   const unplaced = nodes.filter((n) => n.pos === null)
   if (unplaced.length > 0) {
-    const placed = nodes
-      .map((n) => n.pos)
-      .filter((p): p is Point => p !== null && (p[0] !== cx || p[1] !== cy))
+    const placed = nodes.map((n) => n.pos).filter((p): p is Point => p !== null && (p[0] !== cx || p[1] !== cy))
     let base = rad(90)
     if (placed.length > 0) {
       const mx = placed.reduce((s, p) => s + p[0] - cx, 0)
@@ -273,10 +226,7 @@ export function buildTileDrawing(
     }
     unplaced.forEach((node, i) => {
       const angle = base + (i - (unplaced.length - 1) / 2) * rad(60)
-      node.pos = [
-        cx + 0.5 * a * Math.cos(angle),
-        cy + 0.5 * a * Math.sin(angle),
-      ]
+      node.pos = [cx + 0.5 * a * Math.cos(angle), cy + 0.5 * a * Math.sin(angle)]
     })
   }
 
@@ -316,10 +266,7 @@ export function buildTileDrawing(
     }
     occupied.push(...points)
   }
-  const curvePoints = (
-    curve: [Point, Point, Point, Point],
-    segments = 24,
-  ): Point[] =>
+  const curvePoints = (curve: [Point, Point, Point, Point], segments = 24): Point[] =>
     Array.from({ length: segments + 1 }, (_, i) => bezier(curve, i / segments))
 
   const drawnThrough = new Set<TileNode>()
@@ -331,10 +278,7 @@ export function buildTileDrawing(
       // Edge to edge: a curve pulled toward the center.
       const p0 = edgeMidpoint(edgeOf(A))
       const p3 = edgeMidpoint(edgeOf(B))
-      drawTrack(
-        curvePoints([p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]),
-        track,
-      )
+      drawTrack(curvePoints([p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]), track)
     } else if (isNodeRef(A) && isNodeRef(B)) {
       // Node to node: straight.
       const n1 = nodeAt(A)
@@ -354,20 +298,14 @@ export function buildTileDrawing(
       const p0 = edgeMidpoint(edgeOf(isNodeRef(A) ? B : A))
       const q = posOf(node)
       const distance = Math.hypot(q[0] - p0[0], q[1] - p0[1])
-      drawTrack(
-        curvePoints([p0, inward(p0, Math.min(0.45 * a, distance * 0.5)), q, q]),
-        track,
-      )
+      drawTrack(curvePoints([p0, inward(p0, Math.min(0.45 * a, distance * 0.5)), q, q]), track)
     }
   }
 
   // Optional colored frame just inside the edge.
   if (frame) {
     const inset = R - 0.07 * a
-    const framePoints: Point[] = Array.from({ length: 6 }, (_, i) => [
-      cx + inset * Math.cos(rad(60 * i)),
-      cy + inset * Math.sin(rad(60 * i)),
-    ])
+    const framePoints: Point[] = Array.from({ length: 6 }, (_, i) => [cx + inset * Math.cos(rad(60 * i)), cy + inset * Math.sin(rad(60 * i))])
     add({
       kind: 'polygon',
       points: framePoints,
@@ -437,10 +375,7 @@ export function buildTileDrawing(
       }
       const extent = cr * (s === 1 ? 1 : 2.2)
       for (let deg = 0; deg < 360; deg += 30) {
-        occupied.push([
-          x + extent * Math.cos(rad(deg)),
-          y + extent * Math.sin(rad(deg)),
-        ])
+        occupied.push([x + extent * Math.cos(rad(deg)), y + extent * Math.sin(rad(deg))])
       }
       occupied.push([x, y])
       badges.push({ node, extent })
@@ -504,19 +439,12 @@ export function buildTileDrawing(
   const inside = (px: number, py: number, m = 0.12) => {
     for (let i = 0; i < 6; i++) {
       const angle = edgeAngle(i)
-      if (
-        (px - cx) * Math.cos(angle) + (py - cy) * Math.sin(angle) >
-        a * (1 - m)
-      )
-        return false
+      if ((px - cx) * Math.cos(angle) + (py - cy) * Math.sin(angle) > a * (1 - m)) return false
     }
     return true
   }
   // Distance from a point to the nearest drawn thing.
-  const clearance = (px: number, py: number) =>
-    occupied.length === 0
-      ? 99
-      : Math.min(...occupied.map(([qx, qy]) => Math.hypot(px - qx, py - qy)))
+  const clearance = (px: number, py: number) => (occupied.length === 0 ? 99 : Math.min(...occupied.map(([qx, qy]) => Math.hypot(px - qx, py - qy))))
 
   // Revenue circles: try spots around each node; keep the one with the most clearance.
   const br = 0.15 * a
@@ -558,10 +486,7 @@ export function buildTileDrawing(
       fill: 'black',
     })
     for (let deg = 0; deg < 360; deg += 45) {
-      occupied.push([
-        best[0] + rr * Math.cos(rad(deg)),
-        best[1] + rr * Math.sin(rad(deg)),
-      ])
+      occupied.push([best[0] + rr * Math.cos(rad(deg)), best[1] + rr * Math.sin(rad(deg))])
     }
   }
 
@@ -570,31 +495,17 @@ export function buildTileDrawing(
     const candidates: Point[] = []
     for (let i = 0; i < 6; i++) {
       for (const frac of [0.62, 0.72]) {
-        candidates.push([
-          cx + frac * R * Math.cos(rad(-60 * i)),
-          cy + frac * R * Math.sin(rad(-60 * i)),
-        ])
+        candidates.push([cx + frac * R * Math.cos(rad(-60 * i)), cy + frac * R * Math.sin(rad(-60 * i))])
       }
-      candidates.push([
-        cx + 0.62 * a * Math.cos(edgeAngle(i)),
-        cy + 0.62 * a * Math.sin(edgeAngle(i)),
-      ])
+      candidates.push([cx + 0.62 * a * Math.cos(edgeAngle(i)), cy + 0.62 * a * Math.sin(edgeAngle(i))])
     }
     for (const frac of [0.55, 0.45, 0.35]) {
       for (let i = 0; i < 6; i++) {
-        candidates.push([
-          cx + frac * R * Math.cos(rad(-60 * i)),
-          cy + frac * R * Math.sin(rad(-60 * i)),
-        ])
+        candidates.push([cx + frac * R * Math.cos(rad(-60 * i)), cy + frac * R * Math.sin(rad(-60 * i))])
       }
     }
     const tw = textWidth(text, fs, bold)
-    const fits = ([px, py]: Point) =>
-      [-1, 1].every((sx) =>
-        [-1, 1].every((sy) =>
-          inside(px + (sx * tw) / 2, py + sy * fs * 0.45, 0.04),
-        ),
-      )
+    const fits = ([px, py]: Point) => [-1, 1].every((sx) => [-1, 1].every((sy) => inside(px + (sx * tw) / 2, py + sy * fs * 0.45, 0.04)))
     const options = candidates.filter(fits)
     let best: Point = [cx, cy]
     let bestClearance = -1
@@ -613,31 +524,20 @@ export function buildTileDrawing(
       bold,
       fill: 'black',
     })
-    for (const dx of [-1, 0, 1])
-      occupied.push([best[0] + dx * fs * text.length * 0.3, best[1]])
+    for (const dx of [-1, 0, 1]) occupied.push([best[0] + dx * fs * text.length * 0.3, best[1]])
   }
   // The tile number goes in the lower-right corner. Reserve its spot before
   // placing labels, so a label never lands on top of it.
   const numberSize = 0.17 * a
-  const numberAt: Point = [
-    cx + 0.78 * R * Math.cos(rad(-60)) - 0.05 * a,
-    cy + 0.78 * R * Math.sin(rad(-60)) + 0.03 * a,
-  ]
+  const numberAt: Point = [cx + 0.78 * R * Math.cos(rad(-60)) - 0.05 * a, cy + 0.78 * R * Math.sin(rad(-60)) + 0.03 * a]
   if (number) {
     for (const dx of [-1, 0, 1]) {
-      occupied.push([
-        numberAt[0] + dx * numberSize * number.length * 0.3,
-        numberAt[1],
-      ])
+      occupied.push([numberAt[0] + dx * numberSize * number.length * 0.3, numberAt[1]])
     }
   }
 
   for (const label of labels) {
-    placeText(
-      label,
-      label.length <= 2 ? 0.36 * a : label.length <= 3 ? 0.26 * a : 0.18 * a,
-      true,
-    )
+    placeText(label, label.length <= 2 ? 0.36 * a : label.length <= 3 ? 0.26 * a : 0.18 * a, true)
   }
   for (const extra of extras) placeText(extra, 0.15 * a, false)
 
