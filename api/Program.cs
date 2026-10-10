@@ -52,6 +52,7 @@ builder.Services.AddSingleton<GamesRepository>();
 builder.Services.AddSingleton<TilesRepository>();
 builder.Services.AddSingleton<ChangeRequestsRepository>();
 builder.Services.AddSingleton<ImportRunsRepository>();
+builder.Services.AddSingleton<HistoryRepository>();
 
 // ---- A4. Accounts: ASP.NET Core Identity (Phase 3) ----
 //

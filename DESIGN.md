@@ -362,7 +362,8 @@ Rules:
 - Admin changes also create a ChangeRequest, recorded as Approved by that admin, so every change has an audit row.
 - Audit trail: `Tiles.CreatedBy`/`CreatedUtc` (who added a user tile, when), `Tiles.UpdatedBy`/`UpdatedUtc` (last change and the admin who made or
   approved it), and per request `SubmittedBy`/`SubmittedUtc`, `ReviewedBy`/`ReviewedUtc`, `ProposedJson` (after) and `BeforeJson` (the tile with its games
-  just before an approved Edit or Delete). Admins see it as a History section on the tile page.
+  just before an approved Edit or Delete). Admins see it as a History section on the tile page, and across all tiles on `/admin/history`
+  (`GET /api/admin/history`).
 - Permissions (decided after Phase 4): any signed-in user may propose a **new** tile (Add), which waits for an admin. Only admins may **edit or delete**
   existing tiles (the API answers 403 to anyone else); their changes apply at once. Only admins approve or reject.
 - The API sets `Status` from the caller's role. It never reads it from the request body.
@@ -377,7 +378,7 @@ Rules:
 ```sql
 CREATE TABLE ImportRuns (
   Id            INTEGER PRIMARY KEY,
-  SourceCommit  TEXT NOT NULL UNIQUE,     -- tobymao/18xx commit hash
+  SourceCommit  TEXT NOT NULL,            -- tobymao/18xx commit hash (UNIQUE dropped by script 0009)
   CommittedUtc  TEXT NULL,
   ImportedUtc   TEXT NOT NULL,
   Mode          TEXT NOT NULL,            -- 'seed' or 'merge'
@@ -388,6 +389,8 @@ CREATE TABLE ImportRuns (
   NotesJson     TEXT NOT NULL             -- [{ kind, message }]
 );
 ```
+
+Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (indexes on `SourceCommit` and `ImportedUtc`) and backfills a `seed` row for a database seeded before `ImportRuns` existed, from the imported tiles' `CreatedUtc` and `SourceRef` (note kind `backfilled`). DataImporter still applies each commit once.
 
 ## 8. API
 
@@ -436,6 +439,7 @@ Notes:
 | `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
 | `/account/requests` | My change requests |
 | `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
+| `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/login`, `/register` | Auth |
 
@@ -597,6 +601,8 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.7 | Edit and delete restricted to admins (API 403 for others; admin-only `/tiles/:id/edit`; `AdminTileActions` with Edit and Delete on the tile page) | Done (verified) |
 | 4.8 | Audit trail and history: script `0007_AddAuditColumns.sql` (`ChangeRequests.BeforeJson`, `Tiles.UpdatedBy`, index on `TileId`); before-snapshot on every approved Edit/Delete; `GET /api/admin/tiles/{id}/history`; admin-only History section on the tile page | Done (verified) |
 | 4.9 | Tile counts and import refresh: `tools/import/update_data.py`; `DataImporter` (seed or merge, once per commit) replaces `DataSeeder`; script `0008_CreateImportRuns.sql`; `GET /api/admin/imports` and `/admin/imports`; per-game totals in `GameSummaryDto` (physical, unlimited, unknown), shown on Home and the game-filtered Tiles page | Done (verified: merge filled 7,234 counts on a copy of the dev database; restart skipped; scenario test produced each kind of note; fresh seed equals the existing data) |
+| 4.10 | Admin History page: `GET /api/admin/history` (type, status, search, paging; `ChangeHistoryQueryDto`); `/admin/history` with filters in the URL; shared `ChangeRequestEntry` component (also used by the tile page's History section) | Done (verified: filters, search, validation, 401 when signed out, browser) |
+| 4.11 | Fixes: Delete tile uses an on-page confirmation panel instead of `window.prompt()` (which some browsers block, so the button did nothing); imports in History (`HistoryRepository` UNION of change requests and imports, `HistoryEntryDto`, type `Import`; script `0009` backfills the first import) | Done (verified: UI delete, merged timeline, filters, fresh and existing databases) |
 
 **Phase 4 complete.**
 

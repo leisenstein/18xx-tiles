@@ -9,12 +9,12 @@ using Tiles18xx.Api.Dtos;
 
 namespace Tiles18xx.Api.Controllers;
 
-// Admin-only routes: the change-request review queue, tile history, and import reports (DESIGN.md section 8).
+// Admin-only routes: the change-request review queue, change history (all tiles and per tile), and import reports (DESIGN.md section 8).
 // [Authorize(Roles = "Admin")]: not signed in -> 401; signed in without the Admin role -> 403 (forbidden).
 [ApiController]
 [Route("api/admin")]
 [Authorize(Roles = AdminSeeder.AdminRole)]
-public sealed class AdminController(ChangeRequestsRepository requests, ImportRunsRepository imports) : ControllerBase
+public sealed class AdminController(ChangeRequestsRepository requests, ImportRunsRepository imports, HistoryRepository history) : ControllerBase
 {
     public const int MaxNoteLength = 1000;
 
@@ -64,6 +64,38 @@ public sealed class AdminController(ChangeRequestsRepository requests, ImportRun
     // GET /api/admin/tiles/60/history -> who added the tile, its last change, and every change request about it (oldest first). Deleted tiles too.
     [HttpGet("tiles/{id:long}/history")]
     public ActionResult<TileHistoryDto> TileHistory(long id) => requests.GetHistory(id) is { } history ? Ok(history) : NotFound();
+
+    // GET /api/admin/history?type=&status=&q=&page=&pageSize= -> every change request across all tiles and every data import, newest first, one page
+    // at a time. type=Import shows only imports; a status filter shows only change requests (imports have no status).
+    [HttpGet("history")]
+    public ActionResult<PagedResultDto<HistoryEntryDto>> History([FromQuery] HistoryQueryDto query)
+    {
+        if (!string.IsNullOrEmpty(query.Type) && query.Type != HistoryQueryDto.ImportType && !ChangeRequestTypes.IsKnown(query.Type))
+        {
+            ModelState.AddModelError("type", "Type must be Add, Edit, Delete, or Import.");
+        }
+        if (!string.IsNullOrEmpty(query.Status) && !ChangeRequestStatuses.IsKnown(query.Status))
+        {
+            ModelState.AddModelError("status", "Status must be Pending, Approved, or Rejected.");
+        }
+        if (query.Q is { Length: > HistoryQueryDto.MaxSearchLength })
+        {
+            ModelState.AddModelError("q", $"Search text must be {HistoryQueryDto.MaxSearchLength} characters or fewer.");
+        }
+        if (query.Page < 1)
+        {
+            ModelState.AddModelError("page", "Page must be 1 or greater.");
+        }
+        if (query.PageSize is < 1 or > HistoryQueryDto.MaxPageSize)
+        {
+            ModelState.AddModelError("pageSize", $"Page size must be from 1 to {HistoryQueryDto.MaxPageSize}.");
+        }
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem();
+        }
+        return Ok(history.Search(query));
+    }
 
     // GET /api/admin/imports -> every import of the tobymao/18xx seed files, newest first, with notes about upstream changes that were not applied.
     [HttpGet("imports")]

@@ -79,6 +79,10 @@ Content-Type: application/json
 
 { "note": "Already exists as #57." }
 
+### Admin: history of changes and imports across all tiles (all filters optional; type=Import for imports only)
+GET {{Tiles18xx.Api_HostAddress}}/api/admin/history?type=Edit&status=Approved&q=57&page=1&pageSize=25
+Accept: application/json
+
 ### Admin: import history (each tobymao/18xx commit applied, with notes)
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/imports
 Accept: application/json

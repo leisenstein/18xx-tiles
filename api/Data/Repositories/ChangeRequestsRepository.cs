@@ -55,6 +55,10 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
         Read(SelectRequests + " WHERE cr.Status = @status ORDER BY "
             + (status == ChangeRequestStatuses.Pending ? "cr.Id" : "cr.Id DESC") + ";", new { status });
 
+    // Several requests by id (the admin History page), in no particular order.
+    public IReadOnlyList<ChangeRequestDto> GetByIds(IReadOnlyCollection<long> ids) =>
+        ids.Count == 0 ? [] : Read(SelectRequests + " WHERE cr.Id IN @ids;", new { ids });
+
     // Is this tile live (exists and not deleted)?
     public bool IsLiveTile(long tileId)
     {

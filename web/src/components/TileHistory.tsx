@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getTileHistory } from '@/api/admin'
-import StatusBadge from '@/components/StatusBadge'
-import TileChange from '@/components/TileChange'
+import ChangeRequestEntry from '@/components/ChangeRequestEntry'
 import { apiErrorMessages } from '@/lib/apiErrors'
 import type { TileHistory as TileHistoryData } from '@/types/changeRequest'
 
@@ -50,25 +49,7 @@ export default function TileHistory({ tileId }: { tileId: number }) {
       ) : (
         <ol className="space-y-3">
           {history.requests.map((request) => (
-            <li key={request.id} className="space-y-2 rounded-lg border p-3 text-sm">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-medium">
-                  #{request.id} {request.type}
-                </span>
-                <StatusBadge status={request.status} />
-                <span className="text-muted-foreground">
-                  submitted by {request.submittedByEmail ?? 'an unknown user'} on {when(request.submittedUtc)}
-                </span>
-              </div>
-              {request.reason && <p>Reason: {request.reason}</p>}
-              {request.reviewedUtc && (
-                <p className="text-muted-foreground">
-                  {request.status} by {request.reviewedByEmail ?? 'an unknown user'} on {when(request.reviewedUtc)}
-                  {request.reviewNote && `: ${request.reviewNote}`}
-                </p>
-              )}
-              <TileChange request={request} />
-            </li>
+            <ChangeRequestEntry key={request.id} request={request} />
           ))}
         </ol>
       )}
