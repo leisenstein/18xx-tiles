@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router'
 import { submitChangeRequest } from '@/api/changeRequests'
 import { Button } from '@/components/ui/button'
@@ -43,9 +44,13 @@ export default function AdminTileActions({ tileId, displayName }: AdminTileActio
     <div className="space-y-2">
       <div className="flex gap-2">
         <Button asChild variant="outline" size="sm">
-          <Link to={`/tiles/${tileId}/edit`}>Edit tile</Link>
+          <Link to={`/tiles/${tileId}/edit`}>
+            <Pencil aria-hidden="true" />
+            Edit tile
+          </Link>
         </Button>
         <Button variant="destructive" size="sm" disabled={confirming} onClick={() => setConfirming(true)}>
+          <Trash2 aria-hidden="true" />
           Delete tile
         </Button>
       </div>

@@ -268,7 +268,12 @@ def parse_games(game_root, publishers):
         # Sorted so that when two files define the same tile number, the result does not depend on the file system.
         for path in sorted(glob.glob(os.path.join(folder, '*.rb'))):
             source = strip_comments(read(path))
-            for m in re.finditer(r'(?:\b(\w*TILES)|\btiles)\s*=\s*\{', source):
+            # Manifests: "TILES = {", other "*_TILES = {" sets (optional variants), "tiles = {" inside a method, or a method that returns the hash
+            # directly ("def game_tiles" followed by "{", as Harzbahn 1873 does).
+            for m in re.finditer(r'(?:\b(\w*TILES)\s*=|\btiles\s*=|\bdef\s+game_tiles)\s*\{', source):
+                # FIXED_ROTATION_TILES (18Mag) maps tile numbers to a rotation, not a count; reading it as a manifest hid 18Mag's custom tile L33.
+                if m.group(1) and 'ROTATION' in m.group(1):
+                    continue
                 end = match_brace(source, m.end() - 1)
                 for number, entry in parse_tile_hash(source[m.end():end]).items():
                     tiles.setdefault(number, entry)

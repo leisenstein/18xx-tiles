@@ -83,6 +83,16 @@ Content-Type: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/history?type=Edit&status=Approved&q=57&page=1&pageSize=25
 Accept: application/json
 
+### Admin: a game's tile list (Edit game tiles page)
+GET {{Tiles18xx.Api_HostAddress}}/api/admin/games/25/tiles
+Accept: application/json
+
+### Admin: replace a game's tile list (tiles left out are removed); one History entry
+PUT {{Tiles18xx.Api_HostAddress}}/api/admin/games/25/tiles
+Content-Type: application/json
+
+{ "tiles": [{ "tileId": 1, "count": 2, "notes": null }], "reason": "Checked against the box" }
+
 ### Admin: import history (each tobymao/18xx commit applied, with notes)
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/imports
 Accept: application/json

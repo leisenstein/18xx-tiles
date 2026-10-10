@@ -233,7 +233,7 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 5. Also read other `*_TILES = { ... }` hashes in a game folder (for example 1825's unit tile sets), but only entries whose value is a count or a hash with `count` or `code`.
 6. A game entry with no `code`, or with a code identical to the generic definition, uses the generic tile.
 7. Compare definitions by splitting on `;`, trimming, and sorting the parts (ordinal), so part order does not create false versions. Caution: paths refer to nodes by position (`_0`, `_1`), so reordering city or town parts can change meaning, and sorting could in principle merge two different tiles. In the current snapshot sorting merges exactly two pairs (#780 brown, #82 green); both are path-only tiles and were verified as genuine duplicates. Recheck when the snapshot is refreshed.
-8. Known gaps: Harzbahn 1873 declares tiles in a form the prototype did not parse. Rolling Stock and Rolling Stock Stars have no track tiles. Optional rules that add or remove tiles in code are not reflected. 18Mag refers to tile `L33`, which is not in the generic set; the seeder skips it with a warning.
+8. Known gaps: Rolling Stock and Rolling Stock Stars have no track tiles. Optional rules that add or remove tiles in code are not reflected. Fixed after Phase 4: Harzbahn 1873 returns its manifest directly from `def game_tiles` (now read, 39 tiles); 18Mag's `FIXED_ROTATION_TILES` hash is not a manifest and hid its custom tile `L33` (hashes whose name contains `ROTATION` are now skipped). With these fixes a fresh import has 2,024 tiles and 7,275 game links.
 9. Counts (implemented after Phase 4): an integer count from 1 to 100 as given, `unlimited` (string or symbol) as 999, anything else (constants, formulas) as NULL. Imported counts get `Notes` = "Count from 18xx.games manifest", so they can be told apart from counts verified against a physical box. At commit 46a592e: 7,235 links, 7,234 with a count (458 unlimited).
 10. Process game folders in folder-name order, not full-path order: on Windows the backslash sorts after digits, which put `g_18_los_angeles1` before its parent `g_18_los_angeles` and left it with no tiles. Resolve inherited manifests repeatedly until nothing changes, so chains work in any order. Read each folder's `.rb` files in sorted order.
 
@@ -377,6 +377,10 @@ Rules:
 - Validate `Color` and `Type` in the API with explicit branches; reject unknown values.
 - Enable WAL mode and foreign keys on each connection (`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;`). Implemented in `SqliteConnectionFactory.Open()`.
 
+**GameChanges** (script `0011_CreateGameChanges.sql`, after Phase 4): one row per save on the Edit game tiles page: `GameId`, `ChangedBy`,
+`ChangedUtc`, `Reason`, and the game's live tile links before and after (`BeforeJson`, `AfterJson`: `[{ tileId, count, notes }]`). The History page
+shows the difference (tiles added, removed, or with a changed count or notes). Links to deleted tiles are never changed by a game save.
+
 **ImportRuns** (script `0008_CreateImportRuns.sql`, after Phase 4): one row per applied seed-file commit (section 6.4).
 
 ```sql
@@ -412,6 +416,11 @@ Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (index
 | GET | `/api/admin/change-requests?status=Pending` | Admin | Review queue |
 | POST | `/api/admin/change-requests/{id}/approve` | Admin | Apply in a transaction |
 | POST | `/api/admin/change-requests/{id}/reject` | Admin | Reject with a note |
+| GET | `/api/admin/tiles/{id}/history` | Admin | One tile's history |
+| GET | `/api/admin/history?type=&status=&q=&page=&pageSize=` | Admin | Change requests, imports, and game tile list saves, newest first (type Add, Edit, Delete, Import, Game) |
+| GET | `/api/admin/imports` | Admin | Import runs with their reports |
+| GET | `/api/admin/games/{id}/tiles` | Admin | A game and every live tile it uses, with counts and notes |
+| PUT | `/api/admin/games/{id}/tiles` | Admin | Replace a game's tile list (`{ tiles: [{ tileId, count, notes }], reason }`); one transaction and one `GameChanges` row; 409 if nothing changed |
 | | Identity endpoints | | Register, confirm email, login, logout, password reset (consider `MapIdentityApi`) |
 
 Notes:
@@ -443,6 +452,8 @@ Notes:
 | `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
 | `/account/requests` | My change requests |
 | `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
+| `/print/circles` | Printable tile number circles (section 9.4): `?tile=ID` or `?game=ID`; PDF sheet, SVG, PNG. Signed-in users only (any role); the links show only when signed in |
+| `/admin/games/:id/tiles` | Edit game tiles (admins only): the game's whole tile list with counts, Unlimited, and notes; add any existing tile by number, remove tiles; saved as one change. Linked from the game-filtered Tiles page ("Edit this game's tiles") |
 | `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/login`, `/register` | Auth |
@@ -482,29 +493,40 @@ Sorting is done in the API with the shared sort helper.
 
 **Expected result** with the initial import (commit 46a592e), `minGames = 10` (verified against the seeded database): 87 tiles, made up of 86 generic tiles (yellow 19, green 39, brown 26, gray 2) and 1 per-game version, `#169 (variant 1)` (gray, 10 games).
 
-### 9.4 Future feature: Printable tile number circles (on hold)
+### 9.4 Printable tile number circles (built after Phase 4)
 
-**Status:** on hold until per-game tile counts exist (phase "Later", section 11). Not part of Phases 2 to 5.
+**Status:** built after Phase 4 (step 4.15). The original sample PDFs were never added, so the look below was designed and checked at actual print
+size in a browser mockup.
 
-**Image.** The user picks one of three styles. All share a centered white "city" circle with a black outline and the tile number in bold black.
-- **Track ring:** outer circle in the tile's color with a circle of rails and ties around the city circle (city about 58% of the outer diameter).
-- **Crossing sign:** outer circle in the tile's color with a black border, a black X, and the letters "R R" (city about 42% of the outer diameter).
-- **Plain city:** outer circle in the tile's color with a thin gray outline (city about 68% of the outer diameter).
-- Two-color tiles: the outer circle is split into halves, matching the main renderer.
-- Text size scales down to fit long numbers ("1168", "298LA").
+**Implementation.** Page `/print/circles?tile=ID` or `?game=ID` (signed-in users only, any role; loaded on demand because the PDF and font libraries are about
+1 MB). Links: "Print number circle" on the tile page; "Print number circles for this game" on the game-filtered Tiles page. Code in
+`web/src/lib/circles/`: `numberFont.ts` (Roboto Condensed Bold via `@fontsource/roboto-condensed`, read with `@pdf-lib/fontkit`; text is turned into
+outlines), `crossingSign.ts` (the shapes, in a radius-50 unit circle), `circleFiles.ts` (SVG and 300 DPI PNG), `printSheet.ts` (layout and PDF via
+`pdf-lib`). Components `NumberCircle` and `SheetPreview` draw the same shapes on screen. Defaults: 3/4 inch, Letter, 0.5 in margins, 1/8 in spacing,
+no bleed (1/16 or 1/8 in available), cut line on; the grid is centered on the page.
 
-**Sizes.** Diameter of 1/4, 1/2, 3/4, or 1 inch. Track ring and Crossing sign are offered at 1/2 inch and above; 1/4 inch offers Plain city only. PNG output is 300 DPI.
+**Image (decided).** One style for now: the **crossing sign**, modeled on the round railroad advance warning sign (MUTCD W10-1). Tile-color circle; a
+black border just inside the edge (thin margin of tile color outside it); a black X whose bars reach the border; large extra-bold "R"s in the left and
+right gaps next to the border; a white "city" circle (black outline) where the bars cross, holding the tile number (about 50% of the diameter, 54% at
+1/2 inch). Colors are the style B tile fills (section 10). Two-color tiles: the circle is split into halves (left first color). Color `none`: white
+with a dashed outer edge.
 
-**Selection.** A single tile from the detail page, or all tiles for a game from the filtered tile list. Quantity per tile comes from `GameTiles.Count`; when Count is NULL or 999, the user enters the quantity.
+Considered and dropped: "Track ring" and "Plain city" circle styles (not needed for now), and hex-shaped markers with simplified track (a small
+hex cannot show every tile's track cleanly at 1/2 to 1 inch).
 
-**Output.** SVG or PNG for one image. A PDF print sheet where the user sets diameter, margins, and spacing, with an optional cut line and bleed; circles are laid out in rows and columns to match label stock.
+**Number text.** Roboto Condensed Bold. Sized from the font's real measurements to the largest size that fits the city (width about 84% of its
+diameter, digit height about 62%). Numbers of 6 or more characters go on two lines, split at a hyphen or a letter/digit boundary nearest the middle
+(`X17` / `coaloil`). On small circles the city grows and the decorations slim down. Minimum 6 pt: a long number that would print smaller (for example
+`Billings-b` at 1/2 inch, 5.0 pt) is flagged on the page, with the suggestion to use a larger size.
 
-**Look.** See `reference/tile_number_circles_sample.pdf` (Plain city) and `reference/tile_number_circles_train_styles.pdf` (Track ring and Crossing sign). The driving wheel style in the second PDF was rejected.
+**Sizes (decided).** Diameter 1/2, 3/4, or 1 inch. (1/4 inch dropped: numbers of 5+ characters fall below 4 pt.)
 
-**Notes for when work starts**
-- Reuse the tile color fills and two-color split from `TileSvg` (section 10) so colors match.
-- Decide where PDF and PNG generation runs (browser or API) and which library to use.
-- The `none` color and the five game-specific colors (section 7) need a defined outer-circle appearance.
+**Selection.** A single tile from the detail page, or a game's tiles from the filtered tile list. Quantity per tile comes from `GameTiles.Count`;
+when Count is NULL or 999, the user enters the quantity (default 1). For a game, each tile has a checkbox (all checked at first; unchecking keeps its
+quantity), with quick buttons All, None, and Only <color> for the colors the game uses; the page shows "N of M tiles, X circles".
+
+**Output (decided).** Generated in the browser, no server work: `pdf-lib` for the PDF print sheet (Letter or A4; user sets margins and spacing;
+optional cut line and bleed; circles in rows and columns), and SVG or 300 DPI PNG for one circle.
 
 ## 10. Tile renderer specification
 
@@ -611,6 +633,12 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.11 | Fixes: Delete tile uses an on-page confirmation panel instead of `window.prompt()` (which some browsers block, so the button did nothing); imports in History (`HistoryRepository` UNION of change requests and imports, `HistoryEntryDto`, type `Import`; script `0009` backfills the first import) | Done (verified: UI delete, merged timeline, filters, fresh and existing databases) |
 | 4.12 | Open items 8, 9, 12: pinned commit and Docker seed stage; designer and publisher (parser, script `0010` data hash, Home and Tiles pages); renderer `halt`, `border`, `stripes` | Done (verified: Docker data identical to local; re-import on an existing database filled 130 designers; fresh seed; drawings on `/dev/tiles`) |
 | 4.13 | Tile drawing style B ("deep print"): deeper fills, bold edge and inner ring, track casing, black revenue circles | Done (verified on `/dev/tiles`) |
+| 4.14 | Parser gaps (open item 6): Harzbahn 1873 `def game_tiles` manifest; 18Mag `L33` hidden by `FIXED_ROTATION_TILES` | Done (verified: no other game changed; merge on an existing database added 2 tiles and 40 links; fresh import 2,024 tiles) |
+| 4.15 | Printable tile number circles (open item 10): crossing-sign style, 1/2 to 1 inch, PDF sheet (Letter/A4, margins, spacing, bleed, cut line), SVG, 300 DPI PNG; `pdf-lib`, `@pdf-lib/fontkit`, `@fontsource/roboto-condensed` | Done (verified: 1830 sheet, single tile, 1868 Wyoming small-number warning, PDF geometry, PNG 300 x 300 px at 1 in) |
+| 4.16 | Print circles: pick tiles within a game (checkboxes; All, None, Only <color>; running total) | Done (verified on 1822CA) |
+| 4.17 | Printing requires sign-in (any role): `RequireRole` on `/print/circles`; print links hidden when signed out | Done (verified: signed out redirected to login and links hidden; regular user prints) |
+| 4.18 | Edit game tiles (admins): `GET`/`PUT /api/admin/games/{id}/tiles`, script `0011_CreateGameChanges.sql`, `GameTilesRepository`, page `/admin/games/:id/tiles`, Game entries on History (type `Game`); editing an imported count clears its "Count from 18xx.games manifest" note | Done (verified: 403 for regular users, validation, 409 when unchanged, add/change/remove/undo in the browser, History entries) |
+| 4.19 | Action links as buttons with icons: game panel on the Tiles page (Print number circles; Edit this game's tiles for admins), tile page (Print number circle, Edit tile, Delete tile), Back button on Edit game tiles | Done (checked in the browser) |
 
 **Phase 4 complete.**
 
@@ -633,11 +661,11 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
 4. ~~**Display names**~~ Resolved after Phase 4: the section 7 scheme (`#N`, `#N (Game)`, `#N (variant k)`) is kept as is.
 5. ~~**Import refresh**~~ Resolved after Phase 4: merge import that only adds and fills, with a report (section 6.4).
-6. **Parser gaps:** Harzbahn 1873 manifest; 18Mag `L33`. Imported counts come from 18xx.games manifests and may not match every physical box.
+6. ~~**Parser gaps**~~ Resolved after Phase 4 (section 6.3 rule 8). Still true: imported counts come from 18xx.games manifests and may not match every physical box.
 7. ~~**Tile counts**~~ Resolved after Phase 4 (section 6.3 rule 9).
 8. ~~**Seed file distribution**~~ Resolved after Phase 4: never stored in git; generated from tobymao/18xx for the commit pinned in `tools/import/18xx-commit.txt`, by the developer locally and by Docker stage 2 (sections 6.4, 11a).
 9. ~~**Game metadata**~~ Resolved after Phase 4: designer and publisher from each game's `meta.rb` (inherited from the parent game's Meta module when not set), publisher names from `lib/engine/publisher.rb`. 130 of 131 games have a designer and 89 a publisher at commit 46a592e. Shown on Home and the game-filtered Tiles page.
-10. **Tile number circle samples:** `reference/tile_number_circles_sample.pdf` and `reference/tile_number_circles_train_styles.pdf` are referenced by section 9.4 but not yet in `reference/`.
+10. ~~**Tile number circles**~~ Built after Phase 4 (section 9.4). Only the crossing-sign style for now.
 11. **Broken imported definitions (found in Phase 4):** 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
     (for example `#{TILE_O_O}`, `#{Engine::Config::Tile::YELLOW['3']}`), and 9 path ends use edges outside 0 to 5. Fix them through change
     requests (the validator rejects these forms, so a corrected edit is required), or fix the parser and re-import.
@@ -664,5 +692,3 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | `reference/tiles.json` | Generic tiles with games and versions (commit 46a592e). Not in source control |
 | `reference/TILES.md` | Copy of the tobymao/18xx tile language documentation |
 | `reference/18xx_Generic_Tile_Reference.pdf` | Rendered reference from the planning session. Not in source control |
-| `reference/tile_number_circles_sample.pdf` | Tile number circles, Plain city style (section 9.4). Not yet added |
-| `reference/tile_number_circles_train_styles.pdf` | Tile number circles, Track ring and Crossing sign styles; driving wheel style rejected (section 9.4). Not yet added |

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
+import { ListChecks, Printer } from 'lucide-react'
+import { Link } from 'react-router'
 import { getGames } from '@/api/games'
 import { getTiles } from '@/api/tiles'
 import FilterBar from '@/components/FilterBar'
 import TileCard from '@/components/TileCard'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { useTileFilters } from '@/hooks/useTileFilters'
-import { TILES_PAGE_SIZE } from '@/lib/constants'
+import { ADMIN_ROLE, TILES_PAGE_SIZE } from '@/lib/constants'
 import { boxText, creditsText } from '@/lib/tileCount'
 import type { GameSummary } from '@/types/game'
 import type { PagedResult } from '@/types/paged'
@@ -16,6 +19,7 @@ import type { TileSummary } from '@/types/tile'
 export default function TilesPage() {
   const { filters, setFilter } = useTileFilters()
   const { game, color, kind, q, page } = filters
+  const { user } = useAuth()
 
   const [games, setGames] = useState<GameSummary[]>([])
   // The last result, tagged with the filters it was loaded for.
@@ -77,10 +81,33 @@ export default function TilesPage() {
       <FilterBar filters={filters} games={games} onChange={setFilter} />
       {/* Filtered to one game: how many tiles come in its box. */}
       {selectedGame && (
-        <p className="text-sm text-muted-foreground">
-          {selectedGame.title}
-          {creditsText(selectedGame) && ` (${creditsText(selectedGame)})`}: {selectedGame.tileCount} tile designs, {boxText(selectedGame)}.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">
+          <p className="text-sm">
+            <span className="font-medium">{selectedGame.title}</span>
+            <span className="text-muted-foreground">
+              {creditsText(selectedGame) && ` (${creditsText(selectedGame)})`}: {selectedGame.tileCount} tile designs, {boxText(selectedGame)}.
+            </span>
+          </p>
+          {/* Actions for this game: printing for signed-in users (DESIGN.md 9.4); editing the whole tile list for admins (section 8). */}
+          {user && (
+            <div className="flex flex-wrap gap-2">
+              <Button asChild size="sm">
+                <Link to={`/print/circles?game=${selectedGame.id}`}>
+                  <Printer aria-hidden="true" />
+                  Print number circles
+                </Link>
+              </Button>
+              {user.roles.includes(ADMIN_ROLE) && (
+                <Button asChild size="sm" variant="outline">
+                  <Link to={`/admin/games/${selectedGame.id}/tiles`}>
+                    <ListChecks aria-hidden="true" />
+                    Edit this game&apos;s tiles
+                  </Link>
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {error && <p className="text-destructive">Could not load tiles. {error}</p>}

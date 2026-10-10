@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router'
 import { getHistory } from '@/api/admin'
 import ChangeRequestEntry from '@/components/ChangeRequestEntry'
+import GameChangeEntry from '@/components/GameChangeEntry'
 import ImportEntry from '@/components/ImportEntry'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,7 +13,7 @@ import type { HistoryEntry } from '@/types/history'
 import type { PagedResult } from '@/types/paged'
 
 // 'Import' shows only data imports from tobymao/18xx; the others show only change requests of that type.
-const TYPES: (ChangeRequestType | 'Import')[] = ['Add', 'Edit', 'Delete', 'Import']
+const TYPES: (ChangeRequestType | 'Import' | 'Game')[] = ['Add', 'Edit', 'Delete', 'Import', 'Game']
 const STATUSES: ChangeRequestStatus[] = ['Pending', 'Approved', 'Rejected']
 const PAGE_SIZE = 25
 
@@ -98,7 +99,7 @@ export default function AdminHistoryPage() {
         <form onSubmit={onSearch} className="flex gap-2">
           <Input
             aria-label="Search"
-            placeholder="Tile number, email, or commit"
+            placeholder="Tile, email, game, or commit"
             value={search}
             maxLength={100}
             onChange={(e) => setSearch(e.target.value)}
@@ -127,6 +128,8 @@ export default function AdminHistoryPage() {
               {result.items.map((entry) =>
                 entry.kind === 'import' ? (
                   <ImportEntry key={`import-${entry.import.id}`} run={entry.import} />
+                ) : entry.kind === 'game' ? (
+                  <GameChangeEntry key={`game-${entry.game.id}`} change={entry.game} />
                 ) : (
                   <ChangeRequestEntry key={`change-${entry.change.id}`} request={entry.change} showTile />
                 ),

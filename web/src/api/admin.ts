@@ -2,7 +2,8 @@ import type { ChangeRequest, ChangeRequestStatus, TileHistory } from '@/types/ch
 import type { HistoryEntry } from '@/types/history'
 import type { ImportRun } from '@/types/importRun'
 import type { PagedResult } from '@/types/paged'
-import { getJson, postJson } from './client'
+import type { GameTileInput, GameTiles } from '@/types/gameTiles'
+import { getJson, postJson, putJson } from './client'
 
 // API calls for admins only. The API answers 401 when not signed in and 403 without the Admin role (AdminController).
 
@@ -33,6 +34,13 @@ export const getHistory = (query: HistoryQuery) => {
   for (const [name, value] of Object.entries(query)) if (value !== '') params.set(name, String(value))
   return getJson<PagedResult<HistoryEntry>>(`/api/admin/history?${params}`)
 }
+
+// A game and every live tile it uses, with counts and notes (Edit game tiles page).
+export const getGameTiles = (gameId: number) => getJson<GameTiles>(`/api/admin/games/${gameId}/tiles`)
+
+// Replace a game's tile list (tiles left out are removed); returns the saved list. Throws ApiError 409 if nothing changed, 400 for invalid input.
+export const saveGameTiles = (gameId: number, tiles: GameTileInput[], reason: string | null) =>
+  putJson<GameTiles>(`/api/admin/games/${gameId}/tiles`, { tiles, reason })
 
 // Every import of the tobymao/18xx seed files, newest first, with notes about upstream changes that were not applied.
 export const getImports = () => getJson<ImportRun[]>('/api/admin/imports')

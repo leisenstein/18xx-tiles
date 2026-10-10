@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { Printer } from 'lucide-react'
 import { Link, useParams } from 'react-router'
 import { ApiError } from '@/api/client'
 import { getTile } from '@/api/tiles'
 import TileCard from '@/components/TileCard'
 import TileSvg from '@/components/TileSvg'
+import { Button } from '@/components/ui/button'
 import AdminTileActions from '@/components/AdminTileActions'
 import TileHistory from '@/components/TileHistory'
 import { useAuth } from '@/hooks/useAuth'
@@ -71,8 +73,19 @@ export default function TileDetailPage() {
         <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="w-full max-w-80 shrink-0" />
         <div className="min-w-0 space-y-3">
           <h1 className="text-2xl font-semibold">{tile.displayName}</h1>
-          {/* Only admins edit or delete existing tiles; everyone else can propose new tiles from "Submit a tile". */}
-          {isAdmin && <AdminTileActions tileId={tile.id} displayName={tile.displayName} />}
+          {/* Actions: print this tile's number circle (signed-in users, DESIGN.md 9.4); edit or delete it (admins only; everyone else can propose new
+              tiles from "Submit a tile"). */}
+          {user && (
+            <div className="flex flex-wrap items-start gap-2">
+              <Button asChild size="sm">
+                <Link to={`/print/circles?tile=${tile.id}`}>
+                  <Printer aria-hidden="true" />
+                  Print number circle
+                </Link>
+              </Button>
+              {isAdmin && <AdminTileActions tileId={tile.id} displayName={tile.displayName} />}
+            </div>
+          )}
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
             <dt className="text-muted-foreground">Number</dt>
             <dd>{tile.number}</dd>

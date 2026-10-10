@@ -24,7 +24,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
+async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
   const response = await fetch(path, {
     method,
     headers: body === undefined ? { Accept: 'application/json' } : { Accept: 'application/json', 'Content-Type': 'application/json' },
@@ -49,4 +49,9 @@ export function getJson<T>(path: string): Promise<T> {
 // POST an optional JSON body. <T> defaults to void for responses without a body.
 export function postJson<T = void>(path: string, body?: unknown): Promise<T> {
   return request<T>('POST', path, body)
+}
+
+// PUT a JSON body: replace something as a whole (for example a game's tile list).
+export function putJson<T = void>(path: string, body: unknown): Promise<T> {
+  return request<T>('PUT', path, body)
 }
