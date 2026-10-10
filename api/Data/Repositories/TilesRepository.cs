@@ -41,6 +41,40 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
         return new PagedResultDto<TileSummaryDto>(items, query.Page, query.PageSize, sorted.Count);
     }
 
+    // One tile with its games and other versions, or null if it does not exist or is deleted.
+    public TileDetailDto? GetById(long id)
+    {
+        using var connection = db.Open();
+
+        var tile = connection.QuerySingleOrDefault<TileDetailDto>("""
+            SELECT Id, Number, Color, DisplayName, DefinitionCode, HasCity, HasTown, Source, SourceRef
+            FROM Tiles
+            WHERE Id = @id AND IsDeleted = 0;
+            """, new { id });
+        if (tile is null)
+        {
+            return null;
+        }
+
+        var games = connection.Query<TileGameDto>("""
+            SELECT g.Id AS GameId, g.Title, gt.Count, gt.Notes
+            FROM GameTiles gt
+            JOIN Games g ON g.Id = gt.GameId
+            WHERE gt.TileId = @id
+            ORDER BY g.Title COLLATE NOCASE;
+            """, new { id }).ToList();
+
+        var otherVersions = connection.Query<TileSummaryDto>("""
+            SELECT t.Id, t.Number, t.Color, t.DisplayName, t.DefinitionCode, t.HasCity, t.HasTown,
+                   (SELECT COUNT(*) FROM GameTiles x WHERE x.TileId = t.Id) AS GameCount
+            FROM Tiles t
+            WHERE t.Number = @number AND t.Id <> @id AND t.IsDeleted = 0;
+            """, new { number = tile.Number, id });
+
+        // "with" copies the record and fills in the two lists.
+        return tile with { Games = games, OtherVersions = TileSort.Apply(otherVersions).ToList() };
+    }
+
     // Make %, _ and \ in user input match literally in LIKE.
     private static string EscapeLike(string text) =>
         text.Replace(@"\", @"\\").Replace("%", @"\%").Replace("_", @"\_");

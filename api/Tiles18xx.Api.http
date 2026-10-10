@@ -27,5 +27,16 @@ Accept: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/tiles?color=pink&kind=village&page=0
 Accept: application/json
 
+### Tile detail: generic #10 (Step 2.2)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles/60
+Accept: application/json
+
+### Tile detail: #10 (1825)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles/606
+Accept: application/json
+
+### Tile detail: #59
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles/85
+Accept: application/json
 
 ###

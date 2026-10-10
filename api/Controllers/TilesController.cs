@@ -46,4 +46,9 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
 
         return Ok(tiles.Search(query));
     }
+
+    // GET /api/tiles/60 -> one tile, or 404 if it does not exist
+    [HttpGet("{id:long}")]
+    public ActionResult<TileDetailDto> GetById(long id) =>
+        tiles.GetById(id) is { } tile ? Ok(tile) : NotFound();
 }
