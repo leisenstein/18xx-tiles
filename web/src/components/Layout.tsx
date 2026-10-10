@@ -17,12 +17,21 @@ const navItems = [
 // - NavLink: a link that knows if its page is the current one (isActive), which makes it bold.
 // - end: active only on an exact URL match, so "Tiles" is not bold on /tiles/common.
 // - <Outlet />: where App.tsx places the current page (HomePage, TilesPage, ...).
-// - Admins also see an "Admin" link.
+// - Signed-in users also see "Submit a tile" and "My requests"; admins also see "Admin".
 // - Right side: the signed-in user's email and "Sign out", or "Sign in" and "Register".
 export default function Layout() {
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
-  const items = user?.roles.includes(ADMIN_ROLE) ? [...navItems, { to: '/admin/queue', label: 'Admin' }] : navItems
+  const items = [
+    ...navItems,
+    ...(user
+      ? [
+          { to: '/submit', label: 'Submit a tile' },
+          { to: '/account/requests', label: 'My requests' },
+        ]
+      : []),
+    ...(user?.roles.includes(ADMIN_ROLE) ? [{ to: '/admin/queue', label: 'Admin' }] : []),
+  ]
 
   const onSignOut = async () => {
     await signOut()

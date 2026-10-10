@@ -4,6 +4,10 @@ import { ApiError } from '@/api/client'
 import { getTile } from '@/api/tiles'
 import TileCard from '@/components/TileCard'
 import TileSvg from '@/components/TileSvg'
+import AdminTileActions from '@/components/AdminTileActions'
+import TileHistory from '@/components/TileHistory'
+import { useAuth } from '@/hooks/useAuth'
+import { ADMIN_ROLE } from '@/lib/constants'
 import { countText } from '@/lib/tileCount'
 import type { TileDetail } from '@/types/tile'
 
@@ -14,6 +18,8 @@ export default function TileDetailPage() {
   const { id: idText } = useParams()
   const id = Number(idText)
   const validId = Number.isInteger(id) && id > 0
+  const { user } = useAuth()
+  const isAdmin = user?.roles.includes(ADMIN_ROLE) ?? false
 
   // The loaded tile, tagged with its id so a stale tile is never shown for a new URL.
   const [data, setData] = useState<{ id: number; tile: TileDetail } | null>(null)
@@ -65,6 +71,8 @@ export default function TileDetailPage() {
         <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="w-full max-w-80 shrink-0" />
         <div className="min-w-0 space-y-3">
           <h1 className="text-2xl font-semibold">{tile.displayName}</h1>
+          {/* Only admins edit or delete existing tiles; everyone else can propose new tiles from "Submit a tile". */}
+          {isAdmin && <AdminTileActions tileId={tile.id} displayName={tile.displayName} />}
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
             <dt className="text-muted-foreground">Number</dt>
             <dd>{tile.number}</dd>
@@ -121,6 +129,9 @@ export default function TileDetailPage() {
           </ul>
         </section>
       )}
+
+      {/* Audit trail: who added and changed this tile, for admins. */}
+      {isAdmin && <TileHistory tileId={tile.id} />}
     </div>
   )
 }

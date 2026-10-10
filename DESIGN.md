@@ -308,10 +308,25 @@ CREATE TABLE ChangeRequests (
   SubmittedUtc    TEXT NOT NULL,
   ReviewedBy      TEXT NULL,
   ReviewedUtc     TEXT NULL,
-  ReviewNote      TEXT NULL
+  ReviewNote      TEXT NULL,
+  Reason          TEXT NULL               -- added in Phase 4 (script 0006): the submitter's explanation
 );
 CREATE INDEX IX_ChangeRequests_Status ON ChangeRequests(Status);
+CREATE INDEX IX_ChangeRequests_SubmittedBy ON ChangeRequests(SubmittedBy);   -- Phase 4: "my requests"
 ```
+
+**Change request rules (implemented in Phase 4):**
+- `ProposedJson` holds the proposed tile: `{ number, color, definitionCode, games: [{ gameId, count, notes }] }`. For an Edit, `games: null` keeps the tile's current game links; a list replaces them.
+- For an Add, `TileId` is NULL while Pending and is set to the new tile's id when approved, so the audit row links to the tile.
+- Tiles created by users get `Source = 'user'` and `CreatedBy` = the submitter. Display name: with a variant name (`TileContentDto.VariantName`, up to 40
+  characters, no parentheses), `#N (name)`, falling back to `#N (name 2)` if that name was taken after submitting; without one, `#N` if no other live tile has
+  that number, otherwise the first free `#N (variant k)`. An Edit keeps the display name unless the number changes or a variant name is given.
+- While typing a number, the form calls `GET /api/change-requests/number-check?number=&exceptTileId=`, lists the live tiles and Pending requests that use
+  it, explains that the tile becomes a variant, and offers a variant-name field with a preview of the final name. A variant name already used by another
+  tile with that number is rejected with 400.
+- Duplicates (same Number, Color, DefinitionCode, including deleted rows) are rejected when submitting and again when approving (409 with the conflicting tile named).
+- Approving an Edit or Delete whose tile has since been deleted fails with a clear message; the admin rejects it instead.
+- Counts: NULL (unknown), 1 to 100, or 999 (unlimited); anything else is rejected (`Domain/TileCounts`).
 
 **Allowed colors:** `yellow`, `green`, `brown`, `gray`, `greenbrown`, `browngray`, `brownsepia`, `none`, plus (added in 1.2, used by game-specific tiles) `red`, `blue`, `purple`, `white`, `orange`.
 
@@ -324,6 +339,11 @@ CREATE INDEX IX_ChangeRequests_Status ON ChangeRequests(Status);
 Rules:
 - Tiles holds only approved, live data. Pending work lives only in ChangeRequests.
 - Admin changes also create a ChangeRequest, recorded as Approved by that admin, so every change has an audit row.
+- Audit trail: `Tiles.CreatedBy`/`CreatedUtc` (who added a user tile, when), `Tiles.UpdatedBy`/`UpdatedUtc` (last change and the admin who made or
+  approved it), and per request `SubmittedBy`/`SubmittedUtc`, `ReviewedBy`/`ReviewedUtc`, `ProposedJson` (after) and `BeforeJson` (the tile with its games
+  just before an approved Edit or Delete). Admins see it as a History section on the tile page.
+- Permissions (decided after Phase 4): any signed-in user may propose a **new** tile (Add), which waits for an admin. Only admins may **edit or delete**
+  existing tiles (the API answers 403 to anyone else); their changes apply at once. Only admins approve or reject.
 - The API sets `Status` from the caller's role. It never reads it from the request body.
 - Delete is a soft delete (`IsDeleted = 1`).
 - Unlimited count: define one named constant (`UnlimitedTileCount = 999`) in both the API and the frontend. Display it as "Unlimited", exclude it from count totals, and reject other counts above a sensible limit so a typo cannot be mistaken for it.
@@ -341,8 +361,9 @@ Rules:
 | GET | `/api/tiles?game=&color=&kind=city\|town&q=&page=` | Public | Filtered tile list |
 | GET | `/api/tiles/{id}` | Public | Tile detail, its games, other tiles with the same number (`{id:long}` constraint) |
 | GET | `/api/tiles/common?minGames=10` | Public | Tiles used by at least `minGames` games (section 9.3) |
-| POST | `/api/change-requests` | User | Propose Add, Edit, or Delete; applied immediately for Admin |
+| POST | `/api/change-requests` | User (Add); Admin (Edit, Delete) | Propose a new tile (Pending for users); Edit and Delete are admin-only and apply at once |
 | GET | `/api/change-requests/mine` | User | My requests and their status |
+| GET | `/api/change-requests/number-check?number=&exceptTileId=` | User | Live tiles and Pending requests using a number; default display name |
 | GET | `/api/admin/change-requests?status=Pending` | Admin | Review queue |
 | POST | `/api/admin/change-requests/{id}/approve` | Admin | Apply in a transaction |
 | POST | `/api/admin/change-requests/{id}/reject` | Admin | Reject with a note |
@@ -353,6 +374,11 @@ Notes:
 - On approve, re-check the `UNIQUE (Number, Color, DefinitionCode)` constraint and return a clear error on conflict.
 - Use ASP.NET Core rate-limiting middleware on login, registration, and change-request routes.
 - Validate definition strings on the server: known part types only (including `offboard`), edges 0 to 5, node references in range.
+  Implemented in `Domain/TileDefinition.cs`. Known part types (all found in the imported data): nodes `city`, `town`, `junction`, `offboard`, `pass`,
+  `halt`; others `path`, `label`, `frame`, `upgrade`, `icon`, `future_label`, `border`, `stripes`.
+- Rate limits: "auth" (10 per minute per IP on `/api/auth/*`) and "submissions" (30 per hour per signed-in user on `POST /api/change-requests`).
+- Submit returns 201 with the stored request (Pending, or Approved for an admin); 400 lists every problem; 409 for a duplicate. Approve/reject return 404
+  for an unknown request and 409 when the request is not Pending, its tile is gone, or the result would duplicate a tile. Reject requires a note.
 - Validate colors against the allowed list in section 7.
 - **Tile sort order** (one shared helper, used by `/api/tiles` and `/api/tiles/common`): color group in the order yellow, green, brown, gray, then all other colors alphabetically; then the leading numeric part of `Number` ascending (numbers without a leading digit sort after numbered ones); then the remaining suffix (ordinal); then `Id`.
 - Email confirmation needs an email-sending service (open item).
@@ -369,7 +395,7 @@ Notes:
 | `/tiles/common` | Common Tiles: tiles used by at least N games (section 9.3); linked from Home and the main navigation |
 | `/tiles/:id` | Detail: large drawing, number, color, definition string, games with counts and notes, other versions of the same number |
 | `/submit` | Propose a new tile, with live drawing preview |
-| `/tiles/:id/edit` | Propose an edit or deletion |
+| `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
 | `/account/requests` | My change requests |
 | `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
 | `/login`, `/register` | Auth |
@@ -519,6 +545,21 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 - Behind a reverse proxy (Phase 5), configure forwarded headers so rate limiting sees each visitor's IP and links use the public `https` address.
 - Registering an email that already exists returns Identity's "already taken" message, which reveals that the account exists. Acceptable for now; revisit before launch.
 
+### Phase 4 progress
+
+| Step | Scope | Status |
+|---|---|---|
+| 4.1 | Schema: `ChangeRequests.Reason` and `IX_ChangeRequests_SubmittedBy` (script `0006_AddChangeRequestReason.sql`) | Done |
+| 4.2 | Rules: `Domain/ChangeRequestTypes`, `ChangeRequestStatuses`, `TileCounts`, `TileDefinition` (validation, HasCity/HasTown) | Done |
+| 4.3 | `ChangeRequestsRepository` (create, read with submitter/reviewer emails, approve in one transaction, reject); `ReviewResult` | Done |
+| 4.4 | `ChangeRequestsController` (submit with "submissions" rate limit, mine); `AdminController` (queue, approve, reject) | Done (verified: validation, 409 duplicates, admin auto-apply, stale edit refused, 403 for non-admins) |
+| 4.5 | Frontend: `TileForm` (fields, live drawing, games with counts, reason), `TileChange` (before/after), `StatusBadge`, `RequestOutcome`; pages `/submit`, `/tiles/:id/edit`, `/account/requests`, `/admin/queue`; header links; "Propose a change" on tile pages | Done (verified in the browser end to end) |
+| 4.6 | Variant names and number check; definition guide (`DefinitionGuide`: edge diagram, parts table, 12 examples with "Use this example") | Done (verified) |
+| 4.7 | Edit and delete restricted to admins (API 403 for others; admin-only `/tiles/:id/edit`; `AdminTileActions` with Edit and Delete on the tile page) | Done (verified) |
+| 4.8 | Audit trail and history: script `0007_AddAuditColumns.sql` (`ChangeRequests.BeforeJson`, `Tiles.UpdatedBy`, index on `TileId`); before-snapshot on every approved Edit/Delete; `GET /api/admin/tiles/{id}/history`; admin-only History section on the tile page | Done (verified) |
+
+**Phase 4 complete.**
+
 ## 11a. Docker
 
 - **One container.** ASP.NET Core serves the built Vite output from `wwwroot` plus the `/api` routes. One origin also keeps Identity cookie auth simple (no cross-origin setup).
@@ -543,6 +584,11 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 8. **Seed file distribution:** `games.json` and `tiles.json` are not in source control. Decide where the authoritative copies live (for example, regenerated by `tools/import`) so a fresh clone or a CI build can obtain them.
 9. **Game metadata:** designer and publisher are not in the snapshot; extend the parser if they are wanted.
 10. **Tile number circle samples:** `reference/tile_number_circles_sample.pdf` and `reference/tile_number_circles_train_styles.pdf` are referenced by section 9.4 but not yet in `reference/`.
+11. **Broken imported definitions (found in Phase 4):** 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
+    (for example `#{TILE_O_O}`, `#{Engine::Config::Tile::YELLOW['3']}`), and 9 path ends use edges outside 0 to 5. Fix them through change
+    requests (the validator rejects these forms, so a corrected edit is required), or fix the parser and re-import.
+12. **Renderer gaps:** `TileSvg` does not draw `halt` (33 tiles), `border`, or `stripes`, and because `halt` is a node, paths that refer to nodes
+    by number can point at the wrong node on those tiles.
 
 ## 13. Reference files
 

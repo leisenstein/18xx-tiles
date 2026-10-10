@@ -47,4 +47,40 @@ Accept: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/tiles/common?minGames=1
 Accept: application/json
 
+# ---- Phase 4: change requests. Sign in first (in the browser, or send the login request below). ----
+
+### Sign in (sets the cookie for the requests below). Replace with a real account.
+POST {{Tiles18xx.Api_HostAddress}}/api/auth/login?useCookies=true
+Content-Type: application/json
+
+{ "email": "you@example.com", "password": "your-password" }
+
+### Propose a new tile (Pending for a regular user; applied at once for an admin)
+POST {{Tiles18xx.Api_HostAddress}}/api/change-requests
+Content-Type: application/json
+
+{ "type": "Add", "tile": { "number": "T1", "color": "yellow", "definitionCode": "city=revenue:20;path=a:0,b:_0", "games": [{ "gameId": 25, "count": 2 }] },
+  "reason": "Example" }
+
+### My requests
+GET {{Tiles18xx.Api_HostAddress}}/api/change-requests/mine
+Accept: application/json
+
+### Admin: review queue
+GET {{Tiles18xx.Api_HostAddress}}/api/admin/change-requests?status=Pending
+Accept: application/json
+
+### Admin: approve request 1 (note optional)
+POST {{Tiles18xx.Api_HostAddress}}/api/admin/change-requests/1/approve
+
+### Admin: reject request 1 (note required)
+POST {{Tiles18xx.Api_HostAddress}}/api/admin/change-requests/1/reject
+Content-Type: application/json
+
+{ "note": "Already exists as #57." }
+
 ###
+
+### Who else uses tile number 57? (signed in)
+GET {{Tiles18xx.Api_HostAddress}}/api/change-requests/number-check?number=57
+Accept: application/json

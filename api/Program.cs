@@ -50,6 +50,7 @@ Directory.CreateDirectory(Path.GetDirectoryName(sqliteBuilder.DataSource)!);
 builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString()));
 builder.Services.AddSingleton<GamesRepository>();
 builder.Services.AddSingleton<TilesRepository>();
+builder.Services.AddSingleton<ChangeRequestsRepository>();
 
 // ---- A4. Accounts: ASP.NET Core Identity (Phase 3) ----
 //
@@ -64,7 +65,7 @@ builder.Services.AddSingleton<TilesRepository>();
 //   5. Sign out: the cookie is deleted.
 //
 // The pieces below set this up. The endpoints are mapped in B2 (MapIdentityApi, plus AccountController for "who am I?" and sign-out).
-// Sign-in and registration are rate limited in A5.
+// Sign-in, registration, and change requests are rate limited in A5.
 
 // A4a. Where users and roles are stored: the AspNet* tables in the same SQLite file. Identity reads and writes them through EF Core (AuthDbContext),
 //      separate from our Dapper code.
@@ -113,6 +114,11 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+
+    // Change requests (Phase 4): 30 per hour per signed-in user (DESIGN.md section 8), so one account cannot flood the review queue.
+    options.AddPolicy("submissions", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.Identity?.Name ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromHours(1) }));
 });
 
 // =====================================================================================================================
