@@ -178,7 +178,9 @@ Two schema tools share one SQLite file. EF Core migrations manage only the `AspN
 
 **Serving the React app (implemented).** `UseDefaultFiles` and `UseStaticFiles` serve the built app from `wwwroot`. Unknown `/api/...` routes return 404 (`MapFallback("/api/{**rest}", ...)`); every other unknown path returns `index.html` (`MapFallbackToFile`) so client-side routes work on refresh. In development `wwwroot` does not exist and Vite serves the app.
 
-**Development ports.** API on `http://localhost:5010`; Vite on `http://localhost:5173` with a proxy sending `/api` to the API. `GET /api/health` reports `journalMode` and `foreignKeys`.
+**Development ports.** API on `https://localhost:7299` only (one launch profile, `https`; no HTTP endpoint), using the trusted ASP.NET Core development certificate. Vite on `http://localhost:5173` with a proxy sending `/api` to the API (`secure: false`, because Node does not trust the Windows certificate store). `GET /api/health` reports `journalMode` and `foreignKeys`.
+
+**HTTPS policy.** The API accepts HTTPS only. Outside development it also sends HSTS and redirects HTTP to HTTPS. In production, TLS is planned at a reverse proxy (Caddy, Phase 5) with the app container reachable only on Docker's internal network (no published port). Until then, `docker compose` serves plain HTTP on `localhost:8080` for local testing only.
 
 ## 6. Data source and import
 
@@ -450,6 +452,14 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 - **Revenue circles and labels:** pick the candidate position with the most clearance from track and nodes, kept inside the hex.
 - **Unknown part types:** render nothing for the part and show a small warning marker, rather than failing the whole tile.
 
+**Implementation (Step 2.5).** `web/src/lib/tiles/` holds `colors.ts` (fills, including red, blue, purple, orange), `parse.ts` (definition parser, revenue text), and `drawing.ts` (`buildTileDrawing`: geometry as a list of shapes, computed y-up like the prototype and flipped for SVG). `web/src/components/TileSvg.tsx` renders the shapes. `/dev/tiles` (development builds only) shows 24 sample tiles covering every feature. Differences from the prototype:
+- The tile-number corner is reserved before labels are placed, so labels never cover the number.
+- `offboard` nodes draw as a small black triangle under their revenue (the prototype drew nothing).
+- `slots:0` draws as one slot.
+- Revenue text takes only each phase's trailing digits, so color codes such as `#cb7743` are not read as numbers.
+- Unknown part types are skipped silently; the warning marker is not implemented yet.
+- Known limitation: long extra text (for example "future X (brown)") can crowd labels.
+
 ## 11. Phases
 
 | Phase | Scope | Done when |
@@ -481,9 +491,9 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 2.1 | Games API: `/api/games`, `/api/games/{id}` (`GamesController`); `/api/health` moved to `HealthController` | 131 games; 1830 has 46 tiles; unknown id returns 404 | Done (verified) |
 | 2.2 | Tiles API: `/api/tiles` (filters, paging), `/api/tiles/{id}`, shared sort helper (`Domain/TileSort`, `Domain/TileColors`) | 1830: 46 tiles incl. #59, no #10; 1825 has "#10 (1825)"; bad input returns 400; tile 60 lists its two other versions | Done (verified) |
 | 2.3 | Frontend setup: Tailwind, shadcn/ui, React Router, layout and navigation | Navigation between empty pages works | Done (verified): Tailwind 4, shadcn/ui (radix, nova), React Router 8, `@` alias via `paths` (no `baseUrl` in TypeScript 6) |
-| 2.4 | Home page (game list) | 131 games, each linking to its tiles | Not started |
-| 2.5 | `TileSvg` renderer | #10, #59, and sample game-specific tiles draw correctly | Not started |
-| 2.6 | Tiles page: `FilterBar`, `TileCard` | 1830 shows 46 tiles including #59 | Not started |
+| 2.4 | Home page (game list) | 131 games, each linking to its tiles | Done (verified) |
+| 2.5 | `TileSvg` renderer | #10, #59, and sample game-specific tiles draw correctly | Done (verified on `/dev/tiles`, 24 sample tiles) |
+| 2.6 | Tiles page: `FilterBar`, `TileCard` | 1830 shows 46 tiles including #59 | Done (verified): filters in URL via `useTileFilters`; bad URL values ignored; shadcn `input` and `native-select` |
 | 2.7 | Tile detail page | #10 shows its games and its other versions | Not started |
 | 2.8 | Common Tiles: `/api/tiles/common` and `/tiles/common` (section 9.3) | `minGames=10` returns 87 tiles; `minGames=1` and `abc` return 400 | Not started |
 

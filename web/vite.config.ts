@@ -13,9 +13,11 @@ export default defineConfig({
     },
   },
   server: {
-    // Send /api calls to the ASP.NET Core API during development
+    // Send /api calls to the ASP.NET Core API (HTTPS only) during development.
+    // secure: false lets Node accept the local development certificate, which
+    // Windows trusts but Node does not. Development only; not used in production.
     proxy: {
-      '/api': 'http://localhost:5010',
+      '/api': { target: 'https://localhost:7299', secure: false },
     },
   },
 })

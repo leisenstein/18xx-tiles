@@ -18,6 +18,24 @@ const TILE_FILLS: Record<string, string[]> = {
   orange: ['#F8C48C'],
 }
 
+// Colors a tile can have, in display order (matches TileColors in the API, DESIGN.md section 7):
+// the four main colors first, then the rest alphabetically.
+export const TILE_COLORS = [
+  'yellow',
+  'green',
+  'brown',
+  'gray',
+  'blue',
+  'browngray',
+  'brownsepia',
+  'greenbrown',
+  'none',
+  'orange',
+  'purple',
+  'red',
+  'white',
+]
+
 // Unknown colors draw white rather than failing the whole tile.
 export function tileFills(color: string): string[] {
   return TILE_FILLS[color] ?? ['#FFFFFF']

@@ -49,6 +49,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// HSTS tells browsers to use HTTPS for this site from now on, even if a user types http://.
+// Not in development, because it would stick to "localhost" in your browser.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
 app.UseHttpsRedirection();
 
 // Serve the built React app (index.html, JavaScript, CSS) from the wwwroot folder.
