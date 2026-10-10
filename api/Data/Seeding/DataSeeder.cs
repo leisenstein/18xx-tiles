@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.Json;
 using Dapper;
+using Tiles18xx.Api.Domain;
 using Tiles18xx.Api.Data;
 using Tiles18xx.Api.Data.Seeding.SeedModels;
 
@@ -16,12 +17,6 @@ public static class DataSeeder
     private const string SourceGeneric = "generic";
     private const string SourceGameVersion = "game-version";
     private const string SourceGameSpecific = "game-specific";
-
-    private static readonly HashSet<string> KnownColors = new(StringComparer.Ordinal)
-    {
-        "yellow", "green", "brown", "gray", "greenbrown", "browngray", "brownsepia", "none",
-        "red", "blue", "purple", "white", "orange",
-    };
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -218,7 +213,7 @@ public static class DataSeeder
 
     private static void RequireKnownColor(string color, string context)
     {
-        if (!KnownColors.Contains(color))
+        if (!TileColors.IsKnown(color))
         {
             throw new InvalidOperationException($"Unknown color '{color}' for {context}.");
         }

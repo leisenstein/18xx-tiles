@@ -14,4 +14,18 @@ Accept: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/games/1
 Accept: application/json
 
+
+### Tiles: 1830, page 1 (Step 2.2)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles?game=25
+Accept: application/json
+
+### Tiles: yellow towns
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles?color=yellow&kind=town
+Accept: application/json
+
+### Tiles: bad input (expect 400 with three errors)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles?color=pink&kind=village&page=0
+Accept: application/json
+
+
 ###

@@ -8,7 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // API controllers live in the Controllers folder ([ApiController] classes).
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    // Validation error keys in camelCase ("game", not "Game") to match the rest of the JSON.
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.DictionaryKeyPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -29,11 +32,11 @@ if (!Path.IsPathRooted(sqliteBuilder.DataSource))
 
 Directory.CreateDirectory(Path.GetDirectoryName(sqliteBuilder.DataSource)!);
 
-builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString()));
 
 // Repositories are stateless, so one shared instance is fine.
+builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString()));
 builder.Services.AddSingleton<GamesRepository>();
-
+builder.Services.AddSingleton<TilesRepository>();
 
 
 var app = builder.Build();
