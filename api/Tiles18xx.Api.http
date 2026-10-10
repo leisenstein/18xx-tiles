@@ -79,6 +79,10 @@ Content-Type: application/json
 
 { "note": "Already exists as #57." }
 
+### Admin: import history (each tobymao/18xx commit applied, with notes)
+GET {{Tiles18xx.Api_HostAddress}}/api/admin/imports
+Accept: application/json
+
 ###
 
 ### Who else uses tile number 57? (signed in)

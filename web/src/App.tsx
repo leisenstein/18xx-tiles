@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router'
 import Layout from '@/components/Layout'
 import RequireRole from '@/components/RequireRole'
 import { ADMIN_ROLE } from '@/lib/constants'
+import AdminImportsPage from '@/pages/AdminImportsPage'
 import AdminQueuePage from '@/pages/AdminQueuePage'
 import CommonTilesPage from '@/pages/CommonTilesPage'
 import DevTilesPage from '@/pages/DevTilesPage'
@@ -56,6 +57,14 @@ function App() {
           element={
             <RequireRole role={ADMIN_ROLE}>
               <AdminQueuePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="admin/imports"
+          element={
+            <RequireRole role={ADMIN_ROLE}>
+              <AdminImportsPage />
             </RequireRole>
           }
         />

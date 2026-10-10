@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { getGames } from '@/api/games'
+import { boxText } from '@/lib/tileCount'
 import type { GameSummary } from '@/types/game'
 
-// Home page: every game with its tile count. Each game links to its tiles
+// Home page: every game with its number of tile designs and physical tiles. Each game links to its tiles
 // (/tiles?game={id}). Also links to the Common Tiles page (DESIGN.md 9.3).
 export default function HomePage() {
   // null means "still loading".
@@ -52,9 +53,13 @@ export default function HomePage() {
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {games.map((game) => (
           <li key={game.id}>
-            <Link to={`/tiles?game=${game.id}`} className="flex items-center justify-between rounded-lg border px-4 py-3 hover:bg-muted">
+            <Link to={`/tiles?game=${game.id}`} className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 hover:bg-muted">
               <span className="font-medium">{game.title}</span>
-              <span className="text-sm text-muted-foreground">{game.tileCount} tiles</span>
+              {/* Designs = distinct tiles; the second line adds up the counts (unlimited and unknown listed separately). */}
+              <span className="text-right text-sm text-muted-foreground">
+                {game.tileCount} {game.tileCount === 1 ? 'design' : 'designs'}
+                <span className="block text-xs">{boxText(game)}</span>
+              </span>
             </Link>
           </li>
         ))}

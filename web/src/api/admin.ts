@@ -1,4 +1,5 @@
 import type { ChangeRequest, ChangeRequestStatus, TileHistory } from '@/types/changeRequest'
+import type { ImportRun } from '@/types/importRun'
 import { getJson, postJson } from './client'
 
 // API calls for admins only. The API answers 401 when not signed in and 403 without the Admin role (AdminController).
@@ -15,6 +16,9 @@ export const approveChangeRequest = (id: number, note?: string) =>
 
 // A tile's history: who added it, its last change, and every change request about it (oldest first).
 export const getTileHistory = (tileId: number) => getJson<TileHistory>(`/api/admin/tiles/${tileId}/history`)
+
+// Every import of the tobymao/18xx seed files, newest first, with notes about upstream changes that were not applied.
+export const getImports = () => getJson<ImportRun[]>('/api/admin/imports')
 
 // Reject a Pending request. The note is required and shown to the submitter.
 export const rejectChangeRequest = (id: number, note: string) => postJson<ChangeRequest>(`/api/admin/change-requests/${id}/reject`, { note })

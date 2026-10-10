@@ -6,6 +6,7 @@ import TileCard from '@/components/TileCard'
 import { Button } from '@/components/ui/button'
 import { useTileFilters } from '@/hooks/useTileFilters'
 import { TILES_PAGE_SIZE } from '@/lib/constants'
+import { boxText } from '@/lib/tileCount'
 import type { GameSummary } from '@/types/game'
 import type { PagedResult } from '@/types/paged'
 import type { TileSummary } from '@/types/tile'
@@ -62,6 +63,7 @@ export default function TilesPage() {
   }, [game, color, kind, q, page])
 
   const result = data?.result
+  const selectedGame = games.find((g) => g.id === game)
 
   // Change page and jump back to the top, since the paging buttons are at the bottom.
   const goToPage = (n: number) => {
@@ -73,6 +75,12 @@ export default function TilesPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Tiles</h1>
       <FilterBar filters={filters} games={games} onChange={setFilter} />
+      {/* Filtered to one game: how many tiles come in its box. */}
+      {selectedGame && (
+        <p className="text-sm text-muted-foreground">
+          {selectedGame.title}: {selectedGame.tileCount} tile designs, {boxText(selectedGame)}.
+        </p>
+      )}
 
       {error && <p className="text-destructive">Could not load tiles. {error}</p>}
       {!result && !error && <p className="text-muted-foreground">Loading tiles…</p>}

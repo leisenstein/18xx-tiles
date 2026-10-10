@@ -16,6 +16,9 @@ Version 1.2, October 8, 2026. Version 1.1 was prepared in a planning session in 
 - `Games.DevStage` removed (script `0005_DropGamesDevStage.sql`): it was 18xx.games' status, not this project's (sections 6.1, 6.4, 7).
 - API style switched from Minimal APIs to controllers (sections 4, 5.1, 5.2).
 - Future feature on hold: printable tile number circles (sections 9.4, 11, 12, 13).
+- Tile counts and import refresh (after Phase 4): `tools/import/update_data.py` downloads any tobymao/18xx commit and regenerates the seed files with
+  per-game counts; the API's `DataImporter` applies a new commit once, adding new data and filling empty counts without overwriting app edits; import
+  reports on `/admin/imports`; per-game physical tile totals (sections 5.1, 6.3, 6.4, 7, 9.1, 11, 12).
 - Folder structure and naming conventions (sections 5.1 and 5.2). Database code consolidated under `api/Data/` (`Migrations`, `Repositories`, `Seeding`); seed models one type per file; database reset after the move.
 
 ## 1. Purpose
@@ -92,9 +95,9 @@ Folders marked (planned) are created in the step that first needs them.
 │   │   ├── Migrations/       DatabaseMigrator.cs (runs DbUp at startup)
 │   │   │   └── Scripts/      DbUp SQL scripts, NNNN_VerbNoun.sql
 │   │   ├── Repositories/     *Repository classes (Dapper): GamesRepository, ...
-│   │   └── Seeding/          DataSeeder.cs (fills an empty database at startup)
-│   │       ├── SeedFiles/    games.json, tiles.json (embedded; not in source control, see 6.4)
-│   │       └── SeedModels/   SeedGame, SeedGameTile, SeedGenericTile (shapes of the seed JSON)
+│   │   └── Seeding/          DataImporter.cs (applies new seed files at startup: seed or merge, see 6.4)
+│   │       ├── SeedFiles/    games.json, tiles.json, source.json (embedded; not in source control, see 6.4)
+│   │       └── SeedModels/   SeedGame, SeedGameTile, SeedGenericTile, SeedSource (shapes of the seed JSON)
 │   ├── Domain/               (planned, Step 2.2) Shared rules and constants: TileColors, TileSources,
 │   │                         TileSort, TileCounts (UnlimitedTileCount = 999)
 │   └── Dtos/                 API request and response shapes, *Dto
@@ -112,7 +115,8 @@ Folders marked (planned) are created in the step that first needs them.
 │       │                     CommonTilesPage, SubmitPage, AdminQueuePage, ...
 │       └── types/            (planned) TypeScript types matching the API DTOs
 │
-├── tools/import/             Import scripts and seed data generation (see section 6)
+├── tools/import/             update_data.py: downloads tobymao/18xx and regenerates the seed files (section 6.4);
+│                             .cache/ holds the download (not in source control)
 ├── reference/                Prototype scripts from the planning session
 └── data/                     Local development database (not in source control)
 ```
@@ -174,7 +178,7 @@ Two schema tools share one SQLite file. EF Core migrations manage only the `AspN
 
 **Database location.** Connection string `ConnectionStrings:Tiles`, default `Data Source=../data/tiles.db` in `appsettings.json`. A relative path is resolved against the API content root, and the folder is created if missing. Docker overrides it with `/data/tiles.db`.
 
-**Startup order (implemented).** Build the app, run `DatabaseMigrator.Upgrade`, then `DataSeeder.SeedIfEmpty`, then accept requests.
+**Startup order (implemented).** Build the app, run `DatabaseMigrator.Upgrade`, then `DataImporter.Run` (section 6.4), then accept requests.
 
 **Serving the React app (implemented).** `UseDefaultFiles` and `UseStaticFiles` serve the built app from `wwwroot`. Unknown `/api/...` routes return 404 (`MapFallback("/api/{**rest}", ...)`); every other unknown path returns `index.html` (`MapFallbackToFile`) so client-side routes work on refresh. In development `wwwroot` does not exist and Vite serves the app.
 
@@ -230,17 +234,32 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 6. A game entry with no `code`, or with a code identical to the generic definition, uses the generic tile.
 7. Compare definitions by splitting on `;`, trimming, and sorting the parts (ordinal), so part order does not create false versions. Caution: paths refer to nodes by position (`_0`, `_1`), so reordering city or town parts can change meaning, and sorting could in principle merge two different tiles. In the current snapshot sorting merges exactly two pairs (#780 brown, #82 green); both are path-only tiles and were verified as genuine duplicates. Recheck when the snapshot is refreshed.
 8. Known gaps: Harzbahn 1873 declares tiles in a form the prototype did not parse. Rolling Stock and Rolling Stock Stars have no track tiles. Optional rules that add or remove tiles in code are not reflected. 18Mag refers to tile `L33`, which is not in the generic set; the seeder skips it with a warning.
-9. Counts: the prototype did not store per-game tile counts, and the current `games.json` does not contain them. `GameTiles.Count` is NULL for all seeded rows. To capture counts, update the parser: an integer count as given, `unlimited` as 999, anything else as NULL, with `Notes` set to "Count from 18xx.games manifest" so imported counts are distinguishable from counts verified against a physical box.
+9. Counts (implemented after Phase 4): an integer count from 1 to 100 as given, `unlimited` (string or symbol) as 999, anything else (constants, formulas) as NULL. Imported counts get `Notes` = "Count from 18xx.games manifest", so they can be told apart from counts verified against a physical box. At commit 46a592e: 7,235 links, 7,234 with a count (458 unlimited).
+10. Process game folders in folder-name order, not full-path order: on Windows the backslash sorts after digits, which put `g_18_los_angeles1` before its parent `g_18_los_angeles` and left it with no tiles. Resolve inherited manifests repeatedly until nothing changes, so chains work in any order. Read each folder's `.rb` files in sorted order.
 
-### 6.4 Import plan (implemented in Phase 1)
+### 6.4 Import plan (Phase 1; refresh added after Phase 4)
 
-`reference/parse_games.py` and `reference/build_data.py` produce `games.json` and `tiles.json`. Copies live in `api/Data/Seeding/SeedFiles/` and are embedded in the API assembly as `Seed.games.json` and `Seed.tiles.json`.
+**Generating the seed files.** `tools/import/update_data.py` (a cleaned-up merge of `reference/parse_games.py` and `reference/build_data.py`, plus counts) writes `games.json`, `tiles.json`, and `source.json` (repository, commit, commit time in UTC) to `api/Data/Seeding/SeedFiles/`. They are embedded in the API assembly as `Seed.games.json`, `Seed.tiles.json`, and `Seed.source.json`. Run it from the repo root:
 
-**Source control.** `games.json` and `tiles.json` are excluded from git in both `reference/` and `api/Data/Seeding/SeedFiles/`, because they are regenerated as needed. A fresh clone must have them copied into `api/Data/Seeding/SeedFiles/` before the first run; otherwise the seeder stops with "Embedded seed file ... was not found" when the database is empty. The Docker build context must include them (do not exclude them in `.dockerignore`).
+- `python -I tools/import/update_data.py`: latest commit on the default branch.
+- `python -I tools/import/update_data.py --ref <commit, branch, or tag>`: a specific commit.
+- `python -I tools/import/update_data.py --no-fetch`: re-parse the commit already downloaded.
 
-**Seeder rules (`api/Data/Seeding/DataSeeder.cs`):**
+It downloads only `lib/engine/game/`, `lib/engine/config/tile.rb`, and `LICENSE` (a shallow, sparse git fetch, about 14 MB) into `tools/import/.cache/18xx`, and prints what changed compared with the previous seed files. `-I` keeps Python from loading code from the downloaded folder. Verified: at commit 46a592e the output equals the Phase 1 seed files except for the added counts (and a meaningless `aliased` flag on Rolling Stock Stars, which has no tiles).
 
-1. Runs at startup after DbUp, only when `Tiles` is empty. All inserts run in one transaction.
+**Refreshing.** Run the script, review its summary, then rebuild and restart the API (or rebuild the Docker image). The import report is on `/admin/imports`.
+
+**Source control.** The three seed files are excluded from git in `api/Data/Seeding/SeedFiles/` (and `games.json`/`tiles.json` in `reference/`), because they are regenerated as needed. A fresh clone runs `update_data.py --ref <commit>` before the first build; otherwise startup stops with "Embedded seed file ... was not found". The Docker build context must include them (do not exclude them in `.dockerignore`).
+
+**Importer rules (`api/Data/Seeding/DataImporter.cs`):**
+
+1. Runs at startup after DbUp. If `ImportRuns` already has the commit in `source.json`, it does nothing. Otherwise it runs in one transaction and records a row in `ImportRuns` (counts and notes).
+2. **Seed mode** (`Tiles` is empty): inserts everything, as below.
+3. **Merge mode** (existing data) only adds and fills; it never overwrites or deletes anything:
+   - New games (matched by `SourceKey`) are added. A changed title is applied (games are not editable in the app) unless another game has that title.
+   - Tiles are matched by (number, color, sorted definition). A game link to a tile the game does not have yet is added, creating the tile if needed (display name as in section 7; if taken, `#N (Game)` or the next free `#N (variant k)`).
+   - Empty `GameTiles.Count` values are filled from the manifest (with the import note, if `Notes` is empty). Counts entered in the app are kept.
+   - Reported in the import notes and not applied: a game's tile whose definition differs from the app's version; a generic tile whose definition changed; links to tiles deleted in the app; counts that differ; games and links in the app that are not upstream. An admin applies wanted changes with Edit tile.
 2. JSON is read strictly (missing required fields or nulls in non-nullable fields fail the startup).
 3. Games are inserted in ordinal order of their module key. `SourceKey` = folder name. The snapshot's `stage` value is ignored.
 4. Generic tiles from `tiles.json` are inserted with `Source = 'generic'`.
@@ -249,10 +268,12 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
    - Custom: find or create a tile keyed by (number, color, sorted definition). A match with a generic tile links to it. A new tile gets `Source = 'game-version'` if the number exists in the generic set, otherwise `'game-specific'`.
 6. Unknown colors fail the seed.
 7. `HasCity` / `HasTown` = the definition has a part whose type (text before `=`) is `city` / `town`.
-8. `SourceRef` = `18xx.games commit 46a592e40494368390c9a731978a577ac4ecb1e0`.
+8. `SourceRef` = `18xx.games commit <commit from source.json>`.
 9. Display names follow section 7.
 
-**Re-seeding in development.** The seeder never wipes data. To reset: stop the API, delete `data/tiles.db*` (including the `-wal` and `-shm` files), and start the API. Refreshing a database that holds user edits is a separate future feature (open item 5).
+10. Counts: see section 6.3 rule 9. Counts outside the app's rules (`Domain/TileCounts`) are stored as NULL.
+
+**Re-seeding in development.** The importer never wipes data. To reset: stop the API, delete `data/tiles.db*` (including the `-wal` and `-shm` files), and start the API.
 
 Porting the parser to C# is optional later work.
 
@@ -351,6 +372,23 @@ Rules:
 - Validate `Color` and `Type` in the API with explicit branches; reject unknown values.
 - Enable WAL mode and foreign keys on each connection (`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON;`). Implemented in `SqliteConnectionFactory.Open()`.
 
+**ImportRuns** (script `0008_CreateImportRuns.sql`, after Phase 4): one row per applied seed-file commit (section 6.4).
+
+```sql
+CREATE TABLE ImportRuns (
+  Id            INTEGER PRIMARY KEY,
+  SourceCommit  TEXT NOT NULL UNIQUE,     -- tobymao/18xx commit hash
+  CommittedUtc  TEXT NULL,
+  ImportedUtc   TEXT NOT NULL,
+  Mode          TEXT NOT NULL,            -- 'seed' or 'merge'
+  GamesAdded    INTEGER NOT NULL,
+  TilesAdded    INTEGER NOT NULL,
+  LinksAdded    INTEGER NOT NULL,
+  CountsFilled  INTEGER NOT NULL,
+  NotesJson     TEXT NOT NULL             -- [{ kind, message }]
+);
+```
+
 ## 8. API
 
 | Method | Route | Auth | Purpose |
@@ -390,7 +428,7 @@ Notes:
 
 | Route | Page |
 |---|---|
-| `/` | Home: game list with tile counts; each links to `/tiles?game={id}` |
+| `/` | Home: game list with tile designs and physical tiles in the box (unlimited and unknown counts listed separately); each links to `/tiles?game={id}` |
 | `/tiles` | Tile card grid with FilterBar; filters in URL (`game`, `color`, `kind`, `q`) |
 | `/tiles/common` | Common Tiles: tiles used by at least N games (section 9.3); linked from Home and the main navigation |
 | `/tiles/:id` | Detail: large drawing, number, color, definition string, games with counts and notes, other versions of the same number |
@@ -398,6 +436,7 @@ Notes:
 | `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
 | `/account/requests` | My change requests |
 | `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
+| `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/login`, `/register` | Auth |
 
 ### 9.2 Key components
@@ -557,6 +596,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.6 | Variant names and number check; definition guide (`DefinitionGuide`: edge diagram, parts table, 12 examples with "Use this example") | Done (verified) |
 | 4.7 | Edit and delete restricted to admins (API 403 for others; admin-only `/tiles/:id/edit`; `AdminTileActions` with Edit and Delete on the tile page) | Done (verified) |
 | 4.8 | Audit trail and history: script `0007_AddAuditColumns.sql` (`ChangeRequests.BeforeJson`, `Tiles.UpdatedBy`, index on `TileId`); before-snapshot on every approved Edit/Delete; `GET /api/admin/tiles/{id}/history`; admin-only History section on the tile page | Done (verified) |
+| 4.9 | Tile counts and import refresh: `tools/import/update_data.py`; `DataImporter` (seed or merge, once per commit) replaces `DataSeeder`; script `0008_CreateImportRuns.sql`; `GET /api/admin/imports` and `/admin/imports`; per-game totals in `GameSummaryDto` (physical, unlimited, unknown), shown on Home and the game-filtered Tiles page | Done (verified: merge filled 7,234 counts on a copy of the dev database; restart skipped; scenario test produced each kind of note; fresh seed equals the existing data) |
 
 **Phase 4 complete.**
 
@@ -578,10 +618,10 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 2. **Email service:** choose a provider for confirmation and password-reset emails. Until then, development writes emails to the API log (Phase 3 decision).
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
 4. **Display names:** scheme defined in section 7; confirm it reads well in the UI during Phase 2.
-5. **Import refresh:** decide whether to re-import when tobymao/18xx changes, and how to treat rows users have edited.
+5. ~~**Import refresh**~~ Resolved after Phase 4: merge import that only adds and fills, with a report (section 6.4).
 6. **Parser gaps:** Harzbahn 1873 manifest; 18Mag `L33`. Imported counts come from 18xx.games manifests and may not match every physical box.
-7. **Tile counts:** update the parser to capture per-game counts (section 6.3 rule 9).
-8. **Seed file distribution:** `games.json` and `tiles.json` are not in source control. Decide where the authoritative copies live (for example, regenerated by `tools/import`) so a fresh clone or a CI build can obtain them.
+7. ~~**Tile counts**~~ Resolved after Phase 4 (section 6.3 rule 9).
+8. **Seed file distribution:** the seed files are not in source control; `tools/import/update_data.py --ref <commit>` regenerates them. Still to decide: whether a CI build runs it, or the files are committed, so builds do not depend on GitHub being reachable.
 9. **Game metadata:** designer and publisher are not in the snapshot; extend the parser if they are wanted.
 10. **Tile number circle samples:** `reference/tile_number_circles_sample.pdf` and `reference/tile_number_circles_train_styles.pdf` are referenced by section 9.4 but not yet in `reference/`.
 11. **Broken imported definitions (found in Phase 4):** 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
@@ -594,6 +634,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 | File | Contents |
 |---|---|
+| `tools/import/update_data.py` | Downloads tobymao/18xx and regenerates the seed files, with counts (section 6.4). Replaces the two prototype scripts below |
 | `reference/parse_games.py` | Prototype game-manifest parser |
 | `reference/build_data.py` | Combines generic tiles with game usage and versions |
 | `reference/build_pdf.py` | Prototype tile renderer (`render_tile`) and PDF builder |

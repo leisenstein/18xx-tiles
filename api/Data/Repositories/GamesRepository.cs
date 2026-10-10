@@ -6,10 +6,14 @@ namespace Tiles18xx.Api.Data.Repositories;
 // Reads games from the database with Dapper.
 public sealed class GamesRepository(SqliteConnectionFactory db)
 {
-    // Shared SELECT: each game plus how many (non-deleted) tiles it uses.
+    // Shared SELECT: each game, how many (non-deleted) tiles it uses, and how many physical tiles are in the box. Counts of 999 mean unlimited and are
+    // counted separately; links without a count are counted as unknown.
     private const string SelectGames = """
         SELECT g.Id, g.Title, g.Designer, g.Publisher,
-               COUNT(t.Id) AS TileCount
+               COUNT(t.Id) AS TileCount,
+               COALESCE(SUM(CASE WHEN t.Id IS NOT NULL AND gt.Count <> 999 THEN gt.Count END), 0) AS PhysicalTileCount,
+               COUNT(CASE WHEN t.Id IS NOT NULL AND gt.Count = 999 THEN 1 END) AS UnlimitedTileCount,
+               COUNT(CASE WHEN t.Id IS NOT NULL AND gt.Count IS NULL THEN 1 END) AS UnknownCountTileCount
         FROM Games g
         LEFT JOIN GameTiles gt ON gt.GameId = g.Id
         LEFT JOIN Tiles t ON t.Id = gt.TileId AND t.IsDeleted = 0

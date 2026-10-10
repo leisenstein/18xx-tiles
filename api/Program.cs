@@ -1,4 +1,4 @@
-using System.Threading.RateLimiting;
+﻿using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
@@ -51,6 +51,7 @@ builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString
 builder.Services.AddSingleton<GamesRepository>();
 builder.Services.AddSingleton<TilesRepository>();
 builder.Services.AddSingleton<ChangeRequestsRepository>();
+builder.Services.AddSingleton<ImportRunsRepository>();
 
 // ---- A4. Accounts: ASP.NET Core Identity (Phase 3) ----
 //
@@ -129,7 +130,9 @@ var app = builder.Build();
 
 // ---- B1. Database: our tables (DbUp), initial data, then the Identity tables (EF Core) and the admin account ----
 DatabaseMigrator.Upgrade(sqliteBuilder.ToString());
-DataSeeder.SeedIfEmpty(app.Services.GetRequiredService<SqliteConnectionFactory>(), app.Logger);
+// Apply the seed files (Data/Seeding/SeedFiles) if their tobymao/18xx commit is new: everything into an empty database, otherwise only new games, tiles,
+// links, and empty counts. Nothing edited in the app is overwritten. DESIGN.md section 6.4.
+DataImporter.Run(app.Services.GetRequiredService<SqliteConnectionFactory>(), app.Logger);
 
 // Create or update the AspNet* tables from the migrations in Auth/Migrations. Like DbUp, EF Core records which migrations already ran (in the
 // __EFMigrationsHistory table), so each one runs only once. AuthDbContext is a "scoped" service (one per request), so borrow one in a temporary scope.

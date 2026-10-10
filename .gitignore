@@ -493,6 +493,10 @@ $RECYCLE.BIN/
 /reference/tiles.json
 /api/Data/Seeding/SeedFiles/games.json
 /api/Data/Seeding/SeedFiles/tiles.json
+/api/Data/Seeding/SeedFiles/source.json
+
+# Partial download of tobymao/18xx used by tools/import/update_data.py
+/tools/import/.cache/
 
 # Rendered reference PDF from the planning session
 /reference/18xx_Generic_Tile_Reference.pdf
