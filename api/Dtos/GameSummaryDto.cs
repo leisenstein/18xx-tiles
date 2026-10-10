@@ -7,5 +7,4 @@ public sealed record GameSummaryDto(
     string Title,
     string? Designer,
     string? Publisher,
-    string? DevStage,
     long TileCount);

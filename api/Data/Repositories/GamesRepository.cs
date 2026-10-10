@@ -8,7 +8,7 @@ public sealed class GamesRepository(SqliteConnectionFactory db)
 {
     // Shared SELECT: each game plus how many (non-deleted) tiles it uses.
     private const string SelectGames = """
-        SELECT g.Id, g.Title, g.Designer, g.Publisher, g.DevStage,
+        SELECT g.Id, g.Title, g.Designer, g.Publisher,
                COUNT(t.Id) AS TileCount
         FROM Games g
         LEFT JOIN GameTiles gt ON gt.GameId = g.Id

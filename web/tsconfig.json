@@ -1,5 +1,12 @@
 {
   "files": [],
+  /* Import alias: "@/lib/utils" means "src/lib/utils", from any file.
+     Avoids long "../../" imports. shadcn/ui reads the alias from this file,
+     and "paths" must sit inside "compilerOptions". Keep in sync with
+     tsconfig.app.json and the "resolve.alias" setting in vite.config.ts. */
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  },
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

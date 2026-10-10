@@ -16,6 +16,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Import alias: "@/lib/utils" means "src/lib/utils", so the editor and
+       "npm run build" understand "@/" imports. Same alias as tsconfig.json and
+       vite.config.ts. No "baseUrl": TypeScript 6 deprecates it. */
+    "paths": { "@/*": ["./src/*"] },
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,

@@ -20,5 +20,10 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // shadcn/ui generated components export helpers (e.g. buttonVariants) next to components.
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
   eslintConfigPrettier,
 ])

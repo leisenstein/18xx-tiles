@@ -52,15 +52,14 @@ public static class DataSeeder
         {
             gameIds[gameKey] = connection.ExecuteScalar<long>(
                 """
-                INSERT INTO Games (Title, SourceKey, DevStage, CreatedUtc)
-                VALUES (@Title, @SourceKey, @DevStage, @CreatedUtc)
+                INSERT INTO Games (Title, SourceKey, CreatedUtc)
+                VALUES (@Title, @SourceKey, @CreatedUtc)
                 RETURNING Id;
                 """,
                 new
                 {
                     game.Title,
                     SourceKey = game.Dir,
-                    DevStage = ToDevStage(game.Stage, gameKey),
                     CreatedUtc = now,
                 },
                 transaction);
@@ -218,13 +217,6 @@ public static class DataSeeder
             throw new InvalidOperationException($"Unknown color '{color}' for {context}.");
         }
     }
-
-    private static string? ToDevStage(string? stage, string gameKey) => stage switch
-    {
-        "production" or "beta" or "alpha" or "prealpha" => stage,
-        "?" or null => null,
-        _ => throw new InvalidOperationException($"Unknown stage '{stage}' for {gameKey}."),
-    };
 
     private static T ReadResource<T>(string name)
     {

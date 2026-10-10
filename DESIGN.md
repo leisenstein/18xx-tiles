@@ -13,6 +13,7 @@ Version 1.2, October 8, 2026. Version 1.1 was prepared in a planning session in 
 - Phase 2 acceptance test corrected: 1830 does not use tile #10 (section 11).
 - Phase 1 complete, including Docker; API fallback routing documented (sections 5 and 11).
 - New feature: Common Tiles page (sections 8, 9.1, 9.3); shared tile sort order defined (section 8); Phase 2 step plan (section 11).
+- `Games.DevStage` removed (script `0005_DropGamesDevStage.sql`): it was 18xx.games' status, not this project's (sections 6.1, 6.4, 7).
 - API style switched from Minimal APIs to controllers (sections 4, 5.1, 5.2).
 - Future feature on hold: printable tile number circles (sections 9.4, 11, 12, 13).
 - Folder structure and naming conventions (sections 5.1 and 5.2). Database code consolidated under `api/Data/` (`Migrations`, `Repositories`, `Seeding`); seed models one type per file; database reset after the move.
@@ -188,7 +189,7 @@ Two schema tools share one SQLite file. EF Core migrations manage only the `AspN
 | Generic numbered tiles | `lib/engine/config/tile.rb` | Hashes YELLOW, GREEN, BROWN, GRAY, GREENBROWN, BROWNGRAY, BROWNSEPIA, NONE. Skip WHITE (blank, city, town are map hexes, not numbered tiles). Skip commented-out lines. File header says it was originally exported from 18xx-maker/export-rb |
 | Definition language | `TILES.md` | "Tile language" and "Anatomy of a Flat Tile" sections |
 | Per-game tile manifests | `lib/engine/game/g_*/` (`map.rb`, `game.rb`, `meta.rb`) | `TILES = { ... }` hashes; values are a count or a hash with `count`, `color`, `code` |
-| Game metadata | `lib/engine/game/g_*/meta.rb` | `GAME_TITLE` (if absent, title is the module name without the leading `G`), `GAME_DESIGNER`, `GAME_PUBLISHER`, `DEV_STAGE` |
+| Game metadata | `lib/engine/game/g_*/meta.rb` | `GAME_TITLE` (if absent, title is the module name without the leading `G`), `GAME_DESIGNER`, `GAME_PUBLISHER`. (`DEV_STAGE` is 18xx.games' own status and is not imported.) |
 
 Snapshot used in planning: commit `46a592e40494368390c9a731978a577ac4ecb1e0` (October 7, 2026).
 
@@ -239,7 +240,7 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 
 1. Runs at startup after DbUp, only when `Tiles` is empty. All inserts run in one transaction.
 2. JSON is read strictly (missing required fields or nulls in non-nullable fields fail the startup).
-3. Games are inserted in ordinal order of their module key. `SourceKey` = folder name; `DevStage` `?` is stored as NULL; unknown stage values fail the seed.
+3. Games are inserted in ordinal order of their module key. `SourceKey` = folder name. The snapshot's `stage` value is ignored.
 4. Generic tiles from `tiles.json` are inserted with `Source = 'generic'`.
 5. For each game's manifest entry:
    - Not custom: link to the generic tile with that number; if none exists, skip with a warning.
@@ -255,7 +256,7 @@ Porting the parser to C# is optional later work.
 
 ## 7. Database schema (app tables, managed by DbUp)
 
-User IDs are TEXT to match `AspNetUsers.Id`. Scripts: `api/Data/Migrations/Scripts/0001` to `0004`.
+User IDs are TEXT to match `AspNetUsers.Id`. Scripts: `api/Data/Migrations/Scripts/0001` to `0005`. The schema below is the result after all scripts (`0005_DropGamesDevStage.sql` removed `Games.DevStage`, which was 18xx.games' own implementation status and not relevant to this project).
 
 ```sql
 CREATE TABLE Games (
@@ -264,7 +265,6 @@ CREATE TABLE Games (
   SourceKey   TEXT NOT NULL UNIQUE,      -- folder name, e.g. g_1830
   Designer    TEXT NULL,
   Publisher   TEXT NULL,
-  DevStage    TEXT NULL,                 -- production, beta, alpha, prealpha; NULL when unknown
   CreatedUtc  TEXT NOT NULL
 );
 
@@ -479,8 +479,8 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | Step | Scope | Check | Status |
 |---|---|---|---|
 | 2.1 | Games API: `/api/games`, `/api/games/{id}` (`GamesController`); `/api/health` moved to `HealthController` | 131 games; 1830 has 46 tiles; unknown id returns 404 | Done (verified) |
-| 2.2 | Tiles API: `/api/tiles` (filters, paging), `/api/tiles/{id}`, shared sort helper | Filters return the expected tiles | Not started |
-| 2.3 | Frontend setup: Tailwind, shadcn/ui, React Router, layout and navigation | Navigation between empty pages works | Not started |
+| 2.2 | Tiles API: `/api/tiles` (filters, paging), `/api/tiles/{id}`, shared sort helper (`Domain/TileSort`, `Domain/TileColors`) | 1830: 46 tiles incl. #59, no #10; 1825 has "#10 (1825)"; bad input returns 400; tile 60 lists its two other versions | Done (verified) |
+| 2.3 | Frontend setup: Tailwind, shadcn/ui, React Router, layout and navigation | Navigation between empty pages works | Done (verified): Tailwind 4, shadcn/ui (radix, nova), React Router 8, `@` alias via `paths` (no `baseUrl` in TypeScript 6) |
 | 2.4 | Home page (game list) | 131 games, each linking to its tiles | Not started |
 | 2.5 | `TileSvg` renderer | #10, #59, and sample game-specific tiles draw correctly | Not started |
 | 2.6 | Tiles page: `FilterBar`, `TileCard` | 1830 shows 46 tiles including #59 | Not started |
