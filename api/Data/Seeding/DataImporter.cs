@@ -10,7 +10,8 @@ using Tiles18xx.Api.Dtos;
 namespace Tiles18xx.Api.Data.Seeding;
 
 // Applies the embedded seed files (games.json, tiles.json, source.json from tools/import/update_data.py) at startup. DESIGN.md section 6.4.
-// - Each tobymao/18xx commit is applied once: ImportRuns records it, and later starts skip it.
+// - Each version of the data is applied once: ImportRuns records its hash (source.json dataHash), and later starts skip it. The same commit is applied
+//   again when the data changes, for example after a parser improvement. Older source.json files without a hash are matched by commit.
 // - Empty database: "seed" mode loads everything.
 // - Existing data: "merge" mode only ADDS (new games, tiles, and game links) and FILLS empty counts. It never overwrites or deletes anything edited in the
 //   app; upstream changes it cannot apply safely become notes in the import report (Admin > Imports), so an admin can apply them by hand.
@@ -27,6 +28,7 @@ public static class DataImporter
     public static class NoteKinds
     {
         public const string GameRenamed = "game-renamed";              // applied: games are not editable in the app
+        public const string GameDetails = "game-details";              // applied: designer or publisher filled or changed (one summary note)
         public const string GameNotRenamed = "game-not-renamed";       // the new title belongs to another game
         public const string GameNotUpstream = "game-not-upstream";     // kept
         public const string GenericChanged = "generic-changed";        // not applied
@@ -50,9 +52,12 @@ public static class DataImporter
         var source = ReadResource<SeedSource>("Seed.source.json");
         using var connection = db.Open();
 
-        if (connection.ExecuteScalar<long>("SELECT COUNT(*) FROM ImportRuns WHERE SourceCommit = @Commit;", new { source.Commit }) > 0)
+        var applied = source.DataHash is null
+            ? connection.ExecuteScalar<long>("SELECT COUNT(*) FROM ImportRuns WHERE SourceCommit = @Commit;", new { source.Commit })
+            : connection.ExecuteScalar<long>("SELECT COUNT(*) FROM ImportRuns WHERE DataHash = @DataHash;", new { source.DataHash });
+        if (applied > 0)
         {
-            logger.LogInformation("Import skipped: commit {Commit} was already applied.", source.Commit);
+            logger.LogInformation("Import skipped: this data (commit {Commit}) was already applied.", source.Commit);
             return;
         }
 
@@ -75,13 +80,14 @@ public static class DataImporter
 
         connection.Execute(
             """
-            INSERT INTO ImportRuns (SourceCommit, CommittedUtc, ImportedUtc, Mode, GamesAdded, TilesAdded, LinksAdded, CountsFilled, NotesJson)
-            VALUES (@Commit, @CommittedUtc, @Now, @Mode, @GamesAdded, @TilesAdded, @LinksAdded, @CountsFilled, @NotesJson);
+            INSERT INTO ImportRuns (SourceCommit, CommittedUtc, DataHash, ImportedUtc, Mode, GamesAdded, TilesAdded, LinksAdded, CountsFilled, NotesJson)
+            VALUES (@Commit, @CommittedUtc, @DataHash, @Now, @Mode, @GamesAdded, @TilesAdded, @LinksAdded, @CountsFilled, @NotesJson);
             """,
             new
             {
                 source.Commit,
                 source.CommittedUtc,
+                source.DataHash,
                 import.Now,
                 Mode = empty ? "seed" : "merge",
                 import.GamesAdded,
@@ -220,10 +226,11 @@ public static class DataImporter
         public void Merge(List<KeyValuePair<string, SeedGame>> games, List<PlannedTile> tiles, List<PlannedLink> links)
         {
             // Games, matched by folder name (SourceKey), which does not change when a title does.
-            var dbGames = connection.Query<GameRow>("SELECT Id, Title, SourceKey FROM Games;", transaction: transaction)
+            var dbGames = connection.Query<GameRow>("SELECT Id, Title, SourceKey, Designer, Publisher FROM Games;", transaction: transaction)
                 .ToDictionary(g => g.SourceKey, StringComparer.Ordinal);
             var titles = dbGames.Values.Select(g => g.Title).ToHashSet(StringComparer.Ordinal);
             var gameIds = new Dictionary<string, long>(StringComparer.Ordinal);
+            var detailsChanged = 0;
             foreach (var (gameKey, game) in games)
             {
                 if (!dbGames.TryGetValue(game.Dir, out var row))
@@ -233,6 +240,16 @@ public static class DataImporter
                     continue;
                 }
                 gameIds[gameKey] = row.Id;
+                // Designer and publisher come only from upstream (the app cannot edit games), so take upstream's values. A value upstream no longer
+                // lists is kept.
+                var designer = game.Designer ?? row.Designer;
+                var publisher = game.Publisher ?? row.Publisher;
+                if (designer != row.Designer || publisher != row.Publisher)
+                {
+                    connection.Execute(
+                        "UPDATE Games SET Designer = @designer, Publisher = @publisher WHERE Id = @Id;", new { designer, publisher, row.Id }, transaction);
+                    detailsChanged++;
+                }
                 if (row.Title == game.Title)
                 {
                     continue;
@@ -247,6 +264,11 @@ public static class DataImporter
                 titles.Add(game.Title);
                 Note(NoteKinds.GameRenamed, $"Renamed \"{row.Title}\" to \"{game.Title}\", as upstream.");
             }
+            if (detailsChanged > 0)
+            {
+                var noun = detailsChanged == 1 ? "game" : "games";
+                Note(NoteKinds.GameDetails, $"Filled or updated the designer or publisher of {detailsChanged} {noun}, as upstream.");
+            }
             var upstreamDirs = games.Select(g => g.Value.Dir).ToHashSet(StringComparer.Ordinal);
             foreach (var row in dbGames.Values.Where(g => !upstreamDirs.Contains(g.SourceKey)).OrderBy(g => g.Title, StringComparer.OrdinalIgnoreCase))
             {
@@ -260,7 +282,8 @@ public static class DataImporter
 
             // A generic tile whose definition changed upstream would duplicate the app's generic tile, so it is noted and not added.
             var liveGenericNumbers = connection.Query<string>(
-                "SELECT Number FROM Tiles WHERE Source = @SourceGeneric AND IsDeleted = 0;", new { SourceGeneric }, transaction).ToHashSet(StringComparer.Ordinal);
+                "SELECT Number FROM Tiles WHERE Source = @SourceGeneric AND IsDeleted = 0;", new { SourceGeneric }, transaction)
+                .ToHashSet(StringComparer.Ordinal);
             foreach (var tile in tiles.Where(t => t.Source == SourceGeneric))
             {
                 if (dbTiles.ContainsKey(tile.Key))
@@ -271,7 +294,8 @@ public static class DataImporter
                 {
                     tile.ChangedUpstream = true;
                     Note(NoteKinds.GenericChanged,
-                        $"Generic tile #{tile.Number} has a new definition upstream ({tile.Color}: {tile.DefinitionCode}). Not applied; edit the tile to update it.");
+                        $"Generic tile #{tile.Number} has a new definition upstream ({tile.Color}: {tile.DefinitionCode}). "
+                        + "Not applied; edit the tile to update it.");
                 }
                 else
                 {
@@ -375,7 +399,9 @@ public static class DataImporter
                 candidates.Add(ChangeRequestsRepository.VariantDisplayName(tile.Number, tile.GameTitles[0]));
             }
             var name = candidates.FirstOrDefault(c => !taken.Contains(c))
-                ?? Enumerable.Range(1, int.MaxValue).Select(k => ChangeRequestsRepository.VariantDisplayName(tile.Number, $"variant {k}")).First(c => !taken.Contains(c));
+                ?? Enumerable.Range(1, int.MaxValue)
+                    .Select(k => ChangeRequestsRepository.VariantDisplayName(tile.Number, $"variant {k}"))
+                    .First(c => !taken.Contains(c));
             InsertTile(tile, name);
             return new TileRow { Id = tile.Id, Number = tile.Number, Color = tile.Color, DefinitionCode = tile.DefinitionCode, DisplayName = name };
         }
@@ -384,8 +410,8 @@ public static class DataImporter
         {
             GamesAdded++;
             return connection.ExecuteScalar<long>(
-                "INSERT INTO Games (Title, SourceKey, CreatedUtc) VALUES (@Title, @SourceKey, @Now) RETURNING Id;",
-                new { game.Title, SourceKey = game.Dir, Now },
+                "INSERT INTO Games (Title, SourceKey, Designer, Publisher, CreatedUtc) VALUES (@Title, @SourceKey, @Designer, @Publisher, @Now) RETURNING Id;",
+                new { game.Title, SourceKey = game.Dir, game.Designer, game.Publisher, Now },
                 transaction);
         }
 
@@ -433,7 +459,8 @@ public static class DataImporter
 
     // Design doc rule 6.3.7: compare definitions by their trimmed parts in sorted order.
     private static (string, string, string) Key(string number, string color, string code) =>
-        (number, color, string.Join(";", code.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Order(StringComparer.Ordinal)));
+        (number, color, string.Join(";", code.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Order(StringComparer.Ordinal)));
 
     private static void RequireKnownColor(string color, string context)
     {
@@ -471,6 +498,8 @@ public static class DataImporter
         public long Id { get; init; }
         public string Title { get; init; } = "";
         public string SourceKey { get; init; } = "";
+        public string? Designer { get; init; }
+        public string? Publisher { get; init; }
     }
 
     private sealed record TileRow

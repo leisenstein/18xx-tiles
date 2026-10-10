@@ -16,11 +16,14 @@ data/
 *.db-wal
 *.db-shm
 
-# Folders the app does not need
+# Folders the app does not need. From tools/, only the seed data script and its pinned commit (Dockerfile stage 2).
 reference/
-tools/
+tools/**
+!tools/import/update_data.py
+!tools/import/18xx-commit.txt
 
-# Do NOT add api/Data/Seeding/SeedFiles here. The seed files must be included in the build.
+# Local seed files: the Docker build always generates its own from the pinned commit (Dockerfile stage 2).
+api/Data/Seeding/SeedFiles/*.json
 
 # Local secrets for docker compose (see .env.example)
 .env

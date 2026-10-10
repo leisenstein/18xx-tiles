@@ -1,10 +1,13 @@
 """Refresh the seed data files from the tobymao/18xx repository (the code behind 18xx.games). DESIGN.md section 6.4.
 
 What it does:
-  1. Downloads only the files it needs (lib/engine/game/** and lib/engine/config/tile.rb) for one commit, into tools/import/.cache/18xx (gitignored).
-  2. Reads every game's tile manifest (number, count, and custom definitions) and the generic tile list.
-  3. Writes games.json, tiles.json, and source.json (which commit they came from) to api/Data/Seeding/SeedFiles/.
+  1. Downloads only the files it needs (lib/engine/game/**, lib/engine/config/tile.rb, lib/engine/publisher.rb) for one commit, into
+     tools/import/.cache/18xx (gitignored).
+  2. Reads every game's title, designer, publisher, and tile manifest (number, count, and custom definitions), and the generic tile list.
+  3. Writes games.json, tiles.json, and source.json (which commit they came from, plus a hash of the data) to api/Data/Seeding/SeedFiles/.
   4. Prints what changed compared with the files that were there before.
+  5. Records the commit in tools/import/18xx-commit.txt (the pin). The seed files are never stored in git; the pin is, so every build uses the same
+     data and git shows when the data version changed.
 
 The API applies new seed files at its next start (DataImporter): it adds new games, tiles, and links, and fills empty counts, but never overwrites edits
 made in the app. See the import report on the Admin page.
@@ -13,11 +16,13 @@ Usage, from the repo root (-I keeps Python from loading anything from the downlo
   python -I tools/import/update_data.py                  latest commit on the default branch
   python -I tools/import/update_data.py --ref 46a592e    a specific commit, branch, or tag (full or short hash once fetched)
   python -I tools/import/update_data.py --no-fetch       re-parse the commit already in the cache
+  python -I tools/import/update_data.py --pinned         the commit in 18xx-commit.txt, without changing it (what the Docker build runs)
 """
 
 import argparse
 import datetime
 import glob
+import hashlib
 import json
 import os
 import re
@@ -25,11 +30,12 @@ import subprocess
 import sys
 
 REPO_URL = 'https://github.com/tobymao/18xx.git'
-SPARSE_PATHS = ['lib/engine/game/', 'lib/engine/config/tile.rb', 'LICENSE']
+SPARSE_PATHS = ['lib/engine/game/', 'lib/engine/config/tile.rb', 'lib/engine/publisher.rb', 'LICENSE']
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, '.cache', '18xx')
 DEFAULT_OUT = os.path.join(HERE, '..', '..', 'api', 'Data', 'Seeding', 'SeedFiles')
+PIN = os.path.join(HERE, '18xx-commit.txt')
 
 # Domain/TileCounts.cs: 999 means unlimited; real counts are 1 to 100. Anything else (formulas, constants) is stored as unknown (null).
 UNLIMITED = 999
@@ -54,7 +60,8 @@ def fetch(ref):
         os.makedirs(CACHE, exist_ok=True)
         git('init', '-q')
         git('remote', 'add', 'origin', REPO_URL)
-        git('sparse-checkout', 'set', '--no-cone', *SPARSE_PATHS)
+    # Set every time, so a cache made before a path was added to SPARSE_PATHS picks it up.
+    git('sparse-checkout', 'set', '--no-cone', *SPARSE_PATHS)
     print(f'Fetching {ref} from {REPO_URL} ...')
     git('fetch', '-q', '--depth', '1', '--filter=blob:none', 'origin', ref)
     git('checkout', '-q', '--force', '--detach', 'FETCH_HEAD')
@@ -203,9 +210,44 @@ def parse_tile_hash(body):
     return tiles
 
 
-def parse_games(game_root):
-    """Every game folder (g_*) with a meta.rb: title, dev stage, folder name, and its tile manifest. Keyed by Ruby module name, e.g. G1830."""
+def parse_publishers(publisher_rb):
+    """Publisher names from lib/engine/publisher.rb: { 'lookout': 'Lookout Games', ... }. Empty if the file is missing."""
+    if not os.path.exists(publisher_rb):
+        return {}
+    return dict(re.findall(r"^\s+(\w+): \{\s*\n\s*name: '((?:[^'\\]|\\.)*)'", read(publisher_rb), re.M))
+
+
+# Marks a meta.rb constant that is not set in that file, so it is inherited from the parent game's Meta module (as Ruby's include does).
+INHERIT = object()
+
+
+def parse_designer(text):
+    """GAME_DESIGNER = 'Francis Tresham' -> the name; = nil -> None; not set -> INHERIT."""
+    m = re.search(r"GAME_DESIGNER = (?:'((?:[^'\\]|\\.)*)'|(nil))", text)
+    if not m:
+        return INHERIT
+    return m.group(1).replace("\\'", "'") if m.group(1) is not None else None
+
+
+def parse_publisher(text, publishers):
+    """GAME_PUBLISHER = :lookout or %i[a b].freeze -> display names joined with ', '; = nil -> None; not set -> INHERIT."""
+    m = re.search(r'GAME_PUBLISHER = (.+)$', text, re.M)
+    if not m:
+        return INHERIT
+    value = m.group(1).strip()
+    if value == 'nil':
+        return None
+    keys = re.findall(r'\w+', value[2:value.index(']')]) if value.startswith('%i[') else re.findall(r'^:(\w+)', value)
+    # A key missing from publisher.rb is shown from its name: self_published -> Self Published.
+    names = [publishers.get(k, k.replace('_', ' ').title()) for k in keys]
+    return ', '.join(names) or None
+
+
+def parse_games(game_root, publishers):
+    """Every game folder (g_*) with a meta.rb: title, designer, publisher, dev stage, folder name, and its tile manifest. Keyed by Ruby module name,
+    e.g. G1830."""
     games = {}
+    meta_parents = {}
     # Sorted by folder name, the same on every operating system (sorting full paths puts g_18_los_angeles1 first on Windows, because of the backslash).
     for meta in sorted(glob.glob(os.path.join(game_root, 'g_*', 'meta.rb')), key=lambda p: os.path.basename(os.path.dirname(p))):
         folder = os.path.dirname(meta)
@@ -215,6 +257,11 @@ def parse_games(game_root):
         title = title.group(1).replace("\\'", "'") if title else module[1:]
         stage = re.search(r'DEV_STAGE = :(\w+)', text)
         stage = stage.group(1) if stage else '?'
+        # The parent's Meta module, e.g. "include G1822CA::Meta" or "include G18ZOO::SharedMeta".
+        parent_meta = [x for x in re.findall(r'include (G\w+)::\w*Meta\b', text) if x != 'Game']
+        meta_parents[module] = parent_meta[0] if parent_meta else None
+        designer = parse_designer(text)
+        publisher = parse_publisher(text, publishers)
 
         tiles = {}
         alias = None
@@ -232,7 +279,21 @@ def parse_games(game_root):
             m = re.search(r'class Game < (G\w+)::Game', source)
             if m and not alias:
                 alias = m.group(1)
-        games[module] = {'title': title, 'stage': stage, 'dir': os.path.basename(folder), 'tiles': tiles, 'alias': alias}
+        games[module] = {'title': title, 'designer': designer, 'publisher': publisher, 'stage': stage, 'dir': os.path.basename(folder), 'tiles': tiles,
+                         'alias': alias}
+
+    # Designer and publisher not set in a game's meta.rb come from the Meta module it includes (for example 1822CA ERS from 1822CA), up the chain.
+    def inherited(module, key, seen=()):
+        game = games.get(module)
+        if game is None or module in seen:
+            return None
+        if game[key] is not INHERIT:
+            return game[key]
+        return inherited(meta_parents.get(module), key, (*seen, module))
+
+    resolved = {m: {k: inherited(m, k) for k in ('designer', 'publisher')} for m in games}
+    for module, values in resolved.items():
+        games[module].update(values)
 
     # Games without their own manifest use their parent's. Repeat until nothing changes, so a chain (A uses B, B uses C) works in any order.
     changed = True
@@ -307,6 +368,7 @@ def summarize(old_games, new_games, old_tiles, new_tiles):
     for d in sorted(old_by_dir.keys() - new_by_dir.keys()):
         lines.append(f'  - game {old_by_dir[d]["title"]} (no longer upstream; the app keeps it)')
     counts = 0
+    details = 0
     for d in sorted(old_by_dir.keys() & new_by_dir.keys()):
         old, new = old_by_dir[d], new_by_dir[d]
         if old['title'] != new['title']:
@@ -321,6 +383,8 @@ def summarize(old_games, new_games, old_tiles, new_tiles):
                 lines.append(f'  ~ {new["title"]}: tile {number} definition or color changed')
             elif a.get('count') != b.get('count'):
                 counts += 1
+        if (old.get('designer'), old.get('publisher')) != (new.get('designer'), new.get('publisher')):
+            details += 1
     old_generic = {t['name']: (t['color'], t['code']) for t in old_tiles or []}
     for t in new_tiles:
         if t['name'] not in old_generic:
@@ -330,15 +394,22 @@ def summarize(old_games, new_games, old_tiles, new_tiles):
     print('\n'.join(lines) if lines else 'No game, tile, or definition changes.')
     if counts:
         print(f'  {counts} tile counts changed or added.')
+    if details:
+        print(f'  {details} games with a new or changed designer or publisher.')
 
 
 def main():
     parser = argparse.ArgumentParser(description='Refresh the seed data files from tobymao/18xx.')
     parser.add_argument('--ref', default='HEAD', help='commit, branch, or tag to fetch (default: latest on the default branch)')
+    parser.add_argument('--pinned', action='store_true', help='fetch the commit in 18xx-commit.txt and leave the pin unchanged')
     parser.add_argument('--no-fetch', action='store_true', help='use the commit already in tools/import/.cache/18xx')
     parser.add_argument('--out', default=DEFAULT_OUT, help='folder for games.json, tiles.json, and source.json (default: the API seed folder)')
     args = parser.parse_args()
 
+    if args.pinned:
+        if not os.path.exists(PIN):
+            sys.exit(f'No pinned commit: {PIN} is missing.')
+        args.ref = read(PIN).strip()
     if not args.no_fetch:
         fetch(args.ref)
     elif not os.path.isdir(os.path.join(CACHE, 'lib')):
@@ -346,10 +417,11 @@ def main():
     commit, committed = current_commit()
     print(f'Parsing commit {commit} ({committed})')
 
-    games = parse_games(os.path.join(CACHE, 'lib', 'engine', 'game'))
+    games = parse_games(os.path.join(CACHE, 'lib', 'engine', 'game'), parse_publishers(os.path.join(CACHE, 'lib', 'engine', 'publisher.rb')))
     tiles = parse_generic_tiles(os.path.join(CACHE, 'lib', 'engine', 'config', 'tile.rb'), games)
     entries = [e for g in games.values() for e in g['tiles'].values()]
-    print(f'{len(games)} games ({sum(1 for g in games.values() if g["tiles"])} with tiles), {len(tiles)} generic tiles, {len(entries)} manifest entries, '
+    print(f'{len(games)} games ({sum(1 for g in games.values() if g["tiles"])} with tiles, {sum(1 for g in games.values() if g["designer"])} with a '
+          f'designer, {sum(1 for g in games.values() if g["publisher"])} with a publisher), {len(tiles)} generic tiles, {len(entries)} manifest entries, '
           f'{sum(1 for e in entries if e["count"] is not None)} with a count')
 
     out = os.path.abspath(args.out)
@@ -358,8 +430,17 @@ def main():
 
     write_json(os.path.join(out, 'games.json'), games)
     write_json(os.path.join(out, 'tiles.json'), tiles)
-    write_json(os.path.join(out, 'source.json'), {'repository': REPO_URL, 'commit': commit, 'committedUtc': committed})
+    # dataHash changes whenever the data does, including when this script improves for the same commit, so the API knows to apply it again.
+    data_hash = hashlib.sha256()
+    for name in ('games.json', 'tiles.json'):
+        with open(os.path.join(out, name), 'rb') as f:
+            data_hash.update(f.read())
+    write_json(os.path.join(out, 'source.json'), {'repository': REPO_URL, 'commit': commit, 'committedUtc': committed, 'dataHash': data_hash.hexdigest()})
     print(f'Wrote games.json, tiles.json, and source.json to {out}')
+    if not args.pinned:
+        with open(PIN, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(commit + '\n')
+        print(f'Pinned {commit} in tools/import/18xx-commit.txt; commit that file so builds use the same data.')
     print('Restart the API to apply them; the import report is on the Admin page.')
 
 

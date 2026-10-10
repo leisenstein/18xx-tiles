@@ -48,9 +48,13 @@ export interface TileDrawing {
   shapes: Shape[]
 }
 
-// A city, town, junction, offboard, or pass, referred to by paths as "_0", "_1", ...
+// A city, town, junction, offboard, pass, or halt, referred to by paths as "_0", "_1", ... in the order they appear in the definition.
+// Every node type must be listed in NODE_KINDS: a missing one (halt, before Phase 4 follow-up) shifts the numbering, so paths attach to the wrong node.
+const NODE_KINDS = ['city', 'town', 'junction', 'offboard', 'pass', 'halt']
+
 interface TileNode {
   kind: string
+  symbol: string | undefined // halt only: the mark shown in its circle, e.g. "£" or "⚒"
   slots: number
   revenue: string | null
   loc: string | undefined
@@ -76,6 +80,23 @@ function bezier([p0, p1, p2, p3]: [Point, Point, Point, Point], t: number): Poin
 }
 
 const isNodeRef = (ref: string) => ref.startsWith('_')
+
+// Cut a convex polygon down to the part where n·p <= limit (one step of Sutherland-Hodgman clipping). Used to keep stripes inside the hex.
+function clipHalfPlane(polygon: Point[], [nx, ny]: Point, limit: number): Point[] {
+  const out: Point[] = []
+  const side = ([x, y]: Point) => nx * x + ny * y - limit
+  polygon.forEach((current, i) => {
+    const next = polygon[(i + 1) % polygon.length]
+    const sc = side(current)
+    const sn = side(next)
+    if (sc <= 0) out.push(current)
+    if (sc * sn < 0) {
+      const t = sc / (sc - sn)
+      out.push([current[0] + (next[0] - current[0]) * t, current[1] + (next[1] - current[1]) * t])
+    }
+  })
+  return out
+}
 
 // Rough text width; SVG cannot measure text before it is drawn.
 const textWidth = (text: string, size: number, bold: boolean) => text.length * size * (bold ? 0.6 : 0.55)
@@ -129,17 +150,20 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
     })
   }
 
-  // Sort the definition's parts into nodes, paths, labels, and other text.
+  // Sort the definition's parts into nodes, paths, labels, borders, stripes, and other text.
   const nodes: TileNode[] = []
   const paths: Record<string, string>[] = []
   const labels: string[] = []
   const extras: string[] = []
+  const borders: Record<string, string>[] = []
+  let stripes: string | undefined
   let frame: string | undefined
   for (const { type, values } of parseDefinition(code)) {
-    if (['city', 'town', 'junction', 'offboard', 'pass'].includes(type)) {
+    if (NODE_KINDS.includes(type)) {
       const slots = Number.parseInt(values.slots ?? '1', 10)
       nodes.push({
         kind: type,
+        symbol: values.symbol,
         slots: Number.isNaN(slots) ? 1 : slots,
         revenue: revenueText(values.revenue),
         loc: values.loc,
@@ -155,6 +179,10 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       if (label) labels.push(label)
     } else if (type === 'frame') {
       frame = values.color
+    } else if (type === 'border') {
+      borders.push(values)
+    } else if (type === 'stripes') {
+      stripes = values.color
     } else if (type === 'upgrade') {
       extras.push('$' + (values.cost ?? '?'))
     } else if (type === 'icon') {
@@ -163,6 +191,22 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       extras.push('future ' + (values.label ?? '?') + (values.color ? ` (${values.color})` : ''))
     }
     // Other part types are ignored (DESIGN.md: unknown parts must not break the tile).
+  }
+
+  // Stripes: diagonal bands of a second color over the background (for example 1858's Swiss mountain hexes). Each band is the hex cut down to the
+  // strip between two parallel lines, so nothing is drawn outside the hex.
+  if (stripes) {
+    const fill = tileFills(stripes)[0] ?? stripes
+    const normal: Point = [Math.cos(rad(30)), Math.sin(rad(30))] // bands run at 120 degrees
+    const band = 0.14 * a
+    for (let offset = -R; offset < R; offset += 2 * band) {
+      const strip = clipHalfPlane(
+        clipHalfPlane(corners, normal, normal[0] * cx + normal[1] * cy + offset + band),
+        [-normal[0], -normal[1]],
+        -(normal[0] * cx + normal[1] * cy + offset),
+      )
+      if (strip.length >= 3) add({ kind: 'polygon', points: strip, fill })
+    }
   }
 
   const nodeAt = (ref: string): TileNode | undefined => nodes[Number.parseInt(ref.slice(1), 10)]
@@ -194,8 +238,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       const f = Number.parseFloat(loc)
       const [angle, r] = Number.isInteger(f) ? [edgeAngle(f), 0.55 * a] : [rad(-90 - 60 * f), 0.55 * R]
       node.pos = [cx + r * Math.cos(angle), cy + r * Math.sin(angle)]
-    } else if (node.kind === 'town' && node.edges.length === 2 && node.neighbors.length === 0) {
-      // A town on a curve between two edges sits in the middle of the curve.
+    } else if ((node.kind === 'town' || node.kind === 'halt') && node.edges.length === 2 && node.neighbors.length === 0) {
+      // A town or halt on a curve between two edges sits in the middle of the curve.
       const p0 = edgeMidpoint(node.edges[0])
       const p3 = edgeMidpoint(node.edges[1])
       const curve: [Point, Point, Point, Point] = [p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]
@@ -407,6 +451,16 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       }
       occupied.push([x, y])
       badges.push({ node, extent })
+    } else if (node.kind === 'halt') {
+      // A halt (a stop that is not a town, e.g. a mine or a port): a small white circle with its symbol.
+      const r = 0.13 * a
+      add({ kind: 'circle', center: [x, y], r, fill: 'white', stroke: 'black', strokeWidth: 0.8 })
+      if (node.symbol) {
+        const fs = node.symbol.length <= 1 ? r * 1.3 : r * 0.9
+        add({ kind: 'text', at: [x, y - fs * 0.35], text: node.symbol, size: fs, bold: true, fill: 'black' })
+      }
+      occupied.push([x, y])
+      badges.push({ node, extent: r })
     } else if (node.kind === 'pass') {
       add({
         kind: 'circle',
@@ -558,6 +612,29 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       stroke: '#555555',
       strokeWidth: 0.6,
     })
+
+  // Borders, drawn on top of the outline (TILES.md "border"). Without a type, the edge's line is painted in the tile's own color, so the tile looks
+  // joined to its neighbor. Typed borders show a thick colored line just inside the edge, with the crossing cost if there is one.
+  const BORDER_COLORS: Record<string, string> = { mountain: '#8b5a2b', water: '#1e88e5', impassable: '#d32f2f' }
+  for (const border of borders) {
+    const edge = Number.parseInt(border.edge ?? '', 10)
+    if (Number.isNaN(edge) || edge < 0 || edge > 5) continue
+    const mid = -90 - 60 * edge
+    const ends: Point[] = [mid - 30, mid + 30].map((deg) => [cx + R * Math.cos(rad(deg)), cy + R * Math.sin(rad(deg))])
+    const typed = border.type ? BORDER_COLORS[border.type] : undefined
+    if (!typed) {
+      // Two-color tiles: use the half the edge is on (left = first color).
+      const fill = fills.length > 1 && Math.cos(rad(mid)) > 0 ? fills[1] : fills[0]
+      add({ kind: 'polyline', points: ends, stroke: fill, strokeWidth: 1.6 })
+      continue
+    }
+    const inner = ends.map((p) => inward(p, 0.05 * a))
+    add({ kind: 'polyline', points: inner, stroke: typed, strokeWidth: 0.07 * a, dash: border.type === 'impassable' ? undefined : [0.12 * a, 0.06 * a] })
+    if (border.cost) {
+      const at = inward(edgeMidpoint(edge), 0.2 * a)
+      add({ kind: 'text', at: [at[0], at[1] - 0.05 * a], text: '$' + border.cost, size: 0.14 * a, bold: true, fill: typed })
+    }
+  }
 
   // Tile number, in the spot reserved above.
   if (number) {

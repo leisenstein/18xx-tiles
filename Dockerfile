@@ -14,7 +14,19 @@ COPY web/ ./
 RUN npm run build
 
 # ============================================================
-# Stage 2: Build the API
+# Stage 2: Generate the seed data from tobymao/18xx
+# ============================================================
+# The seed files (games.json, tiles.json, source.json) are never stored in git (DESIGN.md section 6.4). This stage downloads the pinned commit
+# (tools/import/18xx-commit.txt) and runs the same script used on a developer machine, so every image is built from the repository alone.
+# Needs internet access to github.com during the build.
+FROM python:3.14-slim AS seed-data
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+COPY tools/import/update_data.py tools/import/18xx-commit.txt tools/import/
+RUN python -I tools/import/update_data.py --pinned --out /seed
+
+# ============================================================
+# Stage 3: Build the API
 # ============================================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS api-build
 WORKDIR /src
@@ -24,17 +36,18 @@ COPY global.json ./
 COPY api/Tiles18xx.Api.csproj api/
 RUN dotnet restore api/Tiles18xx.Api.csproj
 
-# Copy the rest of the API code (including the seed files) and publish it.
+# Copy the rest of the API code, add the seed files generated in stage 2 (embedded in the API), and publish it.
 COPY api/ api/
+COPY --from=seed-data /seed/ api/Data/Seeding/SeedFiles/
 RUN dotnet publish api/Tiles18xx.Api.csproj -c Release -o /app/publish --no-restore
 
 # ============================================================
-# Stage 3: The final, small image that actually runs
+# Stage 4: The final, small image that actually runs
 # ============================================================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Copy the published API from stage 2.
+# Copy the published API from stage 3.
 COPY --from=api-build /app/publish ./
 
 # Copy the built React app from stage 1 into wwwroot, where the API serves it.

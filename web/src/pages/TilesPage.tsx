@@ -6,7 +6,7 @@ import TileCard from '@/components/TileCard'
 import { Button } from '@/components/ui/button'
 import { useTileFilters } from '@/hooks/useTileFilters'
 import { TILES_PAGE_SIZE } from '@/lib/constants'
-import { boxText } from '@/lib/tileCount'
+import { boxText, creditsText } from '@/lib/tileCount'
 import type { GameSummary } from '@/types/game'
 import type { PagedResult } from '@/types/paged'
 import type { TileSummary } from '@/types/tile'
@@ -78,7 +78,8 @@ export default function TilesPage() {
       {/* Filtered to one game: how many tiles come in its box. */}
       {selectedGame && (
         <p className="text-sm text-muted-foreground">
-          {selectedGame.title}: {selectedGame.tileCount} tile designs, {boxText(selectedGame)}.
+          {selectedGame.title}
+          {creditsText(selectedGame) && ` (${creditsText(selectedGame)})`}: {selectedGame.tileCount} tile designs, {boxText(selectedGame)}.
         </p>
       )}
 

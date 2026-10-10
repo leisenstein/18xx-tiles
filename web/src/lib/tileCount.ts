@@ -9,6 +9,11 @@ export function countText(count: number | null): string {
   return `${count} in box`
 }
 
+// A game's designer and publisher as one line: "Francis Tresham · Lookout Games". Empty when neither is known.
+export function creditsText(game: GameSummary): string {
+  return [game.designer, game.publisher].filter(Boolean).join(' · ')
+}
+
 // A game's physical tiles as display text: "85 tiles in box · 3 unlimited · 1 count unknown". Unlimited and unknown designs are listed separately,
 // because they cannot be added into the total.
 export function boxText(game: GameSummary): string {

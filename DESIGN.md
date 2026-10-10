@@ -247,9 +247,13 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 
 It downloads only `lib/engine/game/`, `lib/engine/config/tile.rb`, and `LICENSE` (a shallow, sparse git fetch, about 14 MB) into `tools/import/.cache/18xx`, and prints what changed compared with the previous seed files. `-I` keeps Python from loading code from the downloaded folder. Verified: at commit 46a592e the output equals the Phase 1 seed files except for the added counts (and a meaningless `aliased` flag on Rolling Stock Stars, which has no tiles).
 
-**Refreshing.** Run the script, review its summary, then rebuild and restart the API (or rebuild the Docker image). The import report is on `/admin/imports`.
+**Applying changed data.** `source.json` includes `dataHash`, a SHA-256 of `games.json` and `tiles.json`. DataImporter skips a run only when `ImportRuns` already has that hash (script `0010_AddImportRunsDataHash.sql`), so a parser improvement for the same commit is applied by a merge. Merge also takes upstream designer and publisher (games are not editable in the app), with one summary note.
 
-**Source control.** The three seed files are excluded from git in `api/Data/Seeding/SeedFiles/` (and `games.json`/`tiles.json` in `reference/`), because they are regenerated as needed. A fresh clone runs `update_data.py --ref <commit>` before the first build; otherwise startup stops with "Embedded seed file ... was not found". The Docker build context must include them (do not exclude them in `.dockerignore`).
+**Pinned commit.** Every run except `--pinned` writes the commit it used to `tools/import/18xx-commit.txt`, which is in source control. `--pinned` fetches that commit without changing it; the Docker build uses it.
+
+**Refreshing.** Run the script, review its summary, commit `18xx-commit.txt`, then rebuild and restart the API (or rebuild the Docker image). The import report is on `/admin/imports`.
+
+**Source control (decided after Phase 4).** The seed files always come from tobymao/18xx and are never stored in git (excluded in `api/Data/Seeding/SeedFiles/` and `reference/`); only the pinned commit is. A fresh clone runs `python -I tools/import/update_data.py --pinned` before the first local build; otherwise startup stops with "Embedded seed file ... was not found". Docker builds generate them (section 11a).
 
 **Importer rules (`api/Data/Seeding/DataImporter.cs`):**
 
@@ -603,14 +607,15 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.9 | Tile counts and import refresh: `tools/import/update_data.py`; `DataImporter` (seed or merge, once per commit) replaces `DataSeeder`; script `0008_CreateImportRuns.sql`; `GET /api/admin/imports` and `/admin/imports`; per-game totals in `GameSummaryDto` (physical, unlimited, unknown), shown on Home and the game-filtered Tiles page | Done (verified: merge filled 7,234 counts on a copy of the dev database; restart skipped; scenario test produced each kind of note; fresh seed equals the existing data) |
 | 4.10 | Admin History page: `GET /api/admin/history` (type, status, search, paging; `ChangeHistoryQueryDto`); `/admin/history` with filters in the URL; shared `ChangeRequestEntry` component (also used by the tile page's History section) | Done (verified: filters, search, validation, 401 when signed out, browser) |
 | 4.11 | Fixes: Delete tile uses an on-page confirmation panel instead of `window.prompt()` (which some browsers block, so the button did nothing); imports in History (`HistoryRepository` UNION of change requests and imports, `HistoryEntryDto`, type `Import`; script `0009` backfills the first import) | Done (verified: UI delete, merged timeline, filters, fresh and existing databases) |
+| 4.12 | Open items 8, 9, 12: pinned commit and Docker seed stage; designer and publisher (parser, script `0010` data hash, Home and Tiles pages); renderer `halt`, `border`, `stripes` | Done (verified: Docker data identical to local; re-import on an existing database filled 130 designers; fresh seed; drawings on `/dev/tiles`) |
 
 **Phase 4 complete.**
 
 ## 11a. Docker
 
 - **One container.** ASP.NET Core serves the built Vite output from `wwwroot` plus the `/api` routes. One origin also keeps Identity cookie auth simple (no cross-origin setup).
-- **Multi-stage Dockerfile:** (1) Node image runs `npm ci` and `npm run build` in /web; (2) .NET SDK image runs `dotnet publish` for /api; (3) ASP.NET runtime image copies the publish output and the web `dist` folder into `wwwroot`.
-- **Seed files:** `api/Data/Seeding/SeedFiles/*.json` are not in source control but must be in the build context so they are embedded. Build from a working copy that has them.
+- **Multi-stage Dockerfile:** (1) Node image runs `npm ci` and `npm run build` in /web; (2) Python image with git runs `tools/import/update_data.py --pinned` to generate the seed files; (3) .NET SDK image copies them into `api/Data/Seeding/SeedFiles/` and runs `dotnet publish` for /api; (4) ASP.NET runtime image copies the publish output and the web `dist` folder into `wwwroot`.
+- **Seed files:** never in source control or the build context (`.dockerignore` excludes local copies). Stage 2 generates them from the commit pinned in `tools/import/18xx-commit.txt`, so the build needs internet access to github.com. Verified: the files generated in Docker are byte-for-byte identical to those generated on Windows.
 - **Volume:** the SQLite file lives at `/data/tiles.db`, set by a connection-string environment variable (`ConnectionStrings__Tiles=Data Source=/data/tiles.db`). Without a volume, the database is lost when the container is replaced.
 - **Data Protection keys:** persist them to `/data/keys` (implemented: `DataProtection__KeysPath` in `docker-compose.yml`). Identity uses them for auth cookies, so keys kept only inside the container would log every user out on each restart or redeploy.
 - **Single instance only.** Do not run multiple replicas against one SQLite file, and do not place the file on a network file system. SQLite's documentation warns that file locking can be unreliable on network file systems.
@@ -627,19 +632,27 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 5. ~~**Import refresh**~~ Resolved after Phase 4: merge import that only adds and fills, with a report (section 6.4).
 6. **Parser gaps:** Harzbahn 1873 manifest; 18Mag `L33`. Imported counts come from 18xx.games manifests and may not match every physical box.
 7. ~~**Tile counts**~~ Resolved after Phase 4 (section 6.3 rule 9).
-8. **Seed file distribution:** the seed files are not in source control; `tools/import/update_data.py --ref <commit>` regenerates them. Still to decide: whether a CI build runs it, or the files are committed, so builds do not depend on GitHub being reachable.
-9. **Game metadata:** designer and publisher are not in the snapshot; extend the parser if they are wanted.
+8. ~~**Seed file distribution**~~ Resolved after Phase 4: never stored in git; generated from tobymao/18xx for the commit pinned in `tools/import/18xx-commit.txt`, by the developer locally and by Docker stage 2 (sections 6.4, 11a).
+9. ~~**Game metadata**~~ Resolved after Phase 4: designer and publisher from each game's `meta.rb` (inherited from the parent game's Meta module when not set), publisher names from `lib/engine/publisher.rb`. 130 of 131 games have a designer and 89 a publisher at commit 46a592e. Shown on Home and the game-filtered Tiles page.
 10. **Tile number circle samples:** `reference/tile_number_circles_sample.pdf` and `reference/tile_number_circles_train_styles.pdf` are referenced by section 9.4 but not yet in `reference/`.
 11. **Broken imported definitions (found in Phase 4):** 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
     (for example `#{TILE_O_O}`, `#{Engine::Config::Tile::YELLOW['3']}`), and 9 path ends use edges outside 0 to 5. Fix them through change
     requests (the validator rejects these forms, so a corrected edit is required), or fix the parser and re-import.
-12. **Renderer gaps:** `TileSvg` does not draw `halt` (33 tiles), `border`, or `stripes`, and because `halt` is a node, paths that refer to nodes
-    by number can point at the wrong node on those tiles.
+12. ~~**Renderer gaps**~~ Resolved after Phase 4: `halt` is a node (fixes node numbering) drawn as a white circle with its symbol; `border` paints the
+    edge in the tile color (typed borders: colored line and cost); `stripes` draws diagonal bands clipped to the hex. Samples added to `/dev/tiles`.
+13. **Pre-release reset (decided after Phase 4; do last, before the first production release):** until then, schema changes keep adding numbered
+    DbUp scripts as usual. At the end of development:
+    1. Fix the parser (item 11), regenerate the seed files, and check them.
+    2. Replace DbUp scripts `0001` to `00NN` with one baseline script, `0001_CreateSchema.sql`, holding the final schema (no ALTERs, no backfills such
+       as `0009`). Also keep a single EF Core Identity migration (regenerate it if more were added).
+    3. Delete `data/tiles.db*` (and `docker compose down -v`) and start the API: a clean database, seeded by DataImporter with counts.
+    After the first production release, every schema change is a new numbered script on top of the baseline; never edit or renumber released scripts.
 
 ## 13. Reference files
 
 | File | Contents |
 |---|---|
+| `tools/import/18xx-commit.txt` | The pinned tobymao/18xx commit the seed files are generated from (in source control) |
 | `tools/import/update_data.py` | Downloads tobymao/18xx and regenerates the seed files, with counts (section 6.4). Replaces the two prototype scripts below |
 | `reference/parse_games.py` | Prototype game-manifest parser |
 | `reference/build_data.py` | Combines generic tiles with game usage and versions |

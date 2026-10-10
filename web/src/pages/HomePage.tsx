@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { getGames } from '@/api/games'
-import { boxText } from '@/lib/tileCount'
+import { boxText, creditsText } from '@/lib/tileCount'
 import type { GameSummary } from '@/types/game'
 
 // Home page: every game with its number of tile designs and physical tiles. Each game links to its tiles
@@ -54,9 +54,13 @@ export default function HomePage() {
         {games.map((game) => (
           <li key={game.id}>
             <Link to={`/tiles?game=${game.id}`} className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 hover:bg-muted">
-              <span className="font-medium">{game.title}</span>
+              {/* Title, with designer and publisher underneath when known. min-w-0 lets long names wrap instead of pushing the counts out. */}
+              <span className="min-w-0">
+                <span className="block font-medium">{game.title}</span>
+                {creditsText(game) && <span className="block text-xs text-muted-foreground">{creditsText(game)}</span>}
+              </span>
               {/* Designs = distinct tiles; the second line adds up the counts (unlimited and unknown listed separately). */}
-              <span className="text-right text-sm text-muted-foreground">
+              <span className="shrink-0 text-right text-sm whitespace-nowrap text-muted-foreground">
                 {game.tileCount} {game.tileCount === 1 ? 'design' : 'designs'}
                 <span className="block text-xs">{boxText(game)}</span>
               </span>

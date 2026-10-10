@@ -31,6 +31,13 @@ const SAMPLES: { id: number; feature: string }[] = [
   { id: 524, feature: 'purple offboard' },
   { id: 576, feature: 'slots:0' },
   { id: 1035, feature: 'empty definition' },
+  { id: 840, feature: 'halt on a curve' },
+  { id: 1364, feature: 'halt, center, revenue' },
+  { id: 843, feature: 'two halts' },
+  { id: 880, feature: 'city, town, halt (_2 = halt)' },
+  { id: 1556, feature: 'border (joined edge)' },
+  { id: 524, feature: 'stripes, white' },
+  { id: 837, feature: 'stripes, yellow on green' },
 ]
 
 export default function DevTilesPage() {
