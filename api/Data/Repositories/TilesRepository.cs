@@ -41,6 +41,24 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
         return new PagedResultDto<TileSummaryDto>(items, query.Page, query.PageSize, sorted.Count);
     }
 
+    // Live tiles used by at least minGames games, in the shared tile sort order (DESIGN.md 9.3).
+    // Input is already validated by the controller.
+    public IReadOnlyList<TileSummaryDto> GetCommon(int minGames)
+    {
+        using var connection = db.Open();
+        var rows = connection.Query<TileSummaryDto>("""
+            SELECT t.Id, t.Number, t.Color, t.DisplayName, t.DefinitionCode, t.HasCity, t.HasTown,
+                   COUNT(DISTINCT gt.GameId) AS GameCount
+            FROM Tiles t
+            JOIN GameTiles gt ON gt.TileId = t.Id
+            WHERE t.IsDeleted = 0
+            GROUP BY t.Id
+            HAVING COUNT(DISTINCT gt.GameId) >= @minGames;
+            """, new { minGames });
+
+        return TileSort.Apply(rows).ToList();
+    }
+
     // One tile with its games and other versions, or null if it does not exist or is deleted.
     public TileDetailDto? GetById(long id)
     {

@@ -39,4 +39,12 @@ Accept: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/tiles/85
 Accept: application/json
 
+### Common tiles: used by 10+ games (Step 2.8; expect 87)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles/common?minGames=10
+Accept: application/json
+
+### Common tiles: bad input (expect 400)
+GET {{Tiles18xx.Api_HostAddress}}/api/tiles/common?minGames=1
+Accept: application/json
+
 ###

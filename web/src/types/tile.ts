@@ -11,3 +11,26 @@ export interface TileSummary {
   gameCount: number // how many games use this tile
   countInGame: number | null // tiles in the box, only when filtered by game; null = unknown
 }
+
+// One game that uses a tile, with the box count for that game (matches TileGameDto).
+export interface TileGame {
+  gameId: number
+  title: string
+  count: number | null // null = unknown, 999 = unlimited
+  notes: string | null
+}
+
+// Everything the tile detail page needs, from /api/tiles/{id} (matches TileDetailDto).
+export interface TileDetail {
+  id: number
+  number: string
+  color: string
+  displayName: string
+  definitionCode: string
+  hasCity: boolean
+  hasTown: boolean
+  source: string // generic, game-version, game-specific, user
+  sourceRef: string | null
+  games: TileGame[] // sorted by title
+  otherVersions: TileSummary[] // other tiles with the same number
+}

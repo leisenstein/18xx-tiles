@@ -1,5 +1,5 @@
 import type { PagedResult } from '@/types/paged'
-import type { TileSummary } from '@/types/tile'
+import type { TileDetail, TileSummary } from '@/types/tile'
 import { getJson } from './client'
 
 // API calls for tiles. Pages call these instead of using fetch directly.
@@ -23,3 +23,12 @@ export function getTiles(query: TileQuery) {
   }
   return getJson<PagedResult<TileSummary>>(`/api/tiles?${params}`)
 }
+
+// One tile with its games and other versions (GET /api/tiles/{id}).
+// Throws ApiError with status 404 if the tile does not exist.
+export const getTile = (id: number) => getJson<TileDetail>(`/api/tiles/${id}`)
+
+// Tiles used by at least minGames games (GET /api/tiles/common?minGames=).
+// The API accepts 2 to 200; outside that it returns 400.
+export const getCommonTiles = (minGames: number) =>
+  getJson<TileSummary[]>(`/api/tiles/common?minGames=${minGames}`)

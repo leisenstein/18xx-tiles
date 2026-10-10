@@ -1,19 +1,12 @@
 import { Link } from 'react-router'
 import TileSvg from '@/components/TileSvg'
-import { UNLIMITED_TILE_COUNT } from '@/lib/constants'
+import { countText } from '@/lib/tileCount'
 import type { TileSummary } from '@/types/tile'
 
 interface TileCardProps {
   tile: TileSummary
   // True when the list is filtered by one game, so the box count means something.
   showCountInGame: boolean
-}
-
-// How many of this tile come in the game's box.
-function countText(count: number | null): string {
-  if (count === null) return 'count unknown'
-  if (count === UNLIMITED_TILE_COUNT) return 'unlimited'
-  return `${count} in box`
 }
 
 // One tile in the grid: drawing, name, color, and game count. Links to the tile detail page.

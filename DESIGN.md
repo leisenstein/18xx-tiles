@@ -494,8 +494,10 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 2.4 | Home page (game list) | 131 games, each linking to its tiles | Done (verified) |
 | 2.5 | `TileSvg` renderer | #10, #59, and sample game-specific tiles draw correctly | Done (verified on `/dev/tiles`, 24 sample tiles) |
 | 2.6 | Tiles page: `FilterBar`, `TileCard` | 1830 shows 46 tiles including #59 | Done (verified): filters in URL via `useTileFilters`; bad URL values ignored; shadcn `input` and `native-select` |
-| 2.7 | Tile detail page | #10 shows its games and its other versions | Not started |
-| 2.8 | Common Tiles: `/api/tiles/common` and `/tiles/common` (section 9.3) | `minGames=10` returns 87 tiles; `minGames=1` and `abc` return 400 | Not started |
+| 2.7 | Tile detail page | #10 shows its games and its other versions | Done (verified): generic #10 shows 0 games and versions "#10 (1825)", "#10 (1829)"; #59 lists 15 games linking to `/tiles?game=`; unknown or non-numeric id shows "Tile not found" (`ApiError.status` 404) |
+| 2.8 | Common Tiles: `/api/tiles/common` and `/tiles/common` (section 9.3) | `minGames=10` returns 87 tiles; `minGames=1` and `abc` return 400 | Done (verified): 87 tiles (yellow 19, green 39, brown 26, gray 3 incl. `#169 (variant 1)`); 400 for 1, 201, abc; page validates input before calling the API |
+
+**Phase 2 complete.** Shared frontend helpers added along the way: `ApiError` (status on failed requests) in `api/client.ts`, `countText` in `lib/tileCount.ts`, `TILE_COLORS` in `lib/tiles/colors.ts`.
 
 ## 11a. Docker
 
