@@ -497,3 +497,6 @@ $RECYCLE.BIN/
 # Rendered reference PDF from the planning session
 /reference/18xx_Generic_Tile_Reference.pdf
 
+
+# Local secrets for docker compose (see .env.example)
+.env

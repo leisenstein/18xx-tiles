@@ -2,6 +2,7 @@ import { Hexagon } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
+import { ADMIN_ROLE } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 // Links shown in the header, left to right.
@@ -16,10 +17,12 @@ const navItems = [
 // - NavLink: a link that knows if its page is the current one (isActive), which makes it bold.
 // - end: active only on an exact URL match, so "Tiles" is not bold on /tiles/common.
 // - <Outlet />: where App.tsx places the current page (HomePage, TilesPage, ...).
+// - Admins also see an "Admin" link.
 // - Right side: the signed-in user's email and "Sign out", or "Sign in" and "Register".
 export default function Layout() {
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
+  const items = user?.roles.includes(ADMIN_ROLE) ? [...navItems, { to: '/admin/queue', label: 'Admin' }] : navItems
 
   const onSignOut = async () => {
     await signOut()
@@ -35,7 +38,7 @@ export default function Layout() {
             18xx Tiles
           </NavLink>
           <nav className="flex gap-4 text-sm">
-            {navItems.map((item) => (
+            {items.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

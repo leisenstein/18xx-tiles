@@ -21,3 +21,6 @@ reference/
 tools/
 
 # Do NOT add api/Data/Seeding/SeedFiles here. The seed files must be included in the build.
+
+# Local secrets for docker compose (see .env.example)
+.env

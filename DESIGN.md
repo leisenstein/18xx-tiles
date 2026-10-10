@@ -85,7 +85,7 @@ Folders marked (planned) are created in the step that first needs them.
 ├── api/                      ASP.NET Core Web API (project Tiles18xx.Api, root namespace Tiles18xx.Api)
 │   ├── Program.cs            Startup: services, migrate, seed, middleware, MapControllers
 │   ├── Tiles18xx.Api.http    Sample requests, one per endpoint
-│   ├── Auth/                 (planned, Phase 3) Identity setup; EF Core DbContext for AspNet* tables only
+│   ├── Auth/                 Identity: AuthDbContext (AspNet* tables only), AdminSeeder, LogEmailSender, Migrations/ (EF Core, generated)
 │   ├── Controllers/          [ApiController] classes, *Controller: GamesController, HealthController, ...
 │   ├── Data/                 Everything that touches the database
 │   │   ├── SqliteConnectionFactory.cs
@@ -499,16 +499,36 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 **Phase 2 complete.** Shared frontend helpers added along the way: `ApiError` (status on failed requests) in `api/client.ts`, `countText` in `lib/tileCount.ts`, `TILE_COLORS` in `lib/tiles/colors.ts`.
 
+### Phase 3 progress
+
+| Step | Scope | Status |
+|---|---|---|
+| 3.1 | Packages (Identity EF Core store, EF Core SQLite, EF Core Design) and the `dotnet-ef` local tool (`dotnet-tools.json`) | Done |
+| 3.2 | Identity setup in `Program.cs` (A4): `AuthDbContext`, `AddIdentityApiEndpoints` with roles, confirmed email required, unique email, 10-character passwords; cookie Secure + SameSite=Strict (+ HttpOnly); Data Protection keys on disk | Done |
+| 3.3 | EF Core migration `CreateIdentitySchema` in `api/Auth/Migrations`, applied at startup after DbUp | Done (7 AspNet* tables; app data untouched) |
+| 3.4 | `LogEmailSender`: emails written to the log (links HTML-decoded) | Done |
+| 3.5 | `AdminSeeder`: Admin role and first admin from `Admin:Email` / `Admin:Password` (user-secrets in development) | Done |
+| 3.6 | `MapIdentityApi` under `/api/auth`; `AccountController` (`GET /api/account/me`, `POST /api/account/logout`); `AdminController` (`GET /api/admin/ping`, Admin role) | Done (verified: regular user 403, admin 200) |
+| 3.7 | Rate limiting: policy "auth", 10 requests per minute per IP on `/api/auth/*` | Done (verified: 11th request 429) |
+| 3.8 | Frontend: `api/client.ts` (POST, problem details), `api/auth.ts`, `types/account.ts`, `AuthProvider` + `useAuth` (`lib/authContext.ts`), Login and Register pages, header sign-in area; Vite proxy `changeOrigin: true` so confirmation links point to the API | Done |
+| 3.9 | `RequireRole` route guard, `/admin/queue` placeholder (`AdminQueuePage`), Admin link for admins | Done (verified: signed out → /login?returnTo, regular user "Not allowed", admin sees page) |
+| 3.10 | Docker: `DataProtection__KeysPath=/data/keys`, `Admin__Email` / `Admin__Password` from `.env` (not in git or the image; template `.env.example`) | Done (verified: sign-in cookie survives container recreation) |
+
+**Phase 3 complete.** Notes for later phases:
+- The emailed confirmation link opens the API's built-in `/api/auth/confirmEmail`, which shows plain text. A friendlier React confirmation page can be added with the real email provider (Phase 5).
+- Behind a reverse proxy (Phase 5), configure forwarded headers so rate limiting sees each visitor's IP and links use the public `https` address.
+- Registering an email that already exists returns Identity's "already taken" message, which reveals that the account exists. Acceptable for now; revisit before launch.
+
 ## 11a. Docker
 
 - **One container.** ASP.NET Core serves the built Vite output from `wwwroot` plus the `/api` routes. One origin also keeps Identity cookie auth simple (no cross-origin setup).
 - **Multi-stage Dockerfile:** (1) Node image runs `npm ci` and `npm run build` in /web; (2) .NET SDK image runs `dotnet publish` for /api; (3) ASP.NET runtime image copies the publish output and the web `dist` folder into `wwwroot`.
 - **Seed files:** `api/Data/Seeding/SeedFiles/*.json` are not in source control but must be in the build context so they are embedded. Build from a working copy that has them.
 - **Volume:** the SQLite file lives at `/data/tiles.db`, set by a connection-string environment variable (`ConnectionStrings__Tiles=Data Source=/data/tiles.db`). Without a volume, the database is lost when the container is replaced.
-- **Data Protection keys:** persist them to `/data/keys`. Identity uses them for auth cookies, so keys kept only inside the container would log every user out on each restart or redeploy.
+- **Data Protection keys:** persist them to `/data/keys` (implemented: `DataProtection__KeysPath` in `docker-compose.yml`). Identity uses them for auth cookies, so keys kept only inside the container would log every user out on each restart or redeploy.
 - **Single instance only.** Do not run multiple replicas against one SQLite file, and do not place the file on a network file system. SQLite's documentation warns that file locking can be unreliable on network file systems.
 - **Startup order:** run DbUp scripts and EF Core migrations for the Identity tables, seed data, then seed the Admin role, before the app accepts requests.
-- **Configuration and secrets** (email service, admin bootstrap account) come from environment variables or Docker secrets, never from the image.
+- **Configuration and secrets** (email service, admin bootstrap account) come from environment variables or Docker secrets, never from the image. Implemented: `docker-compose.yml` reads `ADMIN_EMAIL` and `ADMIN_PASSWORD` from a `.env` file next to it, which is excluded by `.gitignore` and `.dockerignore`; `.env.example` lists the required names.
 - **Development:** run the API and `npm run dev` natively, with a Vite proxy to the API. Use Docker to check the production build and for deployment.
 
 ## 12. Open items

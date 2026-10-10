@@ -10,12 +10,17 @@ services:
     ports:
       - "8080:8080"
 
-    # Settings passed to the app.
-    # This replaces the database path from appsettings.json.
+    # Settings passed to the app. Values like ${ADMIN_EMAIL} come from the .env file next to this file (not in git; see .env.example).
     environment:
+      # Database location; replaces the path from appsettings.json.
       ConnectionStrings__Tiles: "Data Source=/data/tiles.db"
+      # Keys that protect the sign-in cookie, kept on the volume so users stay signed in across restarts and rebuilds (DESIGN.md section 11a).
+      DataProtection__KeysPath: "/data/keys"
+      # First admin account, created at startup if missing (Phase 3). If these are empty, no admin account is created.
+      Admin__Email: "${ADMIN_EMAIL:-}"
+      Admin__Password: "${ADMIN_PASSWORD:-}"
 
-    # Store /data (the database) on a Docker volume so it is kept
+    # Store /data (the database and keys) on a Docker volume so it is kept
     # when the container is stopped, removed, or rebuilt.
     volumes:
       - tiles-data:/data
