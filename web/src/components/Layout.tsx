@@ -1,5 +1,7 @@
 import { Hexagon } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router'
+import { Button } from '@/components/ui/button'
+import { useAuth } from '@/hooks/useAuth'
 import { cn } from '@/lib/utils'
 
 // Links shown in the header, left to right.
@@ -14,7 +16,16 @@ const navItems = [
 // - NavLink: a link that knows if its page is the current one (isActive), which makes it bold.
 // - end: active only on an exact URL match, so "Tiles" is not bold on /tiles/common.
 // - <Outlet />: where App.tsx places the current page (HomePage, TilesPage, ...).
+// - Right side: the signed-in user's email and "Sign out", or "Sign in" and "Register".
 export default function Layout() {
+  const { user, loading, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const onSignOut = async () => {
+    await signOut()
+    navigate('/')
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b">
@@ -35,6 +46,27 @@ export default function Layout() {
               </NavLink>
             ))}
           </nav>
+          {/* ml-auto pushes this group to the right. Nothing shows until the first sign-in check finishes, to avoid a flicker. */}
+          <div className="ml-auto flex items-center gap-3 text-sm">
+            {!loading &&
+              (user ? (
+                <>
+                  <span className="text-muted-foreground">{user.email}</span>
+                  <Button variant="outline" size="sm" onClick={onSignOut}>
+                    Sign out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="text-muted-foreground hover:text-foreground">
+                    Sign in
+                  </Link>
+                  <Button asChild size="sm">
+                    <Link to="/register">Register</Link>
+                  </Button>
+                </>
+              ))}
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">

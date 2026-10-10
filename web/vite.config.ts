@@ -16,8 +16,10 @@ export default defineConfig({
     // Send /api calls to the ASP.NET Core API (HTTPS only) during development.
     // secure: false lets Node accept the local development certificate, which
     // Windows trusts but Node does not. Development only; not used in production.
+    // changeOrigin: true makes the API see its own address (localhost:7299), so links it builds,
+    // such as the email confirmation link, point to the API instead of to Vite.
     proxy: {
-      '/api': { target: 'https://localhost:7299', secure: false },
+      '/api': { target: 'https://localhost:7299', secure: false, changeOrigin: true },
     },
   },
 })

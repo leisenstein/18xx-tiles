@@ -1,3 +1,4 @@
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
@@ -63,7 +64,7 @@ builder.Services.AddSingleton<TilesRepository>();
 //   5. Sign out: the cookie is deleted.
 //
 // The pieces below set this up. The endpoints are mapped in B2 (MapIdentityApi, plus AccountController for "who am I?" and sign-out).
-// Still to come: rate limiting (step 3.7).
+// Sign-in and registration are rate limited in A5.
 
 // A4a. Where users and roles are stored: the AspNet* tables in the same SQLite file. Identity reads and writes them through EF Core (AuthDbContext),
 //      separate from our Dapper code.
@@ -101,6 +102,18 @@ builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(k
 // A4e. Emails (confirmation link, password reset). Identity calls this "sender" whenever it needs to email someone. Ours writes the email to the API log
 //      instead of sending it, until a real provider is chosen (DESIGN.md open item 2).
 builder.Services.AddSingleton<IEmailSender<IdentityUser>, LogEmailSender>();
+
+// ---- A5. Rate limiting ----
+// Caps how often one visitor (one IP address) can call the sign-in and registration endpoints: 10 requests per minute, then "429 Too Many Requests"
+// until the minute is up. Slows down password guessing and bulk fake signups. Identity's own lockout also locks an account for 5 minutes after 5 wrong
+// passwords. Note: behind a reverse proxy (Phase 5), every request appears to come from the proxy's IP, so forwarded headers must be set up then.
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("auth", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+});
 
 // =====================================================================================================================
 // Part B: build the app, prepare the database, and set up the request pipeline
@@ -146,12 +159,15 @@ app.UseStaticFiles();
 // Note: reading the sign-in cookie (UseAuthentication) and checking [Authorize] (UseAuthorization) are added to the pipeline automatically, because
 // Identity is registered in A4.
 
+// Rate limiting (A5). Must come before the endpoints it protects.
+app.UseRateLimiter();
+
 // Routes from all controllers (GamesController, HealthController, AccountController, AdminController, ...).
 app.MapControllers();
 
 // Built-in Identity endpoints under /api/auth: register, login, confirmEmail, resendConfirmationEmail, forgotPassword, resetPassword, and manage/info.
-// Login with ?useCookies=true sets the sign-in cookie (step 3 in A4).
-app.MapGroup("/api/auth").MapIdentityApi<IdentityUser>();
+// Login with ?useCookies=true sets the sign-in cookie (step 3 in A4). All of them use the "auth" rate limit from A5.
+app.MapGroup("/api/auth").MapIdentityApi<IdentityUser>().RequireRateLimiting("auth");
 
 // If an /api address does not exist, return "404 Not Found".
 app.MapFallback("/api/{**rest}", () => Results.NotFound());
