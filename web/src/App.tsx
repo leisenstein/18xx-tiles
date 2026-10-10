@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router'
 import Layout from '@/components/Layout'
+import LoadingState from '@/components/LoadingState'
 import RequireRole from '@/components/RequireRole'
 import { ADMIN_ROLE } from '@/lib/constants'
 import AdminHistoryPage from '@/pages/AdminHistoryPage'
@@ -34,7 +35,7 @@ function App() {
           path="print/circles"
           element={
             <RequireRole>
-              <Suspense fallback={<p className="text-muted-foreground">Loading…</p>}>
+              <Suspense fallback={<LoadingState />}>
                 <PrintCirclesPage />
               </Suspense>
             </RequireRole>

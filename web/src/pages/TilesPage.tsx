@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { ListChecks, Printer } from 'lucide-react'
 import { Link } from 'react-router'
+import { Hexagon, ListChecks, Printer, SearchX } from 'lucide-react'
 import { getGames } from '@/api/games'
 import { getTiles } from '@/api/tiles'
+import EmptyState from '@/components/EmptyState'
 import FilterBar from '@/components/FilterBar'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import TileCard from '@/components/TileCard'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
@@ -77,7 +80,7 @@ export default function TilesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Tiles</h1>
+      <PageHeader icon={Hexagon} title="Tiles" description="Every tile from every game. Filter by game, color, or city and town, or search by number." />
       <FilterBar filters={filters} games={games} onChange={setFilter} />
       {/* Filtered to one game: how many tiles come in its box. */}
       {selectedGame && (
@@ -111,7 +114,7 @@ export default function TilesPage() {
       )}
 
       {error && <p className="text-destructive">Could not load tiles. {error}</p>}
-      {!result && !error && <p className="text-muted-foreground">Loading tiles…</p>}
+      {!result && !error && <LoadingState label="Loading tiles…" />}
 
       {result && (
         // Dim the old results while new ones load, instead of blanking the page.
@@ -121,7 +124,16 @@ export default function TilesPage() {
           </p>
 
           {result.items.length === 0 ? (
-            <p className="text-muted-foreground">No tiles match these filters.</p>
+            <EmptyState
+              icon={SearchX}
+              title="No tiles match these filters"
+              description="Try another color or type, or a different number."
+              action={
+                <Button asChild variant="outline" size="sm">
+                  <Link to={game ? `/tiles?game=${game}` : '/tiles'}>Clear filters</Link>
+                </Button>
+              }
+            />
           ) : (
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {result.items.map((tile) => (

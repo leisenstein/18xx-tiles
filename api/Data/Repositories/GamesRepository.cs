@@ -13,7 +13,11 @@ public sealed class GamesRepository(SqliteConnectionFactory db)
                COUNT(t.Id) AS TileCount,
                COALESCE(SUM(CASE WHEN t.Id IS NOT NULL AND gt.Count <> 999 THEN gt.Count END), 0) AS PhysicalTileCount,
                COUNT(CASE WHEN t.Id IS NOT NULL AND gt.Count = 999 THEN 1 END) AS UnlimitedTileCount,
-               COUNT(CASE WHEN t.Id IS NOT NULL AND gt.Count IS NULL THEN 1 END) AS UnknownCountTileCount
+               COUNT(CASE WHEN t.Id IS NOT NULL AND gt.Count IS NULL THEN 1 END) AS UnknownCountTileCount,
+               COUNT(CASE WHEN t.Color = 'yellow' THEN 1 END) AS YellowTileCount,
+               COUNT(CASE WHEN t.Color = 'green' THEN 1 END) AS GreenTileCount,
+               COUNT(CASE WHEN t.Color = 'brown' THEN 1 END) AS BrownTileCount,
+               COUNT(CASE WHEN t.Color = 'gray' THEN 1 END) AS GrayTileCount
         FROM Games g
         LEFT JOIN GameTiles gt ON gt.GameId = g.Id
         LEFT JOIN Tiles t ON t.Id = gt.TileId AND t.IsDeleted = 0

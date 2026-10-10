@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
+import { ArrowLeft, Pencil } from 'lucide-react'
 import { submitChangeRequest } from '@/api/changeRequests'
 import { getGames } from '@/api/games'
 import { getTile } from '@/api/tiles'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import RequestOutcome from '@/components/RequestOutcome'
 import TileForm from '@/components/TileForm'
 import { Button } from '@/components/ui/button'
@@ -71,7 +74,7 @@ export default function EditTilePage() {
 
   if (!validId) return <p>Tile not found.</p>
   if (loadError) return <p className="text-destructive">Could not load the tile. {loadError}</p>
-  if (data?.id !== id) return <p className="text-muted-foreground">Loading…</p>
+  if (data?.id !== id) return <LoadingState label="Loading…" />
 
   const { tile, games } = data
   // The form starts with the tile as it is now, including its games and box counts.
@@ -86,11 +89,19 @@ export default function EditTilePage() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold">Edit {tile.displayName}</h1>
-        <Link to={`/tiles/${tile.id}`} className="text-sm underline">
-          Back to the tile
-        </Link>
+      <div className="space-y-2">
+        <Button asChild size="sm" variant="ghost" className="-ml-2">
+          <Link to={`/tiles/${tile.id}`}>
+            <ArrowLeft aria-hidden="true" />
+            Back to the tile
+          </Link>
+        </Button>
+        <PageHeader
+          icon={Pencil}
+          area="admin"
+          title={`Edit ${tile.displayName}`}
+          description="Changes apply as soon as you save, and are recorded in History."
+        />
       </div>
 
       {result ? (

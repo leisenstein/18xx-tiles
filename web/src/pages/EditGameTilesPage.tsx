@@ -1,8 +1,11 @@
-import { ArrowLeft } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
+import { ArrowLeft, Hexagon, ListChecks } from 'lucide-react'
 import { getGameTiles, saveGameTiles } from '@/api/admin'
 import { getTiles } from '@/api/tiles'
+import EmptyState from '@/components/EmptyState'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import TileSvg from '@/components/TileSvg'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -97,7 +100,7 @@ export default function EditGameTilesPage() {
   }, [q])
 
   if (loadError) return <p className="text-destructive">Could not load the game. {loadError}</p>
-  if (!loaded) return <p className="text-muted-foreground">Loading…</p>
+  if (!loaded) return <LoadingState label="Loading…" />
 
   const update = (tileId: number, change: Partial<EditRow>) => setRows(rows.map((r) => (r.tile.tileId === tileId ? { ...r, ...change } : r)))
   // Count edits: an imported count's note goes away while the count differs from the saved one, and comes back if it is set back.
@@ -155,11 +158,12 @@ export default function EditGameTilesPage() {
             Back to {loaded.title} tiles
           </Link>
         </Button>
-        <h1 className="text-2xl font-semibold">Edit game tiles: {loaded.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          Every tile this game uses, with how many come in the box. Leave a count empty if it is unknown; check Unlimited for an unlimited supply. Changes are
-          saved together as one entry on the History page.
-        </p>
+        <PageHeader
+          icon={ListChecks}
+          area="admin"
+          title={`Edit game tiles: ${loaded.title}`}
+          description="Every tile this game uses, with how many come in the box. Leave a count empty if it is unknown; check Unlimited for an unlimited supply. Changes are saved together as one entry on the History page."
+        />
       </div>
 
       {/* Add a tile that is not in the game yet. */}
@@ -238,7 +242,11 @@ export default function EditGameTilesPage() {
             </li>
           )
         })}
-        {rows.length === 0 && <li className="px-3 py-2 text-sm text-muted-foreground">This game has no tiles yet. Add some above.</li>}
+        {rows.length === 0 && (
+          <li className="p-3">
+            <EmptyState compact icon={Hexagon} title="This game has no tiles yet" description="Add tiles with the search box above." />
+          </li>
+        )}
       </ul>
 
       {/* Save: a summary of what will change, an optional reason for the History page, and the result. */}

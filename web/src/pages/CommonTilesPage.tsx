@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
+import { Layers } from 'lucide-react'
 import { getCommonTiles } from '@/api/tiles'
+import EmptyState from '@/components/EmptyState'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import TileCard from '@/components/TileCard'
 import { Input } from '@/components/ui/input'
 import type { TileSummary } from '@/types/tile'
@@ -66,7 +70,7 @@ export default function CommonTilesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Common Tiles</h1>
+      <PageHeader icon={Layers} title="Common Tiles" description="Tiles that many games share, most widely used first." />
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <label htmlFor="min-games">Used by at least</label>
@@ -94,14 +98,14 @@ export default function CommonTilesPage() {
       </p>
 
       {error && <p className="text-destructive">Could not load tiles. {error}</p>}
-      {!data && !error && valid && <p className="text-muted-foreground">Loading tiles…</p>}
+      {!data && !error && valid && <LoadingState label="Loading tiles…" />}
 
       {data && (
         <div className={loading ? 'space-y-6 opacity-50' : 'space-y-6'}>
           <p className="text-sm text-muted-foreground">
             {data.tiles.length} {data.tiles.length === 1 ? 'tile' : 'tiles'}
           </p>
-          {data.tiles.length === 0 && <p className="text-muted-foreground">No tiles are used by that many games.</p>}
+          {data.tiles.length === 0 && <EmptyState icon={Layers} title="No tiles are used by that many games" description="Try a smaller number of games." />}
           {groups.map((group) => (
             <section key={group.color} className="space-y-2">
               <h2 className="text-lg font-semibold capitalize">

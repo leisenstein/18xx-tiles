@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
 import { resendConfirmation, signIn } from '@/api/auth'
 import { ApiError } from '@/api/client'
+import Logo from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/hooks/useAuth'
@@ -57,8 +58,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-sm space-y-4">
-      <h1 className="text-2xl font-semibold">Sign in</h1>
+    <div className="mx-auto max-w-sm space-y-4 rounded-xl border bg-card p-6 shadow-sm">
+      <div className="space-y-2 text-center">
+        <Logo className="mx-auto size-16" />
+        <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
+        <p className="text-sm text-muted-foreground">Welcome back.</p>
+      </div>
       <form onSubmit={onSubmit} className="space-y-3">
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium">

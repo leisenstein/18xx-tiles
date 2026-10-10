@@ -18,6 +18,9 @@ const TILE_FILLS: Record<string, string[]> = {
   orange: ['#F09A42'],
 }
 
+// The four main tile colors' fills, yellow to gray, for decoration (the strip across the top of every page).
+export const TILE_FILLS_MAIN = ['yellow', 'green', 'brown', 'gray'].map((c) => TILE_FILLS[c][0])
+
 // Colors a tile can have, in display order (matches TileColors in the API, DESIGN.md section 7):
 // the four main colors first, then the rest alphabetically.
 export const TILE_COLORS = ['yellow', 'green', 'brown', 'gray', 'blue', 'browngray', 'brownsepia', 'greenbrown', 'none', 'orange', 'purple', 'red', 'white']

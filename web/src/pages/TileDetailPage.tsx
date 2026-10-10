@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Printer } from 'lucide-react'
 import { Link, useParams } from 'react-router'
+import { Printer } from 'lucide-react'
 import { ApiError } from '@/api/client'
 import { getTile } from '@/api/tiles'
+import AdminTileActions from '@/components/AdminTileActions'
+import LoadingState from '@/components/LoadingState'
 import TileCard from '@/components/TileCard'
+import TileHistory from '@/components/TileHistory'
 import TileSvg from '@/components/TileSvg'
 import { Button } from '@/components/ui/button'
-import AdminTileActions from '@/components/AdminTileActions'
-import TileHistory from '@/components/TileHistory'
 import { useAuth } from '@/hooks/useAuth'
 import { ADMIN_ROLE } from '@/lib/constants'
 import { countText } from '@/lib/tileCount'
@@ -61,7 +62,7 @@ export default function TileDetailPage() {
     return <p className="text-destructive">Could not load the tile. {error}</p>
   }
   if (data?.id !== id) {
-    return <p className="text-muted-foreground">Loading tile…</p>
+    return <LoadingState label="Loading tile…" />
   }
 
   const tile = data.tile

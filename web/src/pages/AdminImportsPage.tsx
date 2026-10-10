@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
+import { Download } from 'lucide-react'
 import { getImports } from '@/api/admin'
+import EmptyState from '@/components/EmptyState'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import { apiErrorMessages } from '@/lib/apiErrors'
 import type { ImportNote, ImportRun } from '@/types/importRun'
 
@@ -50,11 +54,11 @@ export default function AdminImportsPage() {
   }, [])
 
   if (error) return <p className="text-destructive">Could not load imports. {error}</p>
-  if (!runs) return <p className="text-muted-foreground">Loading imports…</p>
+  if (!runs) return <LoadingState label="Loading imports…" />
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Imports</h1>
+      <PageHeader icon={Download} area="admin" title="Imports" description="Each time the site's data was loaded from tobymao/18xx." />
       <p className="text-sm text-muted-foreground">
         Data from{' '}
         <a href="https://github.com/tobymao/18xx" className="underline">
@@ -63,7 +67,9 @@ export default function AdminImportsPage() {
         . To get newer data, run <code className="rounded bg-muted px-1">python -I tools/import/update_data.py</code>, then rebuild and restart the API. Imports
         add new games, tiles, and counts; they never overwrite changes made here.
       </p>
-      {runs.length === 0 && <p className="text-muted-foreground">No imports yet.</p>}
+      {runs.length === 0 && (
+        <EmptyState icon={Download} title="No imports yet" description="The first import runs when the API starts with seed files from tobymao/18xx." />
+      )}
       <ol className="space-y-4">
         {runs.map((run) => (
           <li key={run.id} className="space-y-2 rounded-lg border p-4 text-sm">

@@ -1,9 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
+import { History, SearchX } from 'lucide-react'
 import { getHistory } from '@/api/admin'
 import ChangeRequestEntry from '@/components/ChangeRequestEntry'
+import EmptyState from '@/components/EmptyState'
 import GameChangeEntry from '@/components/GameChangeEntry'
 import ImportEntry from '@/components/ImportEntry'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
@@ -77,7 +81,7 @@ export default function AdminHistoryPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">History</h1>
+      <PageHeader icon={History} area="admin" title="History" description="Every tile change, game tile list change, and data import, newest first." />
 
       <div className="flex flex-wrap items-center gap-3">
         <NativeSelect aria-label="Type" value={type} onChange={(e) => setFilter('type', e.target.value)}>
@@ -112,7 +116,7 @@ export default function AdminHistoryPage() {
       </div>
 
       {error && <p className="text-destructive">Could not load the history. {error}</p>}
-      {!result && !error && <p className="text-muted-foreground">Loading history…</p>}
+      {!result && !error && <LoadingState label="Loading history…" />}
 
       {result && (
         // Dim the old results while new ones load, instead of blanking the page.
@@ -122,7 +126,16 @@ export default function AdminHistoryPage() {
           </p>
 
           {result.items.length === 0 ? (
-            <p className="text-muted-foreground">No changes match these filters.</p>
+            <EmptyState
+              icon={SearchX}
+              title="Nothing matches these filters"
+              description="Try another type or status, or a shorter search."
+              action={
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/admin/history">Clear filters</Link>
+                </Button>
+              }
+            />
           ) : (
             <ol className="space-y-3">
               {result.items.map((entry) =>

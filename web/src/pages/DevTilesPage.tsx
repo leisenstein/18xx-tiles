@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getJson } from '@/api/client'
+import LoadingState from '@/components/LoadingState'
 import TileSvg from '@/components/TileSvg'
 import type { TileSummary } from '@/types/tile'
 
@@ -60,7 +61,7 @@ export default function DevTilesPage() {
   }, [])
 
   if (error) return <p className="text-destructive">{error}</p>
-  if (!tiles) return <p className="text-muted-foreground">Loading…</p>
+  if (!tiles) return <LoadingState label="Loading…" />
 
   return (
     <div className="space-y-4">

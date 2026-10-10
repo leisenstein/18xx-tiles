@@ -444,7 +444,7 @@ Notes:
 
 | Route | Page |
 |---|---|
-| `/` | Home: game list with tile designs and physical tiles in the box (unlimited and unknown counts listed separately); each links to `/tiles?game={id}` |
+| `/` | Home (Games): a card per game with designer and publisher, a strip showing its mix of tile colors, designs, tiles in the box, and unlimited counts; a search box filters by title, designer, or publisher; each card links to `/tiles?game={id}` |
 | `/tiles` | Tile card grid with FilterBar; filters in URL (`game`, `color`, `kind`, `q`) |
 | `/tiles/common` | Common Tiles: tiles used by at least N games (section 9.3); linked from Home and the main navigation |
 | `/tiles/:id` | Detail: large drawing, number, color, definition string, games with counts and notes, other versions of the same number |
@@ -639,6 +639,8 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.17 | Printing requires sign-in (any role): `RequireRole` on `/print/circles`; print links hidden when signed out | Done (verified: signed out redirected to login and links hidden; regular user prints) |
 | 4.18 | Edit game tiles (admins): `GET`/`PUT /api/admin/games/{id}/tiles`, script `0011_CreateGameChanges.sql`, `GameTilesRepository`, page `/admin/games/:id/tiles`, Game entries on History (type `Game`); editing an imported count clears its "Count from 18xx.games manifest" note | Done (verified: 403 for regular users, validation, 409 when unchanged, add/change/remove/undo in the browser, History entries) |
 | 4.19 | Action links as buttons with icons: game panel on the Tiles page (Print number circles; Edit this game's tiles for admins), tile page (Print number circle, Edit tile, Delete tile), Back button on Edit game tiles | Done (checked in the browser) |
+| 4.20 | UI polish: logo (`Logo`: option B, a fanned stack of brown, green, and yellow tiles; the full height of the header, with links and the account area wrapping to its right; also the favicon `web/public/favicon.svg`; page title "18xx Tiles"), navbar with icons, active pill, admin group, user initial, tile-color strip; shared `PageHeader` (icon chip colored by area: browse amber, contribute emerald, admin slate) on every page; Games page cards (`GameCard`: color-mix strip, icon stats, search); sign-in and register as cards. `GameSummaryDto` gains per-color design counts | Done (checked in the browser) |
+| 4.21 | Empty and loading states: `EmptyState` (icon, title, hint, optional action such as Clear filters or Propose a new tile) on Games search, Tiles, Common Tiles, My requests, Review ("All caught up"), History, Imports, Edit game tiles, and tile history; `LoadingState` spinner on every page | Done (checked in the browser) |
 
 **Phase 4 complete.**
 

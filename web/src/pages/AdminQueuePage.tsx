@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
+import { CheckCheck, ClipboardCheck, Inbox } from 'lucide-react'
 import { approveChangeRequest, getChangeRequests, rejectChangeRequest } from '@/api/admin'
+import EmptyState from '@/components/EmptyState'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import StatusBadge from '@/components/StatusBadge'
 import TileChange from '@/components/TileChange'
 import { Button } from '@/components/ui/button'
@@ -61,20 +65,31 @@ export default function AdminQueuePage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold">Review queue</h1>
-        <NativeSelect aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value as ChangeRequestStatus)}>
-          {STATUSES.map((s) => (
-            <NativeSelectOption key={s} value={s}>
-              {s}
-            </NativeSelectOption>
-          ))}
-        </NativeSelect>
-      </div>
+      <PageHeader
+        icon={ClipboardCheck}
+        area="admin"
+        title="Review queue"
+        description="Proposed tiles waiting for a decision. Approve to publish, or reject with a note for the submitter."
+        actions={
+          <NativeSelect aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value as ChangeRequestStatus)}>
+            {STATUSES.map((s) => (
+              <NativeSelectOption key={s} value={s}>
+                {s}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+        }
+      />
 
       {loadError && <p className="text-destructive">Could not load requests. {loadError}</p>}
-      {!data && !loadError && <p className="text-muted-foreground">Loading…</p>}
-      {data && data.requests.length === 0 && <p className="text-muted-foreground">No {data.status.toLowerCase()} requests.</p>}
+      {!data && !loadError && <LoadingState label="Loading…" />}
+      {data &&
+        data.requests.length === 0 &&
+        (data.status === 'Pending' ? (
+          <EmptyState icon={CheckCheck} title="All caught up" description="No proposals are waiting for review." />
+        ) : (
+          <EmptyState icon={Inbox} title={`No ${data.status.toLowerCase()} requests`} description="Requests appear here once they are reviewed." />
+        ))}
 
       {data && data.requests.length > 0 && (
         <Table className={data.status !== status ? 'opacity-50' : undefined}>

@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import { Printer } from 'lucide-react'
 import { getGame } from '@/api/games'
 import { getTile, getTiles } from '@/api/tiles'
+import LoadingState from '@/components/LoadingState'
 import NumberCircle from '@/components/NumberCircle'
+import PageHeader from '@/components/PageHeader'
 import SheetPreview from '@/components/SheetPreview'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -170,10 +173,12 @@ export default function PrintCirclesPage() {
   if (!sourceKey) {
     return (
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Print tile numbers</h1>
-        <p className="text-muted-foreground">
-          Open this page from a tile (&quot;Print number circle&quot;) or from a game&apos;s tile list (&quot;Print number circles for this game&quot;).
-        </p>
+        <PageHeader
+          icon={Printer}
+          area="contribute"
+          title="Print tile numbers"
+          description="Open this page from a tile (Print number circle) or from a game's tile list (Print number circles)."
+        />
         <Link to="/" className="text-sm underline">
           Browse games
         </Link>
@@ -181,18 +186,18 @@ export default function PrintCirclesPage() {
     )
   }
   if (error && rows.length === 0) return <p className="text-destructive">Could not load the tiles. {error}</p>
-  if (rows.length === 0 || !font) return <p className="text-muted-foreground">Loading…</p>
+  if (rows.length === 0 || !font) return <LoadingState label="Loading…" />
 
   const pageArts = printList.slice(shownPage * layout.perPage, (shownPage + 1) * layout.perPage)
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Print tile numbers: {source!.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          Crossing-sign circles with each tile&apos;s number. Download a PDF sheet to print on paper or round labels, or one circle as SVG or PNG.
-        </p>
-      </div>
+      <PageHeader
+        icon={Printer}
+        area="contribute"
+        title={`Print tile numbers: ${source!.title}`}
+        description="Crossing-sign circles with each tile's number. Download a PDF sheet to print on paper or round labels, or one circle as SVG or PNG."
+      />
 
       {/* Sheet settings. */}
       <div className="flex flex-wrap items-end gap-4 text-sm">

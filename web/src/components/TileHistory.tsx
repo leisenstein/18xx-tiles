@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
+import { History } from 'lucide-react'
 import { getTileHistory } from '@/api/admin'
 import ChangeRequestEntry from '@/components/ChangeRequestEntry'
+import EmptyState from '@/components/EmptyState'
+import LoadingState from '@/components/LoadingState'
 import { apiErrorMessages } from '@/lib/apiErrors'
 import type { TileHistory as TileHistoryData } from '@/types/changeRequest'
 
@@ -28,7 +31,7 @@ export default function TileHistory({ tileId }: { tileId: number }) {
   }, [tileId])
 
   if (error) return <p className="text-sm text-destructive">Could not load the history. {error}</p>
-  if (data?.tileId !== tileId) return <p className="text-sm text-muted-foreground">Loading history…</p>
+  if (data?.tileId !== tileId) return <LoadingState label="Loading history…" />
 
   const { history } = data
   const added =
@@ -45,7 +48,7 @@ export default function TileHistory({ tileId }: { tileId: number }) {
         {changed}
       </p>
       {history.requests.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No change requests for this tile.</p>
+        <EmptyState compact icon={History} title="No changes yet" description="Edits and deletions of this tile will be listed here." />
       ) : (
         <ol className="space-y-3">
           {history.requests.map((request) => (

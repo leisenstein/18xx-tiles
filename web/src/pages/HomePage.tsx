@@ -1,22 +1,27 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import { Layers, LayoutGrid, Search, SearchX } from 'lucide-react'
 import { getGames } from '@/api/games'
-import { boxText, creditsText } from '@/lib/tileCount'
+import EmptyState from '@/components/EmptyState'
+import GameCard from '@/components/GameCard'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { GameSummary } from '@/types/game'
 
-// Home page: every game with its number of tile designs and physical tiles. Each game links to its tiles
-// (/tiles?game={id}). Also links to the Common Tiles page (DESIGN.md 9.3).
+// Home page (DESIGN.md section 9.1): every game as a card (GameCard) linking to its tiles (/tiles?game={id}), a search box that filters the cards by
+// title, designer, or publisher, and a link to the Common Tiles page (section 9.3).
 export default function HomePage() {
   // null means "still loading".
   const [games, setGames] = useState<GameSummary[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   // Load the games once, when the page first appears ([] = run once).
   useEffect(() => {
-    // If the user leaves the page before the response arrives, ignore it
-    // instead of updating a page that is no longer shown.
+    // If the user leaves the page before the response arrives, ignore it instead of updating a page that is no longer shown.
     let ignore = false
-
     getGames()
       .then((data) => {
         if (!ignore) setGames(data)
@@ -24,47 +29,61 @@ export default function HomePage() {
       .catch((err: unknown) => {
         if (!ignore) setError(err instanceof Error ? err.message : String(err))
       })
-
     return () => {
       ignore = true
     }
   }, [])
 
-  if (error) {
-    return <p className="text-destructive">Could not load games. {error}</p>
-  }
-  if (!games) {
-    return <p className="text-muted-foreground">Loading games…</p>
-  }
+  const q = search.trim().toLowerCase()
+  const shown = (games ?? []).filter((g) => !q || [g.title, g.designer, g.publisher].some((text) => text?.toLowerCase().includes(q)))
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h1 className="text-2xl font-semibold">Games</h1>
-        <p className="text-sm text-muted-foreground">
-          {games.length} games ·{' '}
-          <Link to="/tiles/common" className="underline hover:text-foreground">
-            Tiles common to many games
-          </Link>
-        </p>
+      <PageHeader
+        icon={LayoutGrid}
+        title="Games"
+        description={games ? `${games.length} games from 18xx.games. Pick one to see its tiles.` : 'Games from 18xx.games.'}
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link to="/tiles/common">
+              <Layers aria-hidden="true" />
+              Tiles common to many games
+            </Link>
+          </Button>
+        }
+      />
+
+      <div className="relative max-w-sm">
+        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <Input
+          className="pl-9"
+          placeholder="Find a game, designer, or publisher"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Find a game"
+        />
       </div>
+
+      {error && <p className="text-destructive">Could not load games. {error}</p>}
+      {!games && !error && <LoadingState label="Loading games…" />}
+      {games && shown.length === 0 && (
+        <EmptyState
+          icon={SearchX}
+          title={`No games match "${search.trim()}"`}
+          description="Try part of the title, or a designer's or publisher's name."
+          action={
+            <Button variant="outline" size="sm" onClick={() => setSearch('')}>
+              Clear search
+            </Button>
+          }
+        />
+      )}
 
       {/* One card per game: 1 column on phones, 2 on tablets, 3 on wide screens. */}
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {games.map((game) => (
+        {shown.map((game) => (
           <li key={game.id}>
-            <Link to={`/tiles?game=${game.id}`} className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 hover:bg-muted">
-              {/* Title, with designer and publisher underneath when known. min-w-0 lets long names wrap instead of pushing the counts out. */}
-              <span className="min-w-0">
-                <span className="block font-medium">{game.title}</span>
-                {creditsText(game) && <span className="block text-xs text-muted-foreground">{creditsText(game)}</span>}
-              </span>
-              {/* Designs = distinct tiles; the second line adds up the counts (unlimited and unknown listed separately). */}
-              <span className="shrink-0 text-right text-sm whitespace-nowrap text-muted-foreground">
-                {game.tileCount} {game.tileCount === 1 ? 'design' : 'designs'}
-                <span className="block text-xs">{boxText(game)}</span>
-              </span>
-            </Link>
+            <GameCard game={game} />
           </li>
         ))}
       </ul>

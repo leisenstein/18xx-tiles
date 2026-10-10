@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
+import { SquarePlus } from 'lucide-react'
 import { submitChangeRequest } from '@/api/changeRequests'
 import { getGames } from '@/api/games'
+import LoadingState from '@/components/LoadingState'
+import PageHeader from '@/components/PageHeader'
 import RequestOutcome from '@/components/RequestOutcome'
 import TileForm from '@/components/TileForm'
 import { Button } from '@/components/ui/button'
@@ -47,11 +50,16 @@ export default function SubmitTilePage() {
   }
 
   if (loadError) return <p className="text-destructive">Could not load games. {loadError}</p>
-  if (!games) return <p className="text-muted-foreground">Loading…</p>
+  if (!games) return <LoadingState label="Loading…" />
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Propose a new tile</h1>
+      <PageHeader
+        icon={SquarePlus}
+        area="contribute"
+        title="Propose a new tile"
+        description="Describe the tile and the games that use it. An admin reviews every proposal before it appears on the site."
+      />
       {result ? (
         <div className="space-y-4">
           <RequestOutcome request={result} />
