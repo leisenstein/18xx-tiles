@@ -508,6 +508,8 @@ Sorting is done in the API with the shared sort helper.
 
 ## 10. Tile renderer specification
 
+**Visual style (decided after Phase 4): "deep print" (style B).** Deeper fills (`lib/tiles/colors.ts`); a bold outer edge in a dark shade of the tile color (neutral gray on two-color tiles) with a light ring just inside; track drawn over a light casing (`#FFF8DC`), so crossings show a small gap; city outlines and halts drawn bolder; revenue as white bold numbers in black circles; the tile number bold in a dark shade of the tile color. Colors and widths are constants at the top of `lib/tiles/drawing.ts`.
+
 Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 - **Orientation:** flat-topped hex. Edges per TILES.md: 0 bottom, 1 lower-left, 2 upper-left, 3 top, 4 upper-right, 5 lower-right. Edge angle = -90 - 60 x edge degrees.
@@ -608,6 +610,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.10 | Admin History page: `GET /api/admin/history` (type, status, search, paging; `ChangeHistoryQueryDto`); `/admin/history` with filters in the URL; shared `ChangeRequestEntry` component (also used by the tile page's History section) | Done (verified: filters, search, validation, 401 when signed out, browser) |
 | 4.11 | Fixes: Delete tile uses an on-page confirmation panel instead of `window.prompt()` (which some browsers block, so the button did nothing); imports in History (`HistoryRepository` UNION of change requests and imports, `HistoryEntryDto`, type `Import`; script `0009` backfills the first import) | Done (verified: UI delete, merged timeline, filters, fresh and existing databases) |
 | 4.12 | Open items 8, 9, 12: pinned commit and Docker seed stage; designer and publisher (parser, script `0010` data hash, Home and Tiles pages); renderer `halt`, `border`, `stripes` | Done (verified: Docker data identical to local; re-import on an existing database filled 130 designers; fresh seed; drawings on `/dev/tiles`) |
+| 4.13 | Tile drawing style B ("deep print"): deeper fills, bold edge and inner ring, track casing, black revenue circles | Done (verified on `/dev/tiles`) |
 
 **Phase 4 complete.**
 
@@ -628,7 +631,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 1. **Licensing:** confirm what may be published publicly for game titles and tile data.
 2. **Email service:** choose a provider for confirmation and password-reset emails. Until then, development writes emails to the API log (Phase 3 decision).
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
-4. **Display names:** scheme defined in section 7; confirm it reads well in the UI during Phase 2.
+4. ~~**Display names**~~ Resolved after Phase 4: the section 7 scheme (`#N`, `#N (Game)`, `#N (variant k)`) is kept as is.
 5. ~~**Import refresh**~~ Resolved after Phase 4: merge import that only adds and fills, with a report (section 6.4).
 6. **Parser gaps:** Harzbahn 1873 manifest; 18Mag `L33`. Imported counts come from 18xx.games manifests and may not match every physical box.
 7. ~~**Tile counts**~~ Resolved after Phase 4 (section 6.3 rule 9).

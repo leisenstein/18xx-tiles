@@ -1,10 +1,11 @@
 // Turns a tile definition into a list of shapes to draw (DESIGN.md section 10).
-// Ported from render_tile in reference/build_pdf.py.
+// Ported from render_tile in reference/build_pdf.py, restyled as "deep print" (style B, after Phase 4): deeper fills (colors.ts), a bold dark edge
+// with a light inner ring, track with a light casing, bolder cities, and revenue in black circles.
 //
 // The math works in "y up" coordinates like the prototype (angle 0 = right,
 // angles grow counterclockwise). SVG's y axis points down, so every point is
 // flipped (y -> height - y) when the shape is added.
-import { tileFills } from './colors'
+import { shade, tileFills } from './colors'
 import { parseDefinition, revenueText } from './parse'
 
 export type Point = [number, number]
@@ -97,6 +98,12 @@ function clipHalfPlane(polygon: Point[], [nx, ny]: Point, limit: number): Point[
   })
   return out
 }
+
+// Style B colors and line widths (in drawing units; a tile is 100 wide).
+const INK = '#1A1A1A' // track, city outlines, revenue circles
+const CASING = '#FFF8DC' // light edging under track
+const EDGE_WIDTH = 2.2 // bold outer edge
+const RING_WIDTH = 1.1 // light ring just inside the edge
 
 // Rough text width; SVG cannot measure text before it is drawn.
 const textWidth = (text: string, size: number, bold: boolean) => text.length * size * (bold ? 0.6 : 0.55)
@@ -287,17 +294,20 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   // Track. Styles: broad = solid; narrow/thin = thinner dashed; dual = black with white dashed center.
   const occupied: Point[] = []
   const lw = 0.13 * a
+  // Each track gets a light casing first, so it stands out from the deeper fills; where tracks cross, the later one's casing leaves a small gap.
   const drawTrack = (points: Point[], track: string) => {
     if (track === 'narrow' || track === 'thin') {
+      add({ kind: 'polyline', points, stroke: CASING, strokeWidth: lw })
       add({
         kind: 'polyline',
         points,
-        stroke: 'black',
+        stroke: INK,
         strokeWidth: lw * 0.55,
         dash: [lw * 0.9, lw * 0.6],
       })
     } else {
-      add({ kind: 'polyline', points, stroke: 'black', strokeWidth: lw })
+      add({ kind: 'polyline', points, stroke: CASING, strokeWidth: lw * 1.55 })
+      add({ kind: 'polyline', points, stroke: INK, strokeWidth: lw })
       if (track === 'dual') {
         add({
           kind: 'polyline',
@@ -403,8 +413,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
           center: [x, y],
           r: cr * (s === 3 ? 1.85 : 2.2),
           fill: 'white',
-          stroke: 'black',
-          strokeWidth: 0.6,
+          stroke: INK,
+          strokeWidth: 1.2,
         })
       }
       for (const [ox, oy] of offsets) {
@@ -413,8 +423,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
           center: [x + ox, y + oy],
           r: cr,
           fill: 'white',
-          stroke: 'black',
-          strokeWidth: 0.8,
+          stroke: INK,
+          strokeWidth: 1.6,
         })
       }
       const extent = cr * (s === 1 ? 1 : 2.2)
@@ -436,7 +446,7 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
         const py = dx
         add({
           kind: 'polygon',
-          fill: 'black',
+          fill: INK,
           points: [
             [x + dx * hl + px * hw, y + dy * hl + py * hw],
             [x + dx * hl - px * hw, y + dy * hl - py * hw],
@@ -446,7 +456,7 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
         })
         extent = 0.2 * a
       } else {
-        add({ kind: 'circle', center: [x, y], r: 0.1 * a, fill: 'black' })
+        add({ kind: 'circle', center: [x, y], r: 0.1 * a, fill: INK })
         extent = 0.1 * a
       }
       occupied.push([x, y])
@@ -454,10 +464,10 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
     } else if (node.kind === 'halt') {
       // A halt (a stop that is not a town, e.g. a mine or a port): a small white circle with its symbol.
       const r = 0.13 * a
-      add({ kind: 'circle', center: [x, y], r, fill: 'white', stroke: 'black', strokeWidth: 0.8 })
+      add({ kind: 'circle', center: [x, y], r, fill: 'white', stroke: INK, strokeWidth: 1.2 })
       if (node.symbol) {
         const fs = node.symbol.length <= 1 ? r * 1.3 : r * 0.9
-        add({ kind: 'text', at: [x, y - fs * 0.35], text: node.symbol, size: fs, bold: true, fill: 'black' })
+        add({ kind: 'text', at: [x, y - fs * 0.35], text: node.symbol, size: fs, bold: true, fill: INK })
       }
       occupied.push([x, y])
       badges.push({ node, extent: r })
@@ -467,17 +477,17 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
         center: [x, y],
         r: 0.09 * a,
         fill: 'white',
-        stroke: 'black',
+        stroke: INK,
         strokeWidth: 0.8,
       })
       badges.push({ node, extent: 0.09 * a })
     } else if (node.kind === 'junction') {
-      add({ kind: 'circle', center: [x, y], r: lw * 0.5, fill: 'black' })
+      add({ kind: 'circle', center: [x, y], r: lw * 0.5, fill: INK })
     } else if (node.kind === 'offboard') {
       // Not drawn by the prototype; shown here as a small black triangle so its revenue has an anchor.
       add({
         kind: 'polygon',
-        fill: 'black',
+        fill: INK,
         points: [
           [x, y + 0.12 * a],
           [x - 0.1 * a, y - 0.06 * a],
@@ -523,21 +533,14 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
     const text = node.revenue
     const rr = br * (text.length <= 2 ? 1 : text.length <= 3 ? 1.25 : 1.6)
     const fs = rr * (text.length <= 2 ? 1.05 : text.length <= 3 ? 0.85 : 0.6)
-    add({
-      kind: 'circle',
-      center: best,
-      r: rr,
-      fill: 'white',
-      stroke: 'black',
-      strokeWidth: 0.5,
-    })
+    add({ kind: 'circle', center: best, r: rr, fill: INK })
     add({
       kind: 'text',
       at: [best[0], best[1] - fs * 0.35],
       text,
       size: fs,
-      bold: false,
-      fill: 'black',
+      bold: true,
+      fill: 'white',
     })
     for (let deg = 0; deg < 360; deg += 45) {
       occupied.push([best[0] + rr * Math.cos(rad(deg)), best[1] + rr * Math.sin(rad(deg))])
@@ -576,7 +579,7 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       text,
       size: fs,
       bold,
-      fill: 'black',
+      fill: INK,
     })
     for (const dx of [-1, 0, 1]) occupied.push([best[0] + dx * fs * text.length * 0.3, best[1]])
   }
@@ -595,23 +598,24 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   }
   for (const extra of extras) placeText(extra, 0.15 * a, false)
 
-  // Outline: dashed for "none", gray otherwise.
+  // Outline: dashed for "none"; otherwise a bold edge in a dark shade of the tile color, with a light ring just inside it.
   const outline = corners
   if (color === 'none')
     add({
       kind: 'polygon',
       points: outline,
-      stroke: 'black',
-      strokeWidth: 0.6,
+      stroke: INK,
+      strokeWidth: 0.8,
       dash: [2, 2],
     })
-  else
-    add({
-      kind: 'polygon',
-      points: outline,
-      stroke: '#555555',
-      strokeWidth: 0.6,
-    })
+  else {
+    const ringInset = R - EDGE_WIDTH - RING_WIDTH / 2
+    const ring: Point[] = Array.from({ length: 6 }, (_, i) => [cx + ringInset * Math.cos(rad(60 * i)), cy + ringInset * Math.sin(rad(60 * i))])
+    // Two-color tiles use neutral shades, since one tile color's shade would look wrong on the other half.
+    const base = fills.length > 1 ? '#8C8C8C' : fills[0]
+    add({ kind: 'polygon', points: ring, stroke: shade(base, 0.55), strokeWidth: RING_WIDTH })
+    add({ kind: 'polygon', points: outline, stroke: shade(base, -0.55), strokeWidth: EDGE_WIDTH })
+  }
 
   // Borders, drawn on top of the outline (TILES.md "border"). Without a type, the edge's line is painted in the tile's own color, so the tile looks
   // joined to its neighbor. Typed borders show a thick colored line just inside the edge, with the crossing cost if there is one.
@@ -625,7 +629,7 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
     if (!typed) {
       // Two-color tiles: use the half the edge is on (left = first color).
       const fill = fills.length > 1 && Math.cos(rad(mid)) > 0 ? fills[1] : fills[0]
-      add({ kind: 'polyline', points: ends, stroke: fill, strokeWidth: 1.6 })
+      add({ kind: 'polyline', points: ends, stroke: fill, strokeWidth: EDGE_WIDTH + 0.6 })
       continue
     }
     const inner = ends.map((p) => inward(p, 0.05 * a))
@@ -643,8 +647,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       at: [numberAt[0], numberAt[1] - numberSize * 0.3],
       text: number,
       size: numberSize,
-      bold: false,
-      fill: '#333333',
+      bold: true,
+      fill: color === 'none' || color === 'white' ? '#333333' : shade(fills[fills.length - 1], -0.6),
     })
   }
 
