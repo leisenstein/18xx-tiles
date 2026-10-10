@@ -20,4 +20,4 @@ data/
 reference/
 tools/
 
-# Do NOT add api/Db/Seed here. The seed files must be included in the build.
+# Do NOT add api/Data/Seeding/SeedFiles here. The seed files must be included in the build.

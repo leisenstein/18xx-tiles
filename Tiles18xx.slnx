@@ -1,5 +1,3 @@
 <Solution>
-  <Folder Name="/api/">
-    <Project Path="api/Tiles18xx.Api.csproj" />
-  </Folder>
+  <Project Path="api/Tiles18xx.Api.csproj" />
 </Solution>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -14,11 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Db\Scripts\" />
+    <!-- DbUp schema scripts; DbUp records each script by its resource name. -->
+    <EmbeddedResource Include="Data\Migrations\Scripts\*.sql" />
+    <!-- Seed snapshots (not in source control), read by DataSeeder as Seed.games.json and Seed.tiles.json. -->
+    <EmbeddedResource Include="Data\Seeding\SeedFiles\*.json" LogicalName="Seed.%(Filename)%(Extension)" />
   </ItemGroup>
-  <ItemGroup>
-	<EmbeddedResource Include="Db\Scripts\*.sql" />
-	<EmbeddedResource Include="Db\Seed\*.json" LogicalName="Seed.%(Filename)%(Extension)" />
-  </ItemGroup>
-	
+
 </Project>

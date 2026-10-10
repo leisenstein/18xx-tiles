@@ -2,8 +2,9 @@ using System.Reflection;
 using System.Text.Json;
 using Dapper;
 using Tiles18xx.Api.Data;
+using Tiles18xx.Api.Data.Seeding.SeedModels;
 
-namespace Tiles18xx.Api.Db;
+namespace Tiles18xx.Api.Data.Seeding;
 
 // Loads games and tiles from the embedded seed files into an empty database.
 // Runs only when Tiles has no rows. To re-seed in development, stop the API

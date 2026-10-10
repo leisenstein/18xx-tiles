@@ -1,6 +1,6 @@
 ﻿using DbUp;
 
-namespace Tiles18xx.Api.Db;
+namespace Tiles18xx.Api.Data.Migrations;
 
 public static class DatabaseMigrator
 {

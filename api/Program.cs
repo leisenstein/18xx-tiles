@@ -1,11 +1,14 @@
-using Tiles18xx.Api.Db;
-using Dapper;
 using Microsoft.Data.Sqlite;
 using Tiles18xx.Api.Data;
+using Tiles18xx.Api.Data.Migrations;
+using Tiles18xx.Api.Data.Repositories;
+using Tiles18xx.Api.Data.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// API controllers live in the Controllers folder ([ApiController] classes).
+builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -28,6 +31,9 @@ Directory.CreateDirectory(Path.GetDirectoryName(sqliteBuilder.DataSource)!);
 
 builder.Services.AddSingleton(new SqliteConnectionFactory(sqliteBuilder.ToString()));
 
+// Repositories are stateless, so one shared instance is fine.
+builder.Services.AddSingleton<GamesRepository>();
+
 
 
 var app = builder.Build();
@@ -47,15 +53,8 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 
-app.MapGet("/api/health", (SqliteConnectionFactory db) =>
-{
-    using var connection = db.Open();
-    var journalMode = connection.ExecuteScalar<string>("PRAGMA journal_mode;");
-    var foreignKeys = connection.ExecuteScalar<long>("PRAGMA foreign_keys;");
-    return new { status = "ok", journalMode, foreignKeys };
-});
-
-
+// Routes from all controllers (GamesController, HealthController, ...).
+app.MapControllers();
 
 // If an /api address does not exist, return "404 Not Found".
 app.MapFallback("/api/{**rest}", () => Results.NotFound());
@@ -67,7 +66,4 @@ app.MapFallbackToFile("index.html");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+

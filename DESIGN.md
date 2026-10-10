@@ -11,6 +11,11 @@ Version 1.2, October 8, 2026. Version 1.1 was prepared in a planning session in 
 - Seed files `games.json` and `tiles.json`, and the reference PDF, are not kept in source control (sections 5, 6.4, 13).
 - Renderer must also handle `offboard` parts, `track:thin`, and empty definitions (section 10).
 - Phase 2 acceptance test corrected: 1830 does not use tile #10 (section 11).
+- Phase 1 complete, including Docker; API fallback routing documented (sections 5 and 11).
+- New feature: Common Tiles page (sections 8, 9.1, 9.3); shared tile sort order defined (section 8); Phase 2 step plan (section 11).
+- API style switched from Minimal APIs to controllers (sections 4, 5.1, 5.2).
+- Future feature on hold: printable tile number circles (sections 9.4, 11, 12, 13).
+- Folder structure and naming conventions (sections 5.1 and 5.2). Database code consolidated under `api/Data/` (`Migrations`, `Repositories`, `Seeding`); seed models one type per file; database reset after the move.
 
 ## 1. Purpose
 
@@ -46,7 +51,7 @@ A public web app for browsing 18xx track tiles with pictures. Users can browse t
 | Data fetching | Built-in `fetch` |
 | Tables | No grid library. Tailwind card grid for tiles; shadcn/ui Table for admin lists |
 | Code quality | ESLint 10 (flat config: `@eslint/js`, typescript-eslint, react-hooks, react-refresh) and Prettier with `eslint-config-prettier`. Prettier style: single quotes, no semicolons. Scripts: `lint`, `format`, `format:check` |
-| API | ASP.NET Core Web API on .NET 10 (current LTS, supported to November 2028; verified October 2026). Minimal APIs. SDK pinned by `global.json` (`rollForward: latestFeature`) |
+| API | ASP.NET Core Web API on .NET 10 (current LTS, supported to November 2028; verified October 2026). Controller-based APIs (`[ApiController]`), chosen over Minimal APIs as developer preference. SDK pinned by `global.json` (`rollForward: latestFeature`) |
 | Database | SQLite, single file, WAL mode |
 | Data access | Dapper with `Microsoft.Data.Sqlite` |
 | App schema changes | Versioned SQL scripts run by DbUp (`dbup-sqlite`), embedded in the API assembly |
@@ -63,32 +68,114 @@ Rejected: EF Core for app data (developer preference for Dapper), Tabulator (not
 
 ## 5. Architecture
 
+### 5.1 Folder structure
+
+Folders marked (planned) are created in the step that first needs them.
+
 ```
-Tiles18xx.slnx      Solution file
-global.json         Pins the .NET 10 SDK
-DESIGN.md           This document
-/api                ASP.NET Core Web API (project Tiles18xx.Api, namespace Tiles18xx.Api)
-  /Db/Scripts       DbUp SQL scripts: 0001_CreateGames.sql ... 0004_CreateChangeRequests.sql
-  /Db/Seed          games.json, tiles.json (embedded; not in source control, see 6.4)
-  /Db               DatabaseMigrator.cs, DataSeeder.cs, SeedModels.cs
-  /Data             SqliteConnectionFactory.cs, Dapper repositories
-  /Auth             Identity setup (EF Core DbContext for AspNet* tables only)
-/web                Vite React app
-  /src/components   TileSvg, TileCard, FilterBar, ...
-  /src/pages        Home, Tiles, TileDetail, Submit, Admin, ...
-/tools/import       Import scripts and seed data (see section 6)
-/reference          Prototype scripts from the planning session
-/data               Local development database (not in source control)
-Dockerfile          Multi-stage build: Node builds /web, .NET SDK builds /api, ASP.NET runtime image runs both
-docker-compose.yml  App service, named volume at /data, environment variables, port mapping
-.dockerignore       Excludes node_modules, bin, obj, local database files
+18xx-tiles/
+├── Tiles18xx.slnx            Solution file
+├── global.json               Pins the .NET 10 SDK
+├── DESIGN.md                 This document
+├── Dockerfile                Multi-stage build: Node builds web, .NET SDK builds api, ASP.NET runtime runs both
+├── docker-compose.yml        App service, named volume at /data, environment variables, port mapping
+├── .dockerignore             Excludes node_modules, bin, obj, dist, local databases, reference, tools
+│
+├── api/                      ASP.NET Core Web API (project Tiles18xx.Api, root namespace Tiles18xx.Api)
+│   ├── Program.cs            Startup: services, migrate, seed, middleware, MapControllers
+│   ├── Tiles18xx.Api.http    Sample requests, one per endpoint
+│   ├── Auth/                 (planned, Phase 3) Identity setup; EF Core DbContext for AspNet* tables only
+│   ├── Controllers/          [ApiController] classes, *Controller: GamesController, HealthController, ...
+│   ├── Data/                 Everything that touches the database
+│   │   ├── SqliteConnectionFactory.cs
+│   │   ├── Migrations/       DatabaseMigrator.cs (runs DbUp at startup)
+│   │   │   └── Scripts/      DbUp SQL scripts, NNNN_VerbNoun.sql
+│   │   ├── Repositories/     *Repository classes (Dapper): GamesRepository, ...
+│   │   └── Seeding/          DataSeeder.cs (fills an empty database at startup)
+│   │       ├── SeedFiles/    games.json, tiles.json (embedded; not in source control, see 6.4)
+│   │       └── SeedModels/   SeedGame, SeedGameTile, SeedGenericTile (shapes of the seed JSON)
+│   ├── Domain/               (planned, Step 2.2) Shared rules and constants: TileColors, TileSources,
+│   │                         TileSort, TileCounts (UnlimitedTileCount = 999)
+│   └── Dtos/                 API request and response shapes, *Dto
+│
+├── web/                      Vite React app
+│   └── src/
+│       ├── main.tsx          Entry point
+│       ├── App.tsx           Routes and layout
+│       ├── api/              (planned, Step 2.3) fetch wrappers per resource: games.ts, tiles.ts
+│       ├── components/       Shared components: TileSvg, TileCard, FilterBar, ...
+│       │   └── ui/           shadcn/ui generated components (do not hand-edit beyond styling)
+│       ├── hooks/            (planned) Custom hooks: useX.ts
+│       ├── lib/              (planned) Helpers and constants: utils.ts (shadcn), tileSort.ts, constants.ts
+│       ├── pages/            One component per route: HomePage, TilesPage, TileDetailPage,
+│       │                     CommonTilesPage, SubmitPage, AdminQueuePage, ...
+│       └── types/            (planned) TypeScript types matching the API DTOs
+│
+├── tools/import/             Import scripts and seed data generation (see section 6)
+├── reference/                Prototype scripts from the planning session
+└── data/                     Local development database (not in source control)
 ```
+
+All database code lives under `Data/`: `Migrations` and `Seeding` build and fill the database at startup; `Repositories` read and write it while the app runs.
+
+**DbUp script names.** DbUp records each script by its embedded resource name, which includes the folder path (`Tiles18xx.Api.Data.Migrations.Scripts.0001_CreateGames.sql`). Moving or renaming the `Scripts` folder makes DbUp try to run every script again. Before real user data exists, reset the database instead (delete `data/tiles.db*`, `docker compose down -v`). After that, give the scripts a fixed `LogicalName` in the `.csproj` before any move.
+
+### 5.2 Naming conventions
+
+**General**
+- One public type per file; the file name matches the type name.
+- Namespaces match folders: `Tiles18xx.Api.Data`, `Tiles18xx.Api.Data.Repositories`, `Tiles18xx.Api.Data.Seeding.SeedModels`, `Tiles18xx.Api.Dtos`, and so on.
+- Prefer full words over abbreviations, except the established `Dto`, `Id`, `Api`, `Db`, `Utc`.
+
+**API (C#)**
+
+| Kind | Folder | Pattern | Example |
+|---|---|---|---|
+| Response and request shapes | `Dtos/` | `<Thing>Dto`; a list item may use `<Thing>SummaryDto` | `GameSummaryDto`, `TileDetailDto` |
+| Database access | `Data/Repositories/` | `<PluralNoun>Repository` | `GamesRepository`, `TilesRepository` |
+| API controllers | `Controllers/` | `<PluralNoun>Controller : ControllerBase`, with `[ApiController]` and an explicit `[Route("api/<plural-noun>")]`; dependencies by primary constructor; actions return `ActionResult<T>` | `GamesController` |
+| Shared rules and constants | `Domain/` | Static class named for the concept | `TileColors.IsKnown(...)`, `TileCounts.Unlimited` |
+| Seed JSON shapes | `Data/Seeding/SeedModels/` | `Seed<Thing>` | `SeedGame` |
+| SQL scripts | `Data/Migrations/Scripts/` | `NNNN_VerbNoun.sql`, never renamed once run | `0005_AddTileNotesIndex.sql` |
+| Types, methods, properties | | PascalCase | `GetById` |
+| Locals and parameters | | camelCase | `gameId` |
+| Private fields | | `_camelCase` | `_connectionString` |
+| Constants | | PascalCase | `UnlimitedTileCount` |
+
+**Database**
+- Tables: plural PascalCase (`Games`, `GameTiles`). Columns: PascalCase (`DisplayName`, `CreatedUtc`).
+- Keys: `Id`; foreign keys `<Table singular>Id` (`GameId`). Indexes: `IX_<Table>_<Columns>`.
+- Timestamps: `<Verb>Utc`, stored as ISO 8601 text.
+
+**API routes and JSON**
+- Routes: lowercase, plural nouns, hyphens between words (`/api/change-requests`); IDs constrained (`{id:long}`).
+- Query parameters and JSON properties: camelCase (`minGames`, `tileCount`). ASP.NET Core produces camelCase JSON by default.
+
+**Web (TypeScript and React)**
+
+| Kind | Folder | Pattern | Example |
+|---|---|---|---|
+| Pages | `pages/` | `<Name>Page.tsx` | `TileDetailPage.tsx` |
+| Components | `components/` | PascalCase `.tsx` | `TileCard.tsx` |
+| Hooks | `hooks/` | `use<Name>.ts` | `useTileFilters.ts` |
+| API calls | `api/` | camelCase file per resource; functions `get<Thing>` | `games.ts` → `getGames()` |
+| Types | `types/` | DTO name without `Dto` | `GameSummary` |
+| Helpers and constants | `lib/` | camelCase file; `UPPER_SNAKE_CASE` constants | `UNLIMITED_TILE_COUNT` |
+| URL routes | | lowercase, hyphens | `/tiles/common`, `/account/requests` |
+
+**Git**
+- Branches: `feature/<short-name>`, `fix/<short-name>`.
+- Commit messages: imperative mood, short first line (`Add games endpoints`).
+
+### 5.3 Runtime notes
 
 Two schema tools share one SQLite file. EF Core migrations manage only the `AspNet*` tables. DbUp manages all other tables. Neither tool should touch the other's tables.
 
 **Database location.** Connection string `ConnectionStrings:Tiles`, default `Data Source=../data/tiles.db` in `appsettings.json`. A relative path is resolved against the API content root, and the folder is created if missing. Docker overrides it with `/data/tiles.db`.
 
 **Startup order (implemented).** Build the app, run `DatabaseMigrator.Upgrade`, then `DataSeeder.SeedIfEmpty`, then accept requests.
+
+**Serving the React app (implemented).** `UseDefaultFiles` and `UseStaticFiles` serve the built app from `wwwroot`. Unknown `/api/...` routes return 404 (`MapFallback("/api/{**rest}", ...)`); every other unknown path returns `index.html` (`MapFallbackToFile`) so client-side routes work on refresh. In development `wwwroot` does not exist and Vite serves the app.
 
 **Development ports.** API on `http://localhost:5010`; Vite on `http://localhost:5173` with a proxy sending `/api` to the API. `GET /api/health` reports `journalMode` and `foreignKeys`.
 
@@ -144,11 +231,11 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 
 ### 6.4 Import plan (implemented in Phase 1)
 
-`reference/parse_games.py` and `reference/build_data.py` produce `games.json` and `tiles.json`. Copies live in `api/Db/Seed/` and are embedded in the API assembly as `Seed.games.json` and `Seed.tiles.json`.
+`reference/parse_games.py` and `reference/build_data.py` produce `games.json` and `tiles.json`. Copies live in `api/Data/Seeding/SeedFiles/` and are embedded in the API assembly as `Seed.games.json` and `Seed.tiles.json`.
 
-**Source control.** `games.json` and `tiles.json` are excluded from git in both `reference/` and `api/Db/Seed/`, because they are regenerated as needed. A fresh clone must have them copied into `api/Db/Seed/` before the first run; otherwise the seeder stops with "Embedded seed file ... was not found" when the database is empty. The Docker build context must include them (do not exclude them in `.dockerignore`).
+**Source control.** `games.json` and `tiles.json` are excluded from git in both `reference/` and `api/Data/Seeding/SeedFiles/`, because they are regenerated as needed. A fresh clone must have them copied into `api/Data/Seeding/SeedFiles/` before the first run; otherwise the seeder stops with "Embedded seed file ... was not found" when the database is empty. The Docker build context must include them (do not exclude them in `.dockerignore`).
 
-**Seeder rules (`api/Db/DataSeeder.cs`):**
+**Seeder rules (`api/Data/Seeding/DataSeeder.cs`):**
 
 1. Runs at startup after DbUp, only when `Tiles` is empty. All inserts run in one transaction.
 2. JSON is read strictly (missing required fields or nulls in non-nullable fields fail the startup).
@@ -168,7 +255,7 @@ Porting the parser to C# is optional later work.
 
 ## 7. Database schema (app tables, managed by DbUp)
 
-User IDs are TEXT to match `AspNetUsers.Id`. Scripts: `api/Db/Scripts/0001` to `0004`.
+User IDs are TEXT to match `AspNetUsers.Id`. Scripts: `api/Data/Migrations/Scripts/0001` to `0004`.
 
 ```sql
 CREATE TABLE Games (
@@ -250,7 +337,8 @@ Rules:
 | GET | `/api/games` | Public | Games with tile counts (for Home) |
 | GET | `/api/games/{id}` | Public | One game |
 | GET | `/api/tiles?game=&color=&kind=city\|town&q=&page=` | Public | Filtered tile list |
-| GET | `/api/tiles/{id}` | Public | Tile detail, its games, other tiles with the same number |
+| GET | `/api/tiles/{id}` | Public | Tile detail, its games, other tiles with the same number (`{id:long}` constraint) |
+| GET | `/api/tiles/common?minGames=10` | Public | Tiles used by at least `minGames` games (section 9.3) |
 | POST | `/api/change-requests` | User | Propose Add, Edit, or Delete; applied immediately for Admin |
 | GET | `/api/change-requests/mine` | User | My requests and their status |
 | GET | `/api/admin/change-requests?status=Pending` | Admin | Review queue |
@@ -264,8 +352,9 @@ Notes:
 - Use ASP.NET Core rate-limiting middleware on login, registration, and change-request routes.
 - Validate definition strings on the server: known part types only (including `offboard`), edges 0 to 5, node references in range.
 - Validate colors against the allowed list in section 7.
+- **Tile sort order** (one shared helper, used by `/api/tiles` and `/api/tiles/common`): color group in the order yellow, green, brown, gray, then all other colors alphabetically; then the leading numeric part of `Number` ascending (numbers without a leading digit sort after numbered ones); then the remaining suffix (ordinal); then `Id`.
 - Email confirmation needs an email-sending service (open item).
-- Remove the template's `/weatherforecast` endpoint in Phase 2.
+- The template's `/weatherforecast` endpoint has been removed; delete the unused `WeatherForecast` record at the end of `Program.cs`.
 
 ## 9. Frontend
 
@@ -275,6 +364,7 @@ Notes:
 |---|---|
 | `/` | Home: game list with tile counts; each links to `/tiles?game={id}` |
 | `/tiles` | Tile card grid with FilterBar; filters in URL (`game`, `color`, `kind`, `q`) |
+| `/tiles/common` | Common Tiles: tiles used by at least N games (section 9.3); linked from Home and the main navigation |
 | `/tiles/:id` | Detail: large drawing, number, color, definition string, games with counts and notes, other versions of the same number |
 | `/submit` | Propose a new tile, with live drawing preview |
 | `/tiles/:id/edit` | Propose an edit or deletion |
@@ -288,6 +378,58 @@ Notes:
 - `TileCard`: drawing, display name, color, game count; tile count in the box when filtered by game.
 - `FilterBar`: game select, color select, city/town toggle, number search; reads and writes URL search parameters.
 - `RequireRole`: route guard for user and admin pages. The API still enforces permissions.
+
+### 9.3 Common Tiles page (added in 1.2)
+
+**Purpose:** show the tiles shared by many games, so players can see which tiles are common across 18xx titles.
+
+**Behavior**
+- Lists every live tile (`IsDeleted = 0`) used by at least N games, where the number of games is the count of distinct `GameTiles.GameId` rows for that tile.
+- N defaults to 10 and can be changed on the page. It is stored in the URL (`/tiles/common?minGames=10`) so filtered views can be linked.
+- Grouped by color, using the tile sort order in section 8 (yellow, green, brown, gray, then other colors; within a group, numeric part, then suffix).
+- Each entry shows the drawing (`TileSvg`), display name, and number of games, and links to `/tiles/:id`.
+- Per-game versions are included when they meet the threshold, since they are separate tiles.
+- Page note: "Game counts include variants and scenarios as separate titles (for example the 1822 family), so the number of distinct published games may be lower."
+
+**API:** `GET /api/tiles/common?minGames=10`. `minGames` must be an integer from 2 to 200; anything else returns 400 with a clear message. Query:
+
+```sql
+SELECT t.Id, t.Number, t.Color, t.DisplayName, t.DefinitionCode,
+       COUNT(DISTINCT gt.GameId) AS GameCount
+FROM Tiles t
+JOIN GameTiles gt ON gt.TileId = t.Id
+WHERE t.IsDeleted = 0
+GROUP BY t.Id
+HAVING COUNT(DISTINCT gt.GameId) >= @MinGames;
+```
+
+Sorting is done in the API with the shared sort helper.
+
+**Expected result** with the initial import (commit 46a592e), `minGames = 10` (verified against the seeded database): 87 tiles, made up of 86 generic tiles (yellow 19, green 39, brown 26, gray 2) and 1 per-game version, `#169 (variant 1)` (gray, 10 games).
+
+### 9.4 Future feature: Printable tile number circles (on hold)
+
+**Status:** on hold until per-game tile counts exist (phase "Later", section 11). Not part of Phases 2 to 5.
+
+**Image.** The user picks one of three styles. All share a centered white "city" circle with a black outline and the tile number in bold black.
+- **Track ring:** outer circle in the tile's color with a circle of rails and ties around the city circle (city about 58% of the outer diameter).
+- **Crossing sign:** outer circle in the tile's color with a black border, a black X, and the letters "R R" (city about 42% of the outer diameter).
+- **Plain city:** outer circle in the tile's color with a thin gray outline (city about 68% of the outer diameter).
+- Two-color tiles: the outer circle is split into halves, matching the main renderer.
+- Text size scales down to fit long numbers ("1168", "298LA").
+
+**Sizes.** Diameter of 1/4, 1/2, 3/4, or 1 inch. Track ring and Crossing sign are offered at 1/2 inch and above; 1/4 inch offers Plain city only. PNG output is 300 DPI.
+
+**Selection.** A single tile from the detail page, or all tiles for a game from the filtered tile list. Quantity per tile comes from `GameTiles.Count`; when Count is NULL or 999, the user enters the quantity.
+
+**Output.** SVG or PNG for one image. A PDF print sheet where the user sets diameter, margins, and spacing, with an optional cut line and bleed; circles are laid out in rows and columns to match label stock.
+
+**Look.** See `reference/tile_number_circles_sample.pdf` (Plain city) and `reference/tile_number_circles_train_styles.pdf` (Track ring and Crossing sign). The driving wheel style in the second PDF was rejected.
+
+**Notes for when work starts**
+- Reuse the tile color fills and two-color split from `TileSvg` (section 10) so colors match.
+- Decide where PDF and PNG generation runs (browser or API) and which library to use.
+- The `none` color and the five game-specific colors (section 7) need a defined outer-circle appearance.
 
 ## 10. Tile renderer specification
 
@@ -318,6 +460,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4 | Change requests: submit, my requests, admin queue, approve and reject | User request stays Pending until approved; admin request applies immediately |
 | 5 | Polish and launch prep: styling, licensing check, hosting, backups | Open items in section 12 resolved |
 | Later | Per-game tile counts shown and edited in the UI (schema supports them; parser must be updated to capture them, see 6.3 rule 9) | Counts display per game; 999 shows as "Unlimited" |
+| Later | Printable tile number circles (section 9.4); depends on per-game counts | One tile exports as SVG and PNG; a game's tiles print on a PDF sheet with the chosen layout |
 
 ### Phase 1 progress
 
@@ -329,13 +472,26 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 1.4 | Vite React app, ESLint and Prettier, Vite proxy, `/api/health` | Done |
 | 1.5 | SQLite connection factory, DbUp, schema scripts 0001 to 0004 | Done |
 | 1.6 | Data seeder | Done |
-| 1.7 | Dockerfile, docker-compose.yml, .dockerignore | Not started |
+| 1.7 | Dockerfile, docker-compose.yml, .dockerignore | Done. Verified: app on port 8080, data survives `docker compose down` and `up` |
+
+### Phase 2 plan
+
+| Step | Scope | Check | Status |
+|---|---|---|---|
+| 2.1 | Games API: `/api/games`, `/api/games/{id}` (`GamesController`); `/api/health` moved to `HealthController` | 131 games; 1830 has 46 tiles; unknown id returns 404 | Done (verified) |
+| 2.2 | Tiles API: `/api/tiles` (filters, paging), `/api/tiles/{id}`, shared sort helper | Filters return the expected tiles | Not started |
+| 2.3 | Frontend setup: Tailwind, shadcn/ui, React Router, layout and navigation | Navigation between empty pages works | Not started |
+| 2.4 | Home page (game list) | 131 games, each linking to its tiles | Not started |
+| 2.5 | `TileSvg` renderer | #10, #59, and sample game-specific tiles draw correctly | Not started |
+| 2.6 | Tiles page: `FilterBar`, `TileCard` | 1830 shows 46 tiles including #59 | Not started |
+| 2.7 | Tile detail page | #10 shows its games and its other versions | Not started |
+| 2.8 | Common Tiles: `/api/tiles/common` and `/tiles/common` (section 9.3) | `minGames=10` returns 87 tiles; `minGames=1` and `abc` return 400 | Not started |
 
 ## 11a. Docker
 
 - **One container.** ASP.NET Core serves the built Vite output from `wwwroot` plus the `/api` routes. One origin also keeps Identity cookie auth simple (no cross-origin setup).
 - **Multi-stage Dockerfile:** (1) Node image runs `npm ci` and `npm run build` in /web; (2) .NET SDK image runs `dotnet publish` for /api; (3) ASP.NET runtime image copies the publish output and the web `dist` folder into `wwwroot`.
-- **Seed files:** `api/Db/Seed/*.json` are not in source control but must be in the build context so they are embedded. Build from a working copy that has them.
+- **Seed files:** `api/Data/Seeding/SeedFiles/*.json` are not in source control but must be in the build context so they are embedded. Build from a working copy that has them.
 - **Volume:** the SQLite file lives at `/data/tiles.db`, set by a connection-string environment variable (`ConnectionStrings__Tiles=Data Source=/data/tiles.db`). Without a volume, the database is lost when the container is replaced.
 - **Data Protection keys:** persist them to `/data/keys`. Identity uses them for auth cookies, so keys kept only inside the container would log every user out on each restart or redeploy.
 - **Single instance only.** Do not run multiple replicas against one SQLite file, and do not place the file on a network file system. SQLite's documentation warns that file locking can be unreliable on network file systems.
@@ -354,6 +510,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 7. **Tile counts:** update the parser to capture per-game counts (section 6.3 rule 9).
 8. **Seed file distribution:** `games.json` and `tiles.json` are not in source control. Decide where the authoritative copies live (for example, regenerated by `tools/import`) so a fresh clone or a CI build can obtain them.
 9. **Game metadata:** designer and publisher are not in the snapshot; extend the parser if they are wanted.
+10. **Tile number circle samples:** `reference/tile_number_circles_sample.pdf` and `reference/tile_number_circles_train_styles.pdf` are referenced by section 9.4 but not yet in `reference/`.
 
 ## 13. Reference files
 
@@ -366,3 +523,5 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | `reference/tiles.json` | Generic tiles with games and versions (commit 46a592e). Not in source control |
 | `reference/TILES.md` | Copy of the tobymao/18xx tile language documentation |
 | `reference/18xx_Generic_Tile_Reference.pdf` | Rendered reference from the planning session. Not in source control |
+| `reference/tile_number_circles_sample.pdf` | Tile number circles, Plain city style (section 9.4). Not yet added |
+| `reference/tile_number_circles_train_styles.pdf` | Tile number circles, Track ring and Crossing sign styles; driving wheel style rejected (section 9.4). Not yet added |
