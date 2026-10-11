@@ -10,9 +10,7 @@ export interface GameSummary {
   physicalTileCount: number // tiles in the box: each design's count added up, leaving out unlimited ones
   unlimitedTileCount: number // designs with an unlimited supply (count 999)
   unknownCountTileCount: number // designs with no count recorded
-  // Designs of each main color, for the color strip on the Games page; other colors (two-color, red, blue, ...) are the rest of tileCount.
-  yellowTileCount: number
-  greenTileCount: number
-  brownTileCount: number
-  grayTileCount: number
+  // Designs of each color the game uses, keyed by tile color ('yellow', 'greenbrown', 'red', ...); they add up to tileCount. Drawn as the color
+  // strip on the Games page.
+  colorCounts: Record<string, number>
 }

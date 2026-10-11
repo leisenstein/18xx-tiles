@@ -5,17 +5,17 @@ namespace Tiles18xx.Api.Dtos;
 // - PhysicalTileCount: total tiles in the box, adding up each link's count; unlimited tiles are not included.
 // - UnlimitedTileCount: tile designs with an unlimited supply (count 999).
 // - UnknownCountTileCount: tile designs with no count recorded.
-// - Yellow/Green/Brown/GrayTileCount: tile designs of each main color (the Games page shows the mix as a strip); other colors are the rest of TileCount.
-public sealed record GameSummaryDto(
-    long Id,
-    string Title,
-    string? Designer,
-    string? Publisher,
-    long TileCount,
-    long PhysicalTileCount,
-    long UnlimitedTileCount,
-    long UnknownCountTileCount,
-    long YellowTileCount,
-    long GreenTileCount,
-    long BrownTileCount,
-    long GrayTileCount);
+// - ColorCounts: tile designs of each color the game uses, keyed by Tiles.Color ("yellow", "greenbrown", "red", ...); they add up to TileCount.
+//   The Games page draws them as the game's color strip.
+public sealed record GameSummaryDto
+{
+    public long Id { get; init; }
+    public string Title { get; init; } = "";
+    public string? Designer { get; init; }
+    public string? Publisher { get; init; }
+    public long TileCount { get; init; }
+    public long PhysicalTileCount { get; init; }
+    public long UnlimitedTileCount { get; init; }
+    public long UnknownCountTileCount { get; init; }
+    public IReadOnlyDictionary<string, long> ColorCounts { get; init; } = new Dictionary<string, long>();
+}

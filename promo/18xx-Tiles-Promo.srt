@@ -1,0 +1,84 @@
+1
+00:00:00,550 --> 00:00:03,465
+If you play 18xx, you know the moment.
+
+2
+00:00:03,465 --> 00:00:08,492
+Halfway through the game, somebody asks: is there another number fifty-seven left?
+
+3
+00:00:08,492 --> 00:00:11,670
+Or, which green tile can this city upgrade to?
+
+4
+00:00:11,670 --> 00:00:15,340
+18xx Tiles is built to answer that, fast.
+
+5
+00:00:16,854 --> 00:00:19,025
+It covers a hundred and eighty games.
+
+6
+00:00:19,025 --> 00:00:26,392
+That's the whole 18xx.games collection, plus older games and variants from 18xx.net.
+
+7
+00:00:26,392 --> 00:00:31,791
+Every card shows the designer, the publisher, and how many tiles come in the box.
+
+8
+00:00:33,302 --> 00:00:42,866
+Pick a game, and you get every tile it uses, drawn cleanly in yellow, green, brown, and gray, with how many of each you should have.
+
+9
+00:00:42,866 --> 00:00:48,026
+You can filter by color, by cities or towns, or just type a tile number.
+
+10
+00:00:49,534 --> 00:00:54,205
+Open any tile to see the full drawing, and every game that uses it.
+
+11
+00:00:54,205 --> 00:00:59,564
+Tile fifty-seven, for example, turns up in a hundred and thirty-four games.
+
+12
+00:01:01,086 --> 00:01:06,382
+The common tiles page shows the workhorses, the tiles shared by game after game.
+
+13
+00:01:06,382 --> 00:01:10,158
+Handy when you're building a set, or replacing lost pieces.
+
+14
+00:01:11,678 --> 00:01:15,032
+Lost a tile number, or making your own copy of a game?
+
+15
+00:01:15,032 --> 00:01:19,301
+Sign in, and you can print number circles for every tile in a game.
+
+16
+00:01:19,301 --> 00:01:24,474
+Pick the size, and you get a PDF sheet that's ready for paper or round labels.
+
+17
+00:01:25,990 --> 00:01:29,131
+And if you spot a tile that's missing, you can submit it.
+
+18
+00:01:29,131 --> 00:01:34,052
+Every suggestion gets reviewed before it goes live, so the reference stays right.
+
+19
+00:01:35,574 --> 00:01:37,239
+18xx Tiles.
+
+20
+00:01:37,239 --> 00:01:40,777
+Every track tile, every game, one place.
+
+21
+00:01:40,777 --> 00:01:42,572
+Bring it to your next game night.
+

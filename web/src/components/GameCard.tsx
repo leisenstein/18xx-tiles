@@ -4,21 +4,24 @@ import { creditsText } from '@/lib/tileCount'
 import { tileFills } from '@/lib/tiles/colors'
 import type { GameSummary } from '@/types/game'
 
-// The color strip's segments, in phase order. "Other" covers two-color tiles and the less common colors (red, blue, ...).
-const SEGMENTS = [
-  { key: 'yellowTileCount', label: 'yellow', fill: tileFills('yellow')[0] },
-  { key: 'greenTileCount', label: 'green', fill: tileFills('green')[0] },
-  { key: 'brownTileCount', label: 'brown', fill: tileFills('brown')[0] },
-  { key: 'grayTileCount', label: 'gray', fill: tileFills('gray')[0] },
-] as const
+// The color strip's order: the upgrade phases (two-color tiles between the phases they join), then the game-specific colors. Colors not listed go last.
+const STRIP_ORDER = ['yellow', 'green', 'greenbrown', 'brown', 'brownsepia', 'sepia', 'browngray', 'gray', 'red', 'orange', 'blue', 'purple', 'white', 'none']
+const LABELS: Record<string, string> = { greenbrown: 'green-brown', brownsepia: 'brown-sepia', browngray: 'brown-gray', none: 'no color' }
+const rank = (color: string) => (STRIP_ORDER.includes(color) ? STRIP_ORDER.indexOf(color) : STRIP_ORDER.length)
+
+// A segment's background: its color, or a hard half-and-half split for two-color tiles (drawn the same way as the tiles themselves).
+function background(color: string) {
+  const fills = tileFills(color)
+  return fills.length === 1 ? fills[0] : `linear-gradient(90deg, ${fills[0]} 50%, ${fills[1]} 50%)`
+}
 
 // One game on the Games page (DESIGN.md section 9.1): title, designer and publisher, a strip showing its mix of tile colors, and its counts.
 // The whole card links to the game's tiles.
 export default function GameCard({ game }: { game: GameSummary }) {
-  const other = game.tileCount - SEGMENTS.reduce((sum, s) => sum + game[s.key], 0)
-  const parts = [...SEGMENTS.map((s) => ({ label: s.label, fill: s.fill, count: game[s.key] })), { label: 'other', fill: '#D9D2C3', count: other }].filter(
-    (p) => p.count > 0,
-  )
+  const parts = Object.entries(game.colorCounts)
+    .filter(([, count]) => count > 0)
+    .sort(([a], [b]) => rank(a) - rank(b) || a.localeCompare(b))
+    .map(([color, count]) => ({ color, label: LABELS[color] ?? color, count }))
   const mix = parts.map((p) => `${p.count} ${p.label}`).join(', ')
   const credits = creditsText(game)
 
@@ -35,10 +38,17 @@ export default function GameCard({ game }: { game: GameSummary }) {
         <ChevronRight className="mt-0.5 size-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground" />
       </div>
 
-      {/* Tile color mix: one segment per color, as wide as its share of the game's tile designs. */}
+      {/* Tile color mix: one segment per color, as wide as its share of the game's tile designs. White tiles get a thin outline so they show. */}
       <div className="flex h-2 overflow-hidden rounded-full bg-muted" title={mix} role="img" aria-label={`Tile colors: ${mix}`}>
         {parts.map((p) => (
-          <span key={p.label} style={{ flexGrow: p.count, backgroundColor: p.fill }} />
+          <span
+            key={p.color}
+            style={{
+              flexGrow: p.count,
+              background: background(p.color),
+              boxShadow: p.color === 'white' || p.color === 'none' ? 'inset 0 0 0 1px #C9C3B6' : undefined,
+            }}
+          />
         ))}
       </div>
 
