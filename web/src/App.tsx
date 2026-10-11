@@ -12,6 +12,7 @@ import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import EditGameTilesPage from '@/pages/EditGameTilesPage'
 import AdminImportsPage from '@/pages/AdminImportsPage'
 import AdminQueuePage from '@/pages/AdminQueuePage'
+import AdminUsersPage from '@/pages/AdminUsersPage'
 import CommonTilesPage from '@/pages/CommonTilesPage'
 import DevTilesPage from '@/pages/DevTilesPage'
 import EditTilePage from '@/pages/EditTilePage'
@@ -107,6 +108,14 @@ function App() {
           element={
             <RequireRole role={ADMIN_ROLE}>
               <AdminHistoryPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <RequireRole role={ADMIN_ROLE}>
+              <AdminUsersPage />
             </RequireRole>
           }
         />

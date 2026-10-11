@@ -442,6 +442,13 @@ Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (index
 | GET | `/api/admin/tiles/{id}/history` | Admin | One tile's history |
 | GET | `/api/admin/history?type=&status=&q=&page=&pageSize=` | Admin | Change requests, imports, and game tile list saves, newest first (type Add, Edit, Delete, Import, Game) |
 | GET | `/api/admin/imports` | Admin | Import runs with their reports |
+| GET | `/api/admin/users?q=` | Admin | Accounts (email contains q): roles, state (Active, Locked, Disabled), email confirmed, request count, isYou, isConfiguredAdmin |
+| GET | `/api/admin/roles` | Admin | Role names (today only Admin) |
+| PUT, DELETE | `/api/admin/users/{id}/roles/{role}` | Admin | Give or take a role. 409 for your own account, the `Admin:Email` account, or the last admin |
+| POST | `/api/admin/users/{id}/disable`, `/enable` | Admin | Lockout until year 9999 plus a new security stamp; enable clears any lockout. 409 for yourself or the configured admin |
+| POST | `/api/admin/users/{id}/confirm-email` | Admin | Mark the email confirmed |
+| POST | `/api/admin/users/{id}/password-reset` | Admin | Email the reset link (same code encoding as `/api/auth/forgotPassword`) |
+| DELETE | `/api/admin/users/{id}` | Admin | Delete the account (history keeps its id). 409 for yourself, the configured admin, or the last admin |
 | GET | `/api/admin/docs/{name}` | Admin | An admin document as Markdown (`runbook`, `database`), embedded in the API at build time; 404 for other names |
 | GET | `/api/admin/games/{id}/tiles` | Admin | A game and every live tile it uses, with counts and notes |
 | PUT | `/api/admin/games/{id}/tiles` | Admin | Replace a game's tile list (`{ tiles: [{ tileId, count, notes }], reason }`); one transaction and one `GameChanges` row; 409 if nothing changed |
@@ -482,6 +489,7 @@ Notes:
 | `/admin/docs/:name` | Admin docs (admins only): `runbook` and `database` tabs, rendered from `docs/RUNBOOK.md` and `docs/DATABASE.md`, with a table of contents and copy buttons on commands |
 | `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
+| `/admin/users` | Accounts: roles, state, request count; make or remove Admin, confirm email, send password reset, disable or enable, delete (admins only) |
 | `/login`, `/register` | Auth |
 | `/forgot-password`, `/reset-password` | Ask for a password-reset email; set a new password from its link (`?email=&code=`) |
 
@@ -675,6 +683,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 5.4 | Nightly database snapshots (`Data/Backups/DatabaseBackupService`): `VACUUM INTO` copy at `Backup:RunAt`, kept only when a fingerprint of the data (app tables, accounts, roles; not sign-in counters) changed; last `Backup:RetainCount` (90) kept; sign-in keys copied alongside; runbook sections for snapshots and restore | Done (verified: first run saves, unchanged and failed-sign-in-only runs skip, changes save, retention prunes, the scheduled run fires, a restored snapshot starts with all data) |
 | 5.5 | Going-live guide (`docs/guide/18xx-Tiles-Going-Live.pdf`, source `going-live.html`): title permission, domain, host choice, Railway deploy with volume and variables, domain and HTTPS (`ASPNETCORE_FORWARDEDHEADERS_ENABLED`), Resend email, a hands-on "Download backup" tutorial (C# endpoint and React button), launch checklist, after-launch tasks, VPS with Caddy, settings reference, glossary | Done (the tutorial's code was built and tested on a copy: admin-only, zip with database and keys, integrity check passes; the React steps compile and pass lint) |
 | 5.7 | Extra games from 18xx.net (section 6.5): comparison and reviewed diff, `18xxnet-games.json` in games.json format with `18xxnet-source.json`, import steps in the runbook, credits | Done (verified with the unchanged importer: on a copy of the database, and on a fresh one after the normal seed, 49 games and 1,593 links added, 0 tiles, 12 publishers filled; a second start and the normal files afterwards are skipped; `update_data.py --pinned --no-fetch` restores identical seed files) |
+| 5.8 | Users page (`/admin/users`, `UsersController`): list and search accounts; give or take roles; disable and enable; confirm email; send password reset; delete. Own account, the `Admin:Email` account, and the last admin are protected. Sign-in cookies are re-checked every minute (`SecurityStampValidatorOptions`), so changes reach signed-in people within a minute; runbook "The Users page" | Done (verified on a database copy: each action, the 409 refusals, 401 and 403 for others, disabled and deleted accounts signed out and a new Admin role applied about a minute later) |
 | 5.6 | Deployment flexibility: website API address from `VITE_API_BASE_URL` (relative `/api` by default, `client.ts` `apiUrl`); Vite port, preview port, `allowedHosts`, proxy target, and proxy `secure` from `web/.env` (`web/.env.example`); API follows `PORT`; optional CORS (`Cors:AllowedOrigins`) with routing, CORS, and sign-in steps ordered explicitly; Docker `APP_PORT` and `CORS_ALLOWED_ORIGINS`; runbook (website settings, how the website finds the API, ports, troubleshooting) and guide updated | Done (verified: PORT, sign-in and admin and 401 and 404 and 429 unchanged, CORS on and off, Vite port and proxy, unknown host blocked and allowed host accepted, secure=true rejects the dev certificate, base URL only built in when set) |
 
 **Phase 4 complete.**

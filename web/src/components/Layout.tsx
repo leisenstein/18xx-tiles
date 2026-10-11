@@ -1,4 +1,4 @@
-import { BookOpen, ClipboardCheck, Download, History, Inbox, Layers, LayoutGrid, LogOut, Hexagon, SquarePlus, type LucideIcon } from 'lucide-react'
+import { BookOpen, ClipboardCheck, Download, Hexagon, History, Inbox, Layers, LayoutGrid, LogOut, SquarePlus, type LucideIcon, Users } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router'
 import Logo from '@/components/Logo'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,7 @@ const adminItems: NavItem[] = [
   { to: '/admin/queue', label: 'Review', icon: ClipboardCheck },
   { to: '/admin/history', label: 'History', icon: History },
   { to: '/admin/imports', label: 'Imports', icon: Download },
+  { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/docs', label: 'Docs', icon: BookOpen, section: true },
 ]
 

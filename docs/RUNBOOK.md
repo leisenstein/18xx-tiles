@@ -438,15 +438,30 @@ dotnet ef migrations add DescribeTheChange --context AuthDbContext --output-dir 
 
 - **First admin:** created at startup from `Admin:Email` and `Admin:Password` (user-secrets in development; `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` for Docker). It is only created if missing. Changing the password setting later does **not** change an existing account's password.
 - **Other users:** register on the site, then confirm from the email (in development, the link in the API log).
-- **Make another user an admin:** there is no screen for this yet. With the API stopped, run this SQL against `data/tiles.db` in any SQLite tool (for example DB Browser for SQLite), replacing the email:
-
-```sql
-INSERT INTO AspNetUserRoles (UserId, RoleId)
-SELECT u.Id, r.Id FROM AspNetUsers u, AspNetRoles r
-WHERE u.NormalizedEmail = UPPER('someone@example.com') AND r.Name = 'Admin';
-```
+- **Manage accounts:** the **Users** page (admins only). See the next section.
 
 - **Rate limits:** sign-in, registration, and other `/api/auth` calls allow 10 per minute per IP address; tile submissions allow 30 per hour per user. Over the limit returns 429; wait and try again.
+
+### The Users page
+
+**Users** lists every account with its roles, state, and how many tile requests it has submitted. Search by email. For each account:
+
+| Action | What it does |
+|---|---|
+| **Make Admin** / **Remove Admin** | Gives or takes the Admin role |
+| **Confirm email** | Marks the email confirmed so the person can sign in without the emailed link. Useful while no email service is set up; only do it when you know the address is theirs |
+| **Send password reset** | Emails the person the same reset link as "Forgot password". You never see or set their password. Without an email service, the link is in the API log |
+| **Disable** / **Enable** | A disabled account cannot sign in. Enable also ends the short lockout Identity applies after 5 wrong passwords (shown as "Locked until ...") |
+| **Delete** | Removes the account and its roles, after you confirm. Its tile requests and history stay, shown as "an unknown user". Disabling is usually better: it can be undone |
+
+Rules that keep the site from losing its admins (the buttons are off, and the API refuses):
+- You cannot remove the Admin role from, disable, or delete **your own account**. Ask another admin.
+- The same goes for the **configured admin** (the `Admin:Email` account): the site would restore it at the next start anyway.
+- The **last admin** cannot lose the role.
+
+Changes reach people who are already signed in **within a minute**: the site re-checks every sign-in once a minute, so new roles apply, and disabled or deleted accounts are signed out.
+
+Roles: the site has one role, **Admin**. Accounts are created by people registering; there is no "add user" button.
 
 ## Admin tasks in the app
 
@@ -457,6 +472,7 @@ WHERE u.NormalizedEmail = UPPER('someone@example.com') AND r.Name = 'Admin';
 | Edit a game's tiles and counts | Tiles filtered to a game: **Edit this game's tiles** | Add, remove, set counts and notes; saved as one History entry |
 | See every change | **History** | Filter by type (Add, Edit, Delete, Import, Game) and status; search by tile, email, game, or commit |
 | See imports | **Imports** | What each import added, and notes to review |
+| Manage accounts | **Users** | Admin role, confirm email, password reset, disable, delete; see "The Users page" |
 | Print tile numbers | a tile or a game: **Print number circle(s)** | Any signed-in user; PDF sheet, SVG, or PNG |
 
 ## Docker

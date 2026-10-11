@@ -33,7 +33,7 @@ const CREDENTIALS: RequestCredentials = API_BASE ? 'include' : 'same-origin'
 // The full address for an API path: '/api/games' stays as is, or becomes 'https://api.example.com/api/games' when a base is set.
 export const apiUrl = (path: string) => API_BASE + path
 
-async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
+async function request<T>(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body?: unknown): Promise<T> {
   const response = await fetch(apiUrl(path), {
     method,
     credentials: CREDENTIALS,
@@ -75,4 +75,9 @@ export function postJson<T = void>(path: string, body?: unknown): Promise<T> {
 // PUT a JSON body: replace something as a whole (for example a game's tile list).
 export function putJson<T = void>(path: string, body: unknown): Promise<T> {
   return request<T>('PUT', path, body)
+}
+
+// DELETE: remove something (for example an account, or a role from an account).
+export function deleteJson<T = void>(path: string): Promise<T> {
+  return request<T>('DELETE', path)
 }

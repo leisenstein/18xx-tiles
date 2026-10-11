@@ -3,7 +3,8 @@ import type { HistoryEntry } from '@/types/history'
 import type { ImportRun } from '@/types/importRun'
 import type { PagedResult } from '@/types/paged'
 import type { GameTileInput, GameTiles } from '@/types/gameTiles'
-import { getJson, getText, postJson, putJson } from './client'
+import type { AdminUser } from '@/types/adminUser'
+import { deleteJson, getJson, getText, postJson, putJson } from './client'
 
 // API calls for admins only. The API answers 401 when not signed in and 403 without the Admin role (AdminController).
 
@@ -50,3 +51,26 @@ export const getImports = () => getJson<ImportRun[]>('/api/admin/imports')
 
 // Reject a Pending request. The note is required and shown to the submitter.
 export const rejectChangeRequest = (id: number, note: string) => postJson<ChangeRequest>(`/api/admin/change-requests/${id}/reject`, { note })
+
+// ---- Users page (UsersController). Changes to an account return it as it is now; 409 explains a refusal (your own account, the configured admin, or
+// the last admin). ----
+
+// Every account, or those whose email contains q, sorted by email.
+export const getUsers = (q: string) => getJson<AdminUser[]>(`/api/admin/users${q ? `?q=${encodeURIComponent(q)}` : ''}`)
+
+// The roles that exist (today only "Admin").
+export const getRoles = () => getJson<string[]>('/api/admin/roles')
+
+const userPath = (id: string) => `/api/admin/users/${encodeURIComponent(id)}`
+
+export const addUserRole = (id: string, role: string) => putJson<AdminUser>(`${userPath(id)}/roles/${encodeURIComponent(role)}`, undefined)
+export const removeUserRole = (id: string, role: string) => deleteJson<AdminUser>(`${userPath(id)}/roles/${encodeURIComponent(role)}`)
+export const disableUser = (id: string) => postJson<AdminUser>(`${userPath(id)}/disable`)
+export const enableUser = (id: string) => postJson<AdminUser>(`${userPath(id)}/enable`)
+export const confirmUserEmail = (id: string) => postJson<AdminUser>(`${userPath(id)}/confirm-email`)
+
+// Emails the person a password-reset link (the admin never sees or sets the password).
+export const sendUserPasswordReset = (id: string) => postJson(`${userPath(id)}/password-reset`)
+
+// Deletes the account. Its tile requests and history stay.
+export const deleteUser = (id: string) => deleteJson(userPath(id))

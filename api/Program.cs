@@ -103,6 +103,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
+// Re-check each signed-in cookie against the database every minute (Identity's default is 30): new roles take effect, and deleted or disabled
+// accounts are signed out, within a minute of an admin's change on the Users page (UsersController).
+builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
 
 // A4d. The keys that encrypt the cookie ("Data Protection"). If the keys were lost on every restart, every cookie would become unreadable and everyone
 //      would be signed out. So they are saved to disk: data/keys in development, /data/keys in Docker (DESIGN.md section 11a). Keep this folder private.
