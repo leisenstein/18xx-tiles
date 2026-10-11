@@ -42,6 +42,13 @@ SOFTWARE.
 As that notice says, the MIT License does not cover any rights in the game titles. This site shows game titles, designers, and publishers only to
 identify which game a tile belongs to, and is not affiliated with 18xx.games, its authors, or any designer or publisher.
 
+## Game and tile list data: 18xx.net
+
+Some games that 18xx.games does not have (older and unpublished designs, units, kits, and variants), their designer and publisher names, which
+tiles they use, and how many, come from [18xx.net](http://www.18xx.net/) (Blackwater Station) and its Tile Encyclopaedia, by Chris Lawson,
+John David Galt and contributors. Only these facts are used, gathered by `tools/import/18xxnet/compare_18xxnet.py` and kept in
+`tools/import/18xxnet/18xxnet-games.json`; none of the site's text or images are included. The site states no license. Thank you to its authors.
+
 ## Fonts
 
 | Font | Used for | License |

@@ -43,7 +43,15 @@ export default function AboutPage() {
           , used under the MIT License (Copyright (c) 2021 Tobias Mao). Thank you to its authors and contributors. Counts come from 18xx.games manifests and may
           not match every printing of a game.
         </p>
-        <p>The tile drawings, printable number circles, and logo are drawn by this site, not copied from 18xx.games.</p>
+        <p>
+          Some games that 18xx.games does not have (older designs, 1825&apos;s units and kits, 1830 variants, and others), with the tiles they use and their
+          counts, come from{' '}
+          <a href="http://www.18xx.net/" className="underline">
+            18xx.net
+          </a>{' '}
+          and its Tile Encyclopaedia, by Chris Lawson, John David Galt and contributors. Thank you to them as well.
+        </p>
+        <p>The tile drawings, printable number circles, and logo are drawn by this site, not copied from 18xx.games or 18xx.net.</p>
       </Section>
 
       <Section title="Game titles">

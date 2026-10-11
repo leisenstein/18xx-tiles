@@ -51,7 +51,7 @@ One row per game, imported from tobymao/18xx. Not editable in the app.
 |---|---|---|---|
 | `Id` | INTEGER | no | Primary key |
 | `Title` | TEXT | no | Game title, unique, for example `1830` |
-| `SourceKey` | TEXT | no | Upstream folder name, unique, for example `g_1830`. Imports match games by this, so a title can change upstream |
+| `SourceKey` | TEXT | no | Upstream folder name, unique, for example `g_1830`; `18xxnet_<name>` for games imported from 18xx.net (runbook). Imports match games by this, so a title can change upstream |
 | `Designer` | TEXT | yes | From the game's `meta.rb`; NULL when upstream lists none |
 | `Publisher` | TEXT | yes | One or more names, comma-separated |
 | `CreatedUtc` | TEXT | no | When the import added it |

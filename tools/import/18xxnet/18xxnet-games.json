@@ -1,0 +1,6969 @@
+{
+ "18xxnet_1800": {
+  "title": "1800",
+  "designer": "Antonio Leal",
+  "publisher": "Antonio Leal",
+  "dir": "18xxnet_1800",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "805": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "806": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "807": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "808": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 2
+   },
+   "24": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "800": {
+    "custom": false,
+    "count": 1
+   },
+   "803": {
+    "custom": false,
+    "count": 1
+   },
+   "802": {
+    "custom": false,
+    "count": 1
+   },
+   "804": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1825_expansion_kit_k1": {
+  "title": "1825 Expansion Kit K1",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_expansion_kit_k1",
+  "tiles": {
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "21": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "22": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_expansion_kit_k3": {
+  "title": "1825 Expansion Kit K3",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_expansion_kit_k3",
+  "tiles": {
+   "168": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1825_expansion_kit_k5": {
+  "title": "1825 Expansion Kit K5",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_expansion_kit_k5",
+  "tiles": {
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_expansion_kit_k6": {
+  "title": "1825 Expansion Kit K6",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_expansion_kit_k6",
+  "tiles": {
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "11": {
+    "custom": false,
+    "count": 2
+   },
+   "198": {
+    "custom": true,
+    "code": "town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:5,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=OO",
+    "color": "yellow",
+    "count": 1
+   },
+   "82": {
+    "custom": false,
+    "count": 1
+   },
+   "199": {
+    "custom": true,
+    "code": "town=revenue:10;town=revenue:10;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_1;path=a:4,b:_1;label=OO",
+    "color": "yellow",
+    "count": 1
+   },
+   "83": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_regional_kit_r1_1_wales": {
+  "title": "1825 Regional Kit R1.1 - Wales",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_regional_kit_r1_1_wales",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "10": {
+    "custom": false,
+    "count": 1
+   },
+   "35": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 1
+   },
+   "11": {
+    "custom": false,
+    "count": 1
+   },
+   "37": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "38": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 2
+   },
+   "23": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_regional_kit_r1_wales": {
+  "title": "1825 Regional Kit R1 - Wales",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_regional_kit_r1_wales",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "10": {
+    "custom": false,
+    "count": 1
+   },
+   "35": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "37": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "23": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 2
+   },
+   "24": {
+    "custom": false,
+    "count": 1
+   },
+   "71": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 1
+   },
+   "72": {
+    "custom": false,
+    "count": 1
+   },
+   "73": {
+    "custom": false,
+    "count": 1
+   },
+   "74": {
+    "custom": false,
+    "count": 1
+   },
+   "78": {
+    "custom": false,
+    "count": 1
+   },
+   "79": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_regional_kit_r2_south_west_england": {
+  "title": "1825 Regional Kit R2 - South West England",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_regional_kit_r2_south_west_england",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "10": {
+    "custom": false,
+    "count": 1
+   },
+   "35": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "37": {
+    "custom": false,
+    "count": 1
+   },
+   "115": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_regional_kit_r3_1_north_norfolk": {
+  "title": "1825 Regional Kit R3.1 - North Norfolk",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_regional_kit_r3_1_north_norfolk",
+  "tiles": {
+   "8": {
+    "custom": false,
+    "count": 1
+   },
+   "11": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_regional_kit_r3_north_norfolk": {
+  "title": "1825 Regional Kit R3 - North Norfolk",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_regional_kit_r3_north_norfolk",
+  "tiles": {
+   "72": {
+    "custom": false,
+    "count": 1
+   },
+   "73": {
+    "custom": false,
+    "count": 1
+   },
+   "74": {
+    "custom": false,
+    "count": 1
+   },
+   "77": {
+    "custom": false,
+    "count": 1
+   },
+   "78": {
+    "custom": false,
+    "count": 1
+   },
+   "79": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_unit_2": {
+  "title": "1825 Unit 2",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_unit_2",
+  "tiles": {
+   "12": {
+    "custom": false,
+    "count": 3
+   },
+   "33": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "34": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "38": {
+    "custom": false,
+    "count": 3
+   },
+   "4": {
+    "custom": false,
+    "count": 1
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 4
+   },
+   "23": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 4
+   },
+   "24": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "114": {
+    "custom": true,
+    "code": "town=revenue:10;town=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_1",
+    "color": "yellow",
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "52": {
+    "custom": false,
+    "count": 2
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1825_unit_3": {
+  "title": "1825 Unit 3",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1825_unit_3",
+  "tiles": {
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "34": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "38": {
+    "custom": false,
+    "count": 2
+   },
+   "3": {
+    "custom": false,
+    "count": 1
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 6
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 2
+   },
+   "115": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 2
+   },
+   "52": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "81": {
+    "custom": false,
+    "count": 1
+   },
+   "118": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1829_expansion_kit_msk1": {
+  "title": "1829 Expansion Kit MSK1",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1829_expansion_kit_msk1",
+  "tiles": {}
+ },
+ "18xxnet_1829_expansion_kit_msk5": {
+  "title": "1829 Expansion Kit MSK5",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1829_expansion_kit_msk5",
+  "tiles": {
+   "55": {
+    "custom": false,
+    "count": 2
+   },
+   "11": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 2
+   },
+   "115": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1829_expansion_kit_msk6": {
+  "title": "1829 Expansion Kit MSK6",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1829_expansion_kit_msk6",
+  "tiles": {
+   "52": {
+    "custom": false,
+    "count": 3
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1829_mainline": {
+  "title": "1829 Mainline",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1829_mainline",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 2
+   },
+   "10": {
+    "custom": false,
+    "count": 3
+   },
+   "33": {
+    "custom": false,
+    "count": 1
+   },
+   "12": {
+    "custom": false,
+    "count": 3
+   },
+   "34": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 3
+   },
+   "35": {
+    "custom": false,
+    "count": 3
+   },
+   "4": {
+    "custom": false,
+    "count": 8
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "36": {
+    "custom": false,
+    "count": 3
+   },
+   "6": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "37": {
+    "custom": false,
+    "count": 3
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "38": {
+    "custom": false,
+    "count": 4
+   },
+   "8": {
+    "custom": false,
+    "count": 11
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 13
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 2
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "114": {
+    "custom": true,
+    "code": "town=revenue:10;town=revenue:10;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_1;path=a:5,b:_1",
+    "color": "yellow",
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "169": {
+    "custom": false,
+    "count": 2
+   },
+   "115": {
+    "custom": false,
+    "count": 3
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "87": {
+    "custom": false,
+    "count": 2
+   },
+   "88": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1830_coalfields": {
+  "title": "1830 Coalfields",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1830_coalfields",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 4
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 7
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 6
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 4
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 2
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "G17": {
+    "custom": true,
+    "code": "town=revenue:20;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0",
+    "color": "brown",
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1830_reading": {
+  "title": "1830 Reading",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1830_reading",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 7
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 2
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1830_wabash": {
+  "title": "1830 Wabash",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1830_wabash",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 7
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "592": {
+    "custom": false,
+    "count": 2
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "448": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1838": {
+  "title": "1838",
+  "designer": "Wolfram Janich",
+  "publisher": "Wolfram Janich",
+  "dir": "18xxnet_1838",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 1
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 1
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 7
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 6
+   },
+   "23": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 3
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "216": {
+    "custom": false,
+    "count": 3
+   },
+   "201": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "217": {
+    "custom": false,
+    "count": 1
+   },
+   "202": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "218": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "219": {
+    "custom": false,
+    "count": 1
+   },
+   "87": {
+    "custom": false,
+    "count": 3
+   },
+   "88": {
+    "custom": false,
+    "count": 2
+   },
+   "203": {
+    "custom": false,
+    "count": 2
+   },
+   "204": {
+    "custom": false,
+    "count": 2
+   },
+   "207": {
+    "custom": false,
+    "count": 1
+   },
+   "208": {
+    "custom": false,
+    "count": 1
+   },
+   "211": {
+    "custom": false,
+    "count": 1
+   },
+   "212": {
+    "custom": false,
+    "count": 1
+   },
+   "213": {
+    "custom": false,
+    "count": 1
+   },
+   "214": {
+    "custom": false,
+    "count": 1
+   },
+   "215": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1838tl": {
+  "title": "1838TL",
+  "designer": "Dieter Danziger",
+  "publisher": "Dieter Danziger",
+  "dir": "18xxnet_1838tl",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 32
+   },
+   "141": {
+    "custom": false,
+    "count": 15
+   },
+   "767": {
+    "custom": false,
+    "count": 3
+   },
+   "4": {
+    "custom": false,
+    "count": 32
+   },
+   "142": {
+    "custom": false,
+    "count": 15
+   },
+   "768": {
+    "custom": false,
+    "count": 3
+   },
+   "7": {
+    "custom": false,
+    "count": 32
+   },
+   "143": {
+    "custom": false,
+    "count": 12
+   },
+   "769": {
+    "custom": false,
+    "count": 3
+   },
+   "8": {
+    "custom": false,
+    "count": 32
+   },
+   "144": {
+    "custom": false,
+    "count": 6
+   },
+   "9": {
+    "custom": false,
+    "count": 32
+   },
+   "58": {
+    "custom": false,
+    "count": 32
+   }
+  }
+ },
+ "18xxnet_1842": {
+  "title": "1842",
+  "designer": "Wolfram Janich",
+  "publisher": "Marflow Games",
+  "dir": "18xxnet_1842",
+  "tiles": {
+   "12": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 3
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 4
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 5
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 12
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 14
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 3
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "216": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "217": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "218": {
+    "custom": false,
+    "count": 2
+   },
+   "201": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "219": {
+    "custom": false,
+    "count": 2
+   },
+   "202": {
+    "custom": false,
+    "count": 1
+   },
+   "87": {
+    "custom": false,
+    "count": 1
+   },
+   "88": {
+    "custom": false,
+    "count": 1
+   },
+   "203": {
+    "custom": false,
+    "count": 1
+   },
+   "204": {
+    "custom": false,
+    "count": 1
+   },
+   "205": {
+    "custom": false,
+    "count": 1
+   },
+   "206": {
+    "custom": false,
+    "count": 1
+   },
+   "207": {
+    "custom": false,
+    "count": 2
+   },
+   "208": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1847": {
+  "title": "1847",
+  "designer": "Wolfram Janich",
+  "publisher": "Wolfram Janich",
+  "dir": "18xxnet_1847",
+  "tiles": {
+   "12": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "15": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 5
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 2
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "216": {
+    "custom": false,
+    "count": 3
+   },
+   "201": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "202": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "87": {
+    "custom": false,
+    "count": 2
+   },
+   "88": {
+    "custom": false,
+    "count": 2
+   },
+   "203": {
+    "custom": false,
+    "count": 2
+   },
+   "204": {
+    "custom": false,
+    "count": 2
+   },
+   "205": {
+    "custom": false,
+    "count": 1
+   },
+   "206": {
+    "custom": false,
+    "count": 1
+   },
+   "207": {
+    "custom": false,
+    "count": 2
+   },
+   "208": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1851": {
+  "title": "1851",
+  "designer": "Chris Lawson, Mark Derrick",
+  "publisher": "Chris Lawson",
+  "dir": "18xxnet_1851",
+  "tiles": {
+   "5": {
+    "custom": false,
+    "count": 4
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 4
+   },
+   "15": {
+    "custom": false,
+    "count": 4
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 5
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 3
+   },
+   "8": {
+    "custom": false,
+    "count": 18
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 3
+   },
+   "9": {
+    "custom": false,
+    "count": 18
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "202": {
+    "custom": false,
+    "count": 3
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "21": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "22": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 4
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 4
+   },
+   "216": {
+    "custom": false,
+    "count": 3
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "611": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "627": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "628": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "629": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "511": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;label=Y;path=a:0,b:_0;path=a:2,b:_0;path=a:4,b:_0",
+    "color": "green",
+    "count": 4
+   },
+   "619": {
+    "custom": false,
+    "count": 3
+   },
+   "624": {
+    "custom": false,
+    "count": 1
+   },
+   "625": {
+    "custom": false,
+    "count": 1
+   },
+   "626": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1853": {
+  "title": "1853",
+  "designer": "Francis Tresham",
+  "publisher": "Hartland Trefoil Ltd",
+  "dir": "18xxnet_1853",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 2
+   },
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "102": {
+    "custom": false,
+    "count": 2
+   },
+   "13": {
+    "custom": false,
+    "count": 2
+   },
+   "103": {
+    "custom": false,
+    "count": 4
+   },
+   "3": {
+    "custom": false,
+    "count": 10
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "104": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 14
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "105": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 4
+   },
+   "80": {
+    "custom": false,
+    "count": 2
+   },
+   "106": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 8
+   },
+   "81": {
+    "custom": false,
+    "count": 2
+   },
+   "107": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "82": {
+    "custom": false,
+    "count": 4
+   },
+   "108": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 14
+   },
+   "83": {
+    "custom": false,
+    "count": 4
+   },
+   "9": {
+    "custom": false,
+    "count": 14
+   },
+   "84": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 2
+   },
+   "85": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 2
+   },
+   "86": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 2
+   },
+   "87": {
+    "custom": false,
+    "count": 2
+   },
+   "71": {
+    "custom": false,
+    "count": 2
+   },
+   "88": {
+    "custom": false,
+    "count": 2
+   },
+   "72": {
+    "custom": false,
+    "count": 4
+   },
+   "89": {
+    "custom": false,
+    "count": 2
+   },
+   "73": {
+    "custom": false,
+    "count": 6
+   },
+   "90": {
+    "custom": false,
+    "count": 2
+   },
+   "74": {
+    "custom": false,
+    "count": 4
+   },
+   "91": {
+    "custom": false,
+    "count": 2
+   },
+   "75": {
+    "custom": false,
+    "count": 2
+   },
+   "92": {
+    "custom": false,
+    "count": 2
+   },
+   "76": {
+    "custom": false,
+    "count": 2
+   },
+   "93": {
+    "custom": false,
+    "count": 2
+   },
+   "77": {
+    "custom": false,
+    "count": 2
+   },
+   "94": {
+    "custom": false,
+    "count": 2
+   },
+   "78": {
+    "custom": false,
+    "count": 6
+   },
+   "95": {
+    "custom": false,
+    "count": 2
+   },
+   "79": {
+    "custom": false,
+    "count": 4
+   },
+   "96": {
+    "custom": false,
+    "count": 2
+   },
+   "113": {
+    "custom": false,
+    "count": 2
+   },
+   "97": {
+    "custom": false,
+    "count": 2
+   },
+   "98": {
+    "custom": false,
+    "count": 2
+   },
+   "99": {
+    "custom": false,
+    "count": 2
+   },
+   "100": {
+    "custom": false,
+    "count": 2
+   },
+   "101": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1853_v1_expansion_kit_mik1": {
+  "title": "1853 v1 Expansion Kit MIK1",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1853_v1_expansion_kit_mik1",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 4
+   },
+   "71": {
+    "custom": false,
+    "count": 1
+   },
+   "72": {
+    "custom": false,
+    "count": 2
+   },
+   "73": {
+    "custom": false,
+    "count": 3
+   },
+   "74": {
+    "custom": false,
+    "count": 2
+   },
+   "75": {
+    "custom": false,
+    "count": 1
+   },
+   "76": {
+    "custom": false,
+    "count": 1
+   },
+   "77": {
+    "custom": false,
+    "count": 1
+   },
+   "78": {
+    "custom": false,
+    "count": 3
+   },
+   "79": {
+    "custom": false,
+    "count": 2
+   },
+   "113": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1853_v1_expansion_kit_mik1_1": {
+  "title": "1853 v1 Expansion Kit MIK1.1",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1853_v1_expansion_kit_mik1_1",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "71": {
+    "custom": false,
+    "count": 1
+   },
+   "72": {
+    "custom": false,
+    "count": 1
+   },
+   "73": {
+    "custom": false,
+    "count": 2
+   },
+   "75": {
+    "custom": false,
+    "count": 2
+   },
+   "76": {
+    "custom": false,
+    "count": 2
+   },
+   "78": {
+    "custom": false,
+    "count": 3
+   },
+   "113": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1853_v2": {
+  "title": "1853 v2",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1853_v2",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 2
+   },
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "102": {
+    "custom": false,
+    "count": 3
+   },
+   "13": {
+    "custom": false,
+    "count": 2
+   },
+   "103": {
+    "custom": false,
+    "count": 4
+   },
+   "3": {
+    "custom": false,
+    "count": 10
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "105": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 14
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "106": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 4
+   },
+   "80": {
+    "custom": false,
+    "count": 2
+   },
+   "107": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 8
+   },
+   "81": {
+    "custom": false,
+    "count": 2
+   },
+   "108": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 6
+   },
+   "82": {
+    "custom": false,
+    "count": 4
+   },
+   "8": {
+    "custom": false,
+    "count": 14
+   },
+   "83": {
+    "custom": false,
+    "count": 4
+   },
+   "9": {
+    "custom": false,
+    "count": 14
+   },
+   "84": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 2
+   },
+   "85": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 2
+   },
+   "86": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 10
+   },
+   "87": {
+    "custom": false,
+    "count": 2
+   },
+   "71": {
+    "custom": false,
+    "count": 2
+   },
+   "88": {
+    "custom": false,
+    "count": 2
+   },
+   "72": {
+    "custom": false,
+    "count": 4
+   },
+   "89": {
+    "custom": false,
+    "count": 2
+   },
+   "73": {
+    "custom": false,
+    "count": 6
+   },
+   "100": {
+    "custom": false,
+    "count": 2
+   },
+   "74": {
+    "custom": false,
+    "count": 4
+   },
+   "101": {
+    "custom": false,
+    "count": 2
+   },
+   "75": {
+    "custom": false,
+    "count": 2
+   },
+   "116": {
+    "custom": false,
+    "count": 2
+   },
+   "76": {
+    "custom": false,
+    "count": 2
+   },
+   "117": {
+    "custom": false,
+    "count": 2
+   },
+   "77": {
+    "custom": false,
+    "count": 4
+   },
+   "233": {
+    "custom": false,
+    "count": 6
+   },
+   "78": {
+    "custom": false,
+    "count": 6
+   },
+   "234": {
+    "custom": false,
+    "count": 4
+   },
+   "79": {
+    "custom": false,
+    "count": 6
+   },
+   "113": {
+    "custom": false,
+    "count": 2
+   },
+   "115": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1862": {
+  "title": "1862 (Helmut Ohley)",
+  "designer": "Helmut Ohley",
+  "publisher": "Helmut Ohley",
+  "dir": "18xxnet_1862",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 5
+   },
+   "14": {
+    "custom": false,
+    "count": 7
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 10
+   },
+   "15": {
+    "custom": false,
+    "count": 7
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "895": {
+    "custom": false,
+    "count": 3
+   },
+   "8": {
+    "custom": false,
+    "count": 18
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 25
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 15
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 5
+   },
+   "23": {
+    "custom": false,
+    "count": 5
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "899": {
+    "custom": true,
+    "code": "city=revenue:80,slots:3;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=NO",
+    "color": "gray",
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 5
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "125": {
+    "custom": false,
+    "count": 6
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "887": {
+    "custom": false,
+    "count": 2
+   },
+   "888": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1869am": {
+  "title": "1869AM",
+  "designer": "Alan R. Moon",
+  "publisher": null,
+  "dir": "18xxnet_1869am",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "38": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 4
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 6
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 15
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 18
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 6
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 4
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "21": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "22": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 4
+   },
+   "24": {
+    "custom": false,
+    "count": 4
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "52": {
+    "custom": false,
+    "count": 1
+   },
+   "90": {
+    "custom": false,
+    "count": 1
+   },
+   "91": {
+    "custom": false,
+    "count": 1
+   },
+   "92": {
+    "custom": false,
+    "count": 1
+   },
+   "93": {
+    "custom": false,
+    "count": 1
+   },
+   "410": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:2;path=a:0,b:_0;path=a:3,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "411": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:4;path=a:0,b:_0;path=a:3,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "412": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:3;path=a:0,b:_0;path=a:2,b:_0",
+    "color": "green",
+    "count": 2
+   },
+   "413": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:3;path=a:0,b:_0;path=a:4,b:_0",
+    "color": "green",
+    "count": 2
+   },
+   "414": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:1;path=a:0,b:_0;path=a:3,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "415": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:5;path=a:0,b:_0;path=a:3,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "416": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:3;path=a:0,b:_0;path=a:1,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "417": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:3;path=a:0,b:_0;path=a:5,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "418": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:4;path=a:0,b:_0;path=a:2,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "419": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:2;path=a:0,b:_0;path=a:4,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "420": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:5;path=a:0,b:_0;path=a:4,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "421": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:1;path=a:0,b:_0;path=a:2,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "422": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:4;path=a:0,b:_0;path=a:5,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "423": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:0,b:2;path=a:0,b:_0;path=a:1,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "424": {
+    "custom": true,
+    "code": "town=revenue:10;path=a:1,b:3;path=a:0,b:_0;path=a:4,b:_0",
+    "color": "green",
+    "count": 1
+   },
+   "425": {
+    "custom": true,
+    "code": "city=revenue:50,slots:1;city=revenue:50,slots:1,loc:2;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;path=a:1,b:_1;path=a:2,b:_1;path=a:3,b:_1;path=a:_0,b:_1;label=Bu",
+    "color": "green",
+    "count": 1
+   },
+   "426": {
+    "custom": true,
+    "code": "city=revenue:30,slots:1;path=a:0,b:_0;path=a:1,b:_0;label=Bo",
+    "color": "green",
+    "count": 1
+   },
+   "427": {
+    "custom": true,
+    "code": "city=revenue:60,groups:Vienna;path=a:0,b:_0;city=revenue:60,groups:Vienna;path=a:1,b:_1;city=revenue:60,groups:Vienna;path=a:2,b:_2;city=revenue:60,groups:Vienna;path=a:3,b:_3;city=revenue:60,groups:Vienna;path=a:4,b:_4;city=revenue:60,groups:Vienna;path=a:5,b:_5;label=W",
+    "color": "green",
+    "count": 1
+   },
+   "429": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=X",
+    "color": "green",
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1869tgs": {
+  "title": "1869TGS",
+  "designer": "Colin Barnhorst, Kris Marquardt",
+  "publisher": "C&K",
+  "dir": "18xxnet_1869tgs",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 2
+   },
+   "11": {
+    "custom": false,
+    "count": 4
+   },
+   "39": {
+    "custom": false,
+    "count": 3
+   },
+   "14": {
+    "custom": false,
+    "count": 4
+   },
+   "40": {
+    "custom": false,
+    "count": 3
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "15": {
+    "custom": false,
+    "count": 4
+   },
+   "41": {
+    "custom": false,
+    "count": 4
+   },
+   "16": {
+    "custom": false,
+    "count": 3
+   },
+   "42": {
+    "custom": false,
+    "count": 4
+   },
+   "232": {
+    "custom": false,
+    "count": 1
+   },
+   "17": {
+    "custom": false,
+    "count": 3
+   },
+   "43": {
+    "custom": false,
+    "count": 3
+   },
+   "6": {
+    "custom": false,
+    "count": 5
+   },
+   "18": {
+    "custom": false,
+    "count": 3
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 9
+   },
+   "19": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 4
+   },
+   "8": {
+    "custom": false,
+    "count": 24
+   },
+   "20": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 4
+   },
+   "9": {
+    "custom": false,
+    "count": 39
+   },
+   "23": {
+    "custom": false,
+    "count": 9
+   },
+   "47": {
+    "custom": false,
+    "count": 4
+   },
+   "55": {
+    "custom": false,
+    "count": 2
+   },
+   "24": {
+    "custom": false,
+    "count": 9
+   },
+   "63": {
+    "custom": false,
+    "count": 8
+   },
+   "56": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 3
+   },
+   "70": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 4
+   },
+   "58": {
+    "custom": false,
+    "count": 3
+   },
+   "27": {
+    "custom": false,
+    "count": 4
+   },
+   "69": {
+    "custom": false,
+    "count": 3
+   },
+   "28": {
+    "custom": false,
+    "count": 3
+   },
+   "29": {
+    "custom": false,
+    "count": 3
+   },
+   "132": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "170": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1876": {
+  "title": "1876",
+  "designer": "Peter Jacobi",
+  "publisher": "Chris Lawson",
+  "dir": "18xxnet_1876",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 1
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 5
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 4
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "21": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "22": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 2
+   },
+   "23": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "24": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1876_30": {
+  "title": "1876-30",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1876_30",
+  "tiles": {
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 3
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 3
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1876_35": {
+  "title": "1876-35",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1876_35",
+  "tiles": {
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "12": {
+    "custom": false,
+    "count": 2
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "13": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 3
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 3
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 3
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 3
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 2
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 3
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "201": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "216": {
+    "custom": false,
+    "count": 1
+   },
+   "202": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "217": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "218": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "219": {
+    "custom": false,
+    "count": 1
+   },
+   "87": {
+    "custom": false,
+    "count": 2
+   },
+   "205": {
+    "custom": false,
+    "count": 1
+   },
+   "206": {
+    "custom": false,
+    "count": 1
+   },
+   "207": {
+    "custom": false,
+    "count": 2
+   },
+   "208": {
+    "custom": false,
+    "count": 2
+   },
+   "210": {
+    "custom": false,
+    "count": 1
+   },
+   "211": {
+    "custom": false,
+    "count": 1
+   },
+   "212": {
+    "custom": false,
+    "count": 1
+   },
+   "213": {
+    "custom": false,
+    "count": 1
+   },
+   "214": {
+    "custom": false,
+    "count": 1
+   },
+   "215": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1881": {
+  "title": "1881",
+  "designer": "Michael Mette",
+  "publisher": "Michael Mette",
+  "dir": "18xxnet_1881",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 6
+   },
+   "13": {
+    "custom": false,
+    "count": 3
+   },
+   "38": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 6
+   },
+   "80": {
+    "custom": false,
+    "count": 2
+   },
+   "449": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 6
+   },
+   "81": {
+    "custom": false,
+    "count": 2
+   },
+   "82": {
+    "custom": false,
+    "count": 4
+   },
+   "7": {
+    "custom": false,
+    "count": 6
+   },
+   "83": {
+    "custom": false,
+    "count": 4
+   },
+   "141": {
+    "custom": false,
+    "count": 4
+   },
+   "9": {
+    "custom": false,
+    "count": 8
+   },
+   "142": {
+    "custom": false,
+    "count": 4
+   },
+   "58": {
+    "custom": false,
+    "count": 4
+   },
+   "205": {
+    "custom": false,
+    "count": 2
+   },
+   "206": {
+    "custom": false,
+    "count": 2
+   },
+   "212": {
+    "custom": false,
+    "count": 1
+   },
+   "429": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;label=X",
+    "color": "green",
+    "count": 4
+   },
+   "711": {
+    "custom": false,
+    "count": 2
+   },
+   "714": {
+    "custom": false,
+    "count": 1
+   },
+   "715": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1886": {
+  "title": "1886",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_1886",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 7
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "123": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 7
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "124": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 4
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 3
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 3
+   },
+   "5": {
+    "custom": false,
+    "count": 7
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 8
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 5
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 10
+   },
+   "23": {
+    "custom": false,
+    "count": 4
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 17
+   },
+   "24": {
+    "custom": false,
+    "count": 4
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 7
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 5
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "630": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 1
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "631": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 3
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "121": {
+    "custom": false,
+    "count": 2
+   },
+   "125": {
+    "custom": false,
+    "count": 4
+   },
+   "619": {
+    "custom": false,
+    "count": 6
+   },
+   "127": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "18xxnet_1895": {
+  "title": "1895",
+  "designer": "Adam Romoth, Helmut Ohley",
+  "publisher": "Helmut Ohley",
+  "dir": "18xxnet_1895",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 2
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 5
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 12
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 12
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 3
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 3
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 2
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "125": {
+    "custom": false,
+    "count": 3
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "887": {
+    "custom": false,
+    "count": 1
+   },
+   "888": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1898": {
+  "title": "1898",
+  "designer": "Michael Brünker",
+  "publisher": "Michael Brünker",
+  "dir": "18xxnet_1898",
+  "tiles": {
+   "1": {
+    "custom": false,
+    "count": 1
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "39": {
+    "custom": false,
+    "count": 2
+   },
+   "114": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "17": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 2
+   },
+   "3": {
+    "custom": false,
+    "count": 3
+   },
+   "18": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 8
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 16
+   },
+   "21": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 16
+   },
+   "22": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 5
+   },
+   "25": {
+    "custom": false,
+    "count": 3
+   },
+   "70": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "168": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "169": {
+    "custom": false,
+    "count": 2
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "174": {
+    "custom": true,
+    "code": "city=revenue:50,loc:0.5;city=revenue:50,loc:4.5;path=a:0,b:_0;path=a:1,b:_0;path=a:4,b:_1;path=a:5,b:_1;path=a:1,b:4;label=OO",
+    "color": "brown",
+    "count": 2
+   },
+   "30": {
+    "custom": false,
+    "count": 2
+   },
+   "31": {
+    "custom": false,
+    "count": 2
+   },
+   "305": {
+    "custom": true,
+    "code": "city=revenue:50,slots:3;label=XX;path=a:0,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:5,b:_0",
+    "color": "brown",
+    "count": 2
+   },
+   "306": {
+    "custom": true,
+    "code": "city=revenue:50,slots:3;label=XX;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:5,b:_0",
+    "color": "brown",
+    "count": 2
+   },
+   "630": {
+    "custom": false,
+    "count": 1
+   },
+   "631": {
+    "custom": false,
+    "count": 1
+   },
+   "632": {
+    "custom": false,
+    "count": 1
+   },
+   "338": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;",
+    "color": "brown",
+    "count": 1
+   },
+   "633": {
+    "custom": false,
+    "count": 1
+   },
+   "627": {
+    "custom": false,
+    "count": 1
+   },
+   "628": {
+    "custom": false,
+    "count": 1
+   },
+   "629": {
+    "custom": false,
+    "count": 1
+   },
+   "624": {
+    "custom": false,
+    "count": 1
+   },
+   "625": {
+    "custom": false,
+    "count": 1
+   },
+   "626": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_1899": {
+  "title": "1899",
+  "designer": "Ingo Meyer, Dirk Clemens",
+  "publisher": "Chris Lawson",
+  "dir": "18xxnet_1899",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 4
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 3
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 6
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 11
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 11
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 3
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "981": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "991": {
+    "custom": false,
+    "count": 1
+   },
+   "984": {
+    "custom": true,
+    "code": "city=revenue:50;city=revenue:50;path=a:0,b:_0;path=a:_0,b:1;path=a:2,b:_1;path=a:_1,b:3;label=OO",
+    "color": "brown",
+    "count": 1
+   },
+   "997": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18c2c": {
+  "title": "18C2C",
+  "designer": null,
+  "publisher": null,
+  "dir": "18xxnet_18c2c",
+  "tiles": {
+   "5": {
+    "custom": false,
+    "count": 15
+   },
+   "14": {
+    "custom": false,
+    "count": 12
+   },
+   "39": {
+    "custom": false,
+    "count": 4
+   },
+   "6": {
+    "custom": false,
+    "count": 15
+   },
+   "15": {
+    "custom": false,
+    "count": 18
+   },
+   "40": {
+    "custom": false,
+    "count": 8
+   },
+   "7": {
+    "custom": false,
+    "count": 36
+   },
+   "16": {
+    "custom": false,
+    "count": 8
+   },
+   "41": {
+    "custom": false,
+    "count": 12
+   },
+   "8": {
+    "custom": false,
+    "count": null
+   },
+   "17": {
+    "custom": false,
+    "count": 8
+   },
+   "42": {
+    "custom": false,
+    "count": 12
+   },
+   "9": {
+    "custom": false,
+    "count": null
+   },
+   "18": {
+    "custom": false,
+    "count": 8
+   },
+   "43": {
+    "custom": false,
+    "count": 8
+   },
+   "57": {
+    "custom": false,
+    "count": 30
+   },
+   "19": {
+    "custom": false,
+    "count": 8
+   },
+   "44": {
+    "custom": false,
+    "count": 4
+   },
+   "20": {
+    "custom": false,
+    "count": 8
+   },
+   "45": {
+    "custom": false,
+    "count": 8
+   },
+   "23": {
+    "custom": false,
+    "count": 16
+   },
+   "46": {
+    "custom": false,
+    "count": 8
+   },
+   "24": {
+    "custom": false,
+    "count": 16
+   },
+   "47": {
+    "custom": false,
+    "count": 8
+   },
+   "25": {
+    "custom": false,
+    "count": 12
+   },
+   "62": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 8
+   },
+   "63": {
+    "custom": false,
+    "count": 32
+   },
+   "27": {
+    "custom": false,
+    "count": 8
+   },
+   "70": {
+    "custom": false,
+    "count": 8
+   },
+   "28": {
+    "custom": false,
+    "count": 8
+   },
+   "125": {
+    "custom": false,
+    "count": 5
+   },
+   "29": {
+    "custom": false,
+    "count": 8
+   },
+   "170": {
+    "custom": false,
+    "count": 5
+   },
+   "54": {
+    "custom": false,
+    "count": 2
+   },
+   "448": {
+    "custom": false,
+    "count": 6
+   },
+   "590": {
+    "custom": false,
+    "count": 1
+   },
+   "591": {
+    "custom": false,
+    "count": 1
+   },
+   "592": {
+    "custom": false,
+    "count": 7
+   },
+   "593": {
+    "custom": false,
+    "count": 5
+   },
+   "619": {
+    "custom": false,
+    "count": 12
+   }
+  }
+ },
+ "18xxnet_18ec": {
+  "title": "18EC",
+  "designer": "Auke Stegink, Han Heidema",
+  "publisher": "Wolfram Janich",
+  "dir": "18xxnet_18ec",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 4
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 3
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 3
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 3
+   },
+   "8": {
+    "custom": false,
+    "count": 12
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 13
+   },
+   "23": {
+    "custom": false,
+    "count": 5
+   },
+   "45": {
+    "custom": false,
+    "count": 3
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 5
+   },
+   "46": {
+    "custom": false,
+    "count": 3
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 5
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18fr": {
+  "title": "18FR (Michael Liebetanz)",
+  "designer": "Michael Liebetanz",
+  "publisher": "Helmut Ohley",
+  "dir": "18xxnet_18fr",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 11
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18gl": {
+  "title": "18GL",
+  "designer": null,
+  "publisher": "Deep Thought Games",
+  "dir": "18xxnet_18gl",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 6
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 5
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "17": {
+    "custom": false,
+    "count": 2
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 5
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 11
+   },
+   "21": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 14
+   },
+   "22": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "63": {
+    "custom": false,
+    "count": 4
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "145": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 4
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "146": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "147": {
+    "custom": false,
+    "count": 2
+   },
+   "630": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "631": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "632": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "633": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "141": {
+    "custom": false,
+    "count": 2
+   },
+   "142": {
+    "custom": false,
+    "count": 2
+   },
+   "143": {
+    "custom": false,
+    "count": 2
+   },
+   "144": {
+    "custom": false,
+    "count": 2
+   },
+   "619": {
+    "custom": false,
+    "count": 4
+   },
+   "624": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18gm": {
+  "title": "18GM",
+  "designer": "Colin Barnhorst, Kris Marquardt",
+  "publisher": null,
+  "dir": "18xxnet_18gm",
+  "tiles": {
+   "11": {
+    "custom": false,
+    "count": 3
+   },
+   "32": {
+    "custom": false,
+    "count": 1
+   },
+   "48": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "12": {
+    "custom": false,
+    "count": 4
+   },
+   "34": {
+    "custom": false,
+    "count": 1
+   },
+   "50": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 2
+   },
+   "123": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 6
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 2
+   },
+   "5": {
+    "custom": false,
+    "count": 4
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "41": {
+    "custom": false,
+    "count": 3
+   },
+   "6": {
+    "custom": false,
+    "count": 4
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "42": {
+    "custom": false,
+    "count": 3
+   },
+   "7": {
+    "custom": false,
+    "count": 9
+   },
+   "17": {
+    "custom": false,
+    "count": 2
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 20
+   },
+   "18": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 20
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "232": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "261": {
+    "custom": true,
+    "code": "city=revenue:80,slots:3;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SF",
+    "color": "gray",
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 6
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 6
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 3
+   },
+   "63": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 2
+   },
+   "53": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 3
+   },
+   "121": {
+    "custom": false,
+    "count": 1
+   },
+   "132": {
+    "custom": false,
+    "count": 1
+   },
+   "212": {
+    "custom": false,
+    "count": 1
+   },
+   "170": {
+    "custom": false,
+    "count": 2
+   },
+   "221": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18kaas": {
+  "title": "18Kaas",
+  "designer": "Erno Eekelschot",
+  "publisher": "ERJO Games",
+  "dir": "18xxnet_18kaas",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 2
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "16": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "4": {
+    "custom": false,
+    "count": 2
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 4
+   },
+   "19": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "20": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 7
+   },
+   "23": {
+    "custom": false,
+    "count": 3
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 3
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 3
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "53": {
+    "custom": false,
+    "count": 2
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 2
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "18xxnet_18mw": {
+  "title": "18MW",
+  "designer": "Robin Barbehenn",
+  "publisher": null,
+  "dir": "18xxnet_18mw",
+  "tiles": {
+   "3": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "4": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 5
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 3
+   },
+   "16": {
+    "custom": false,
+    "count": 2
+   },
+   "41": {
+    "custom": false,
+    "count": 2
+   },
+   "6": {
+    "custom": false,
+    "count": 3
+   },
+   "17": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 2
+   },
+   "7": {
+    "custom": false,
+    "count": 8
+   },
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 2
+   },
+   "8": {
+    "custom": false,
+    "count": 20
+   },
+   "19": {
+    "custom": false,
+    "count": 2
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "9": {
+    "custom": false,
+    "count": 18
+   },
+   "20": {
+    "custom": false,
+    "count": 2
+   },
+   "45": {
+    "custom": false,
+    "count": 2
+   },
+   "57": {
+    "custom": false,
+    "count": 4
+   },
+   "23": {
+    "custom": false,
+    "count": 4
+   },
+   "46": {
+    "custom": false,
+    "count": 2
+   },
+   "58": {
+    "custom": false,
+    "count": 3
+   },
+   "24": {
+    "custom": false,
+    "count": 4
+   },
+   "47": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 2
+   },
+   "63": {
+    "custom": false,
+    "count": 5
+   },
+   "26": {
+    "custom": false,
+    "count": 2
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   },
+   "27": {
+    "custom": false,
+    "count": 2
+   },
+   "28": {
+    "custom": false,
+    "count": 2
+   },
+   "29": {
+    "custom": false,
+    "count": 2
+   },
+   "30": {
+    "custom": false,
+    "count": 1
+   },
+   "31": {
+    "custom": false,
+    "count": 1
+   },
+   "619": {
+    "custom": false,
+    "count": 3
+   }
+  }
+ },
+ "18xxnet_18sx": {
+  "title": "18SX",
+  "designer": "Wolfram Janich",
+  "publisher": "Marflow Games",
+  "dir": "18xxnet_18sx",
+  "tiles": {}
+ },
+ "18xxnet_18us": {
+  "title": "18US",
+  "designer": "David Hecht",
+  "publisher": "Deep Thought Games",
+  "dir": "18xxnet_18us",
+  "tiles": {
+   "5": {
+    "custom": false,
+    "count": 2
+   },
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "145": {
+    "custom": false,
+    "count": 4
+   },
+   "6": {
+    "custom": false,
+    "count": 3
+   },
+   "15": {
+    "custom": false,
+    "count": 6
+   },
+   "146": {
+    "custom": false,
+    "count": 4
+   },
+   "7": {
+    "custom": false,
+    "count": 2
+   },
+   "141": {
+    "custom": false,
+    "count": 4
+   },
+   "147": {
+    "custom": false,
+    "count": 4
+   },
+   "8": {
+    "custom": false,
+    "count": 16
+   },
+   "142": {
+    "custom": false,
+    "count": 4
+   },
+   "9": {
+    "custom": false,
+    "count": 32
+   },
+   "143": {
+    "custom": false,
+    "count": 4
+   },
+   "57": {
+    "custom": false,
+    "count": 3
+   },
+   "144": {
+    "custom": false,
+    "count": 4
+   },
+   "401": {
+    "custom": false,
+    "count": 1
+   },
+   "207": {
+    "custom": false,
+    "count": 3
+   },
+   "246": {
+    "custom": true,
+    "code": "city=revenue:60,slots:2;path=a:0,b:_0;path=a:0,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=SF",
+    "color": "brown",
+    "count": 1
+   },
+   "447": {
+    "custom": false,
+    "count": 1
+   },
+   "405": {
+    "custom": false,
+    "count": 3
+   },
+   "243": {
+    "custom": true,
+    "code": "city=revenue:40;city=revenue:40;path=a:0,b:_0;path=a:4,b:_1;label=SF",
+    "color": "green",
+    "count": 1
+   },
+   "619": {
+    "custom": false,
+    "count": 3
+   }
+  }
+ },
+ "18xxnet_powerrails": {
+  "title": "Powerrails",
+  "designer": "Tom Schoeps",
+  "publisher": null,
+  "dir": "18xxnet_powerrails",
+  "tiles": {
+   "14": {
+    "custom": false,
+    "count": 3
+   },
+   "39": {
+    "custom": false,
+    "count": 1
+   },
+   "2": {
+    "custom": false,
+    "count": 1
+   },
+   "15": {
+    "custom": false,
+    "count": 3
+   },
+   "40": {
+    "custom": false,
+    "count": 1
+   },
+   "5": {
+    "custom": false,
+    "count": 1
+   },
+   "23": {
+    "custom": false,
+    "count": 1
+   },
+   "41": {
+    "custom": false,
+    "count": 1
+   },
+   "6": {
+    "custom": false,
+    "count": 1
+   },
+   "24": {
+    "custom": false,
+    "count": 1
+   },
+   "42": {
+    "custom": false,
+    "count": 1
+   },
+   "7": {
+    "custom": false,
+    "count": 2
+   },
+   "25": {
+    "custom": false,
+    "count": 1
+   },
+   "43": {
+    "custom": false,
+    "count": 1
+   },
+   "8": {
+    "custom": false,
+    "count": 2
+   },
+   "26": {
+    "custom": false,
+    "count": 1
+   },
+   "44": {
+    "custom": false,
+    "count": 1
+   },
+   "168": {
+    "custom": true,
+    "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;label=OO",
+    "color": "gray",
+    "count": 2
+   },
+   "9": {
+    "custom": false,
+    "count": 2
+   },
+   "27": {
+    "custom": false,
+    "count": 1
+   },
+   "45": {
+    "custom": false,
+    "count": 1
+   },
+   "55": {
+    "custom": false,
+    "count": 1
+   },
+   "28": {
+    "custom": false,
+    "count": 1
+   },
+   "46": {
+    "custom": false,
+    "count": 1
+   },
+   "56": {
+    "custom": false,
+    "count": 1
+   },
+   "29": {
+    "custom": false,
+    "count": 1
+   },
+   "47": {
+    "custom": false,
+    "count": 1
+   },
+   "262": {
+    "custom": true,
+    "code": "city=revenue:70,slots:3;path=a:0,b:_0;path=a:1,b:_0;path=a:2,b:_0;path=a:3,b:_0;path=a:4,b:_0;path=a:5,b:_0;label=StL",
+    "color": "gray",
+    "count": 1
+   },
+   "57": {
+    "custom": false,
+    "count": 5
+   },
+   "53": {
+    "custom": false,
+    "count": 1
+   },
+   "61": {
+    "custom": false,
+    "count": 2
+   },
+   "69": {
+    "custom": false,
+    "count": 1
+   },
+   "54": {
+    "custom": false,
+    "count": 1
+   },
+   "62": {
+    "custom": false,
+    "count": 1
+   },
+   "59": {
+    "custom": false,
+    "count": 1
+   },
+   "63": {
+    "custom": false,
+    "count": 5
+   },
+   "64": {
+    "custom": false,
+    "count": 1
+   },
+   "65": {
+    "custom": false,
+    "count": 1
+   },
+   "66": {
+    "custom": false,
+    "count": 1
+   },
+   "67": {
+    "custom": false,
+    "count": 1
+   },
+   "68": {
+    "custom": false,
+    "count": 1
+   },
+   "70": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "g_1825": {
+  "title": "1825",
+  "designer": null,
+  "publisher": "Hartland Trefoil Ltd",
+  "dir": "g_1825",
+  "tiles": {}
+ },
+ "g_1829": {
+  "title": "1829",
+  "designer": null,
+  "publisher": "Hartland Trefoil Ltd",
+  "dir": "g_1829",
+  "tiles": {}
+ },
+ "g_1835": {
+  "title": "1835",
+  "designer": null,
+  "publisher": "Hans im Glück",
+  "dir": "g_1835",
+  "tiles": {}
+ },
+ "g_1844": {
+  "title": "1844",
+  "designer": null,
+  "publisher": null,
+  "dir": "g_1844",
+  "tiles": {
+   "18": {
+    "custom": false,
+    "count": 1
+   },
+   "125": {
+    "custom": false,
+    "count": 6
+   }
+  }
+ },
+ "g_1850": {
+  "title": "1850",
+  "designer": null,
+  "publisher": "Deep Thought Games",
+  "dir": "g_1850",
+  "tiles": {}
+ },
+ "g_1850_jr": {
+  "title": "1850Jr",
+  "designer": null,
+  "publisher": "18xx zine, 'dalla AX'",
+  "dir": "g_1850_jr",
+  "tiles": {}
+ },
+ "g_1870": {
+  "title": "1870",
+  "designer": null,
+  "publisher": "Mayfair Games",
+  "dir": "g_1870",
+  "tiles": {}
+ },
+ "g_1889": {
+  "title": "1889",
+  "designer": null,
+  "publisher": null,
+  "dir": "g_1889",
+  "tiles": {
+   "4": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "g_18_al": {
+  "title": "18AL",
+  "designer": null,
+  "publisher": "John Galt",
+  "dir": "g_18_al",
+  "tiles": {
+   "442": {
+    "custom": false,
+    "count": 1
+   },
+   "443": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "g_18_eu": {
+  "title": "18EU",
+  "designer": null,
+  "publisher": "Deep Thought Games",
+  "dir": "g_18_eu",
+  "tiles": {}
+ },
+ "g_18_fl": {
+  "title": "18FL",
+  "designer": null,
+  "publisher": null,
+  "dir": "g_18_fl",
+  "tiles": {
+   "6": {
+    "custom": false,
+    "count": 2
+   },
+   "443": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "g_18_ga": {
+  "title": "18GA",
+  "designer": null,
+  "publisher": "John Galt",
+  "dir": "g_18_ga",
+  "tiles": {}
+ },
+ "g_18_mex": {
+  "title": "18MEX",
+  "designer": null,
+  "publisher": null,
+  "dir": "g_18_mex",
+  "tiles": {
+   "144": {
+    "custom": false,
+    "count": 2
+   }
+  }
+ },
+ "g_18_nl": {
+  "title": "18NL",
+  "designer": null,
+  "publisher": "Wolfram Janich",
+  "dir": "g_18_nl",
+  "tiles": {
+   "12": {
+    "custom": false,
+    "count": 1
+   },
+   "13": {
+    "custom": false,
+    "count": 1
+   },
+   "218": {
+    "custom": false,
+    "count": 1
+   },
+   "219": {
+    "custom": false,
+    "count": 1
+   },
+   "205": {
+    "custom": false,
+    "count": 1
+   },
+   "206": {
+    "custom": false,
+    "count": 1
+   }
+  }
+ },
+ "g_18_tn": {
+  "title": "18TN",
+  "designer": null,
+  "publisher": null,
+  "dir": "g_18_tn",
+  "tiles": {
+   "598": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;path=a:2,b:_0;path=a:1,b:_0;path=a:0,b:_0;path=a:5,b:_0;path=a:4,b:_0;label=Nash;future_label=label:P,color:brown",
+    "color": "green",
+    "count": 1
+   },
+   "599": {
+    "custom": true,
+    "code": "city=revenue:40,slots:2;path=a:2,b:_0;path=a:4,b:_0;path=a:0,b:_0;label=;label=Chat;future_label=label:P,color:brown",
+    "color": "green",
+    "count": 1
+   }
+  }
+ },
+ "g_18_va": {
+  "title": "18VA",
+  "designer": null,
+  "publisher": "Deep Thought Games",
+  "dir": "g_18_va",
+  "tiles": {}
+ },
+ "g_steam_over_holland": {
+  "title": "Steam Over Holland",
+  "designer": null,
+  "publisher": "Bart Van Dijk",
+  "dir": "g_steam_over_holland",
+  "tiles": {
+   "448": {
+    "custom": false,
+    "count": 3
+   },
+   "611": {
+    "custom": false,
+    "count": 3
+   }
+  }
+ }
+}

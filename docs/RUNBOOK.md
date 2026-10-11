@@ -13,6 +13,7 @@ How to set up, run, update, and look after the 18xx Tiles app. For admins. The d
 | Website | React 19, Vite 8, Tailwind 4, shadcn/ui | `web/` | http://localhost:5173 (Vite sends `/api` calls to the API) |
 | Database | One SQLite file, plus the sign-in key folder | `data/tiles.db`, `data/keys/` (not in git) | |
 | Data import | Python script that reads tobymao/18xx | `tools/import/update_data.py` | |
+| 18xx.net games | Reviewed extra games and links from 18xx.net, in games.json format, kept in git | `tools/import/18xxnet/` | |
 | Docker | One container: the API serves the built website | `Dockerfile`, `docker-compose.yml` | http://localhost:8080 |
 
 At startup the API, in order:
@@ -296,6 +297,56 @@ Open **Imports**. Each import lists what it added and notes about upstream chang
 | In the app but not upstream | A link exists here but not upstream (removed upstream, or added by an admin) | Remove it with **Edit game tiles** if it is wrong |
 | Game no longer upstream | The game was removed upstream | The app keeps it |
 | Designers and publishers updated | Filled or changed from upstream | Nothing |
+
+## Data: extra games from 18xx.net
+
+[18xx.net](http://www.18xx.net/) (Blackwater Station and its Tile Encyclopaedia, by Chris Lawson, John David Galt and contributors) lists games that 18xx.games does not have: older and unpublished designs, 1825's units and kits, 1830 variants, and others. The site has not changed since about 2009. What we chose to take from it is kept in git, in `tools/import/18xxnet/`:
+
+| File | What it is |
+|---|---|
+| `18xxnet-games.json` | **The file to import.** Exactly the format of `games.json`: 49 games, units, and variants (their `dir` starts with `18xxnet_`) with the tiles the database has, plus 17 existing games with only the links and empty publishers to add |
+| `18xxnet-source.json` | Its `source.json` (commit `18xx.net`, and a hash so it is imported once) |
+| `18xxnet-diff.json`, `18xxnet-diff.md` | The review: every difference found, each with its `decision` |
+| `18xxnet-missing-tiles.json` | Tiles 18xx.net lists for those games that the database does not have (not imported) |
+| `compare_18xxnet.py`, `build_games_file.py` | The scripts that make the files above |
+
+It never adds tiles (18xx.net has no track layouts), only games, links, counts, and empty publishers.
+
+### Import it
+
+Import the normal data first (a new database gets it on its first start). Then, from the repo root:
+
+1. Put the 18xx.net files in place of the normal seed files (`tiles.json` stays):
+
+```bash
+cp tools/import/18xxnet/18xxnet-games.json api/Data/Seeding/SeedFiles/games.json
+```
+
+```bash
+cp tools/import/18xxnet/18xxnet-source.json api/Data/Seeding/SeedFiles/source.json
+```
+
+2. Rebuild and start the API. It imports the file in merge mode: **Imports** shows commit `18xx.net` with 49 games and about 1,590 links added.
+3. Stop the API and put the normal seed files back (no download needed):
+
+```bash
+python -I tools/import/update_data.py --pinned --no-fetch
+```
+
+4. Rebuild and start the API again. The normal data was already applied, so nothing more is imported.
+
+Docker builds always generate the normal seed files, so they cannot import this file themselves. Import it with the API on your PC (steps 1 to 4) into the database you will deploy, or restore a snapshot that already has it.
+
+**Notes in the report are expected.** The importer treats the file as the whole upstream: it lists the 18xx.games games as "Game no longer upstream" and the other links of the 17 games it touches as "In the app but not upstream". Both are kept; nothing is removed. Later 18xx.games updates likewise list the 18xx.net games and their added links as not upstream, and keep them.
+
+### Change what is imported
+
+1. Optional: compare again with `python -I tools/import/18xxnet/compare_18xxnet.py` (add `--offline` to use only the pages already downloaded to `tools/import/.cache/18xxnet`). Decisions already made are kept.
+2. Edit `"decision"` in `18xxnet-diff.json`: `"import"`, `"skip"`, or `null` (later).
+3. Run `python -I tools/import/18xxnet/build_games_file.py`. It fills undecided entries with the rules agreed in review (`RULES` in the script), never changing a decision made by hand, and rewrites `18xxnet-games.json` and `18xxnet-source.json`.
+4. Import it as above, and commit the files in `tools/import/18xxnet/`.
+
+Tile numbers 18xx.net has but the database does not (`newTile` entries, left undecided) need a track definition written by hand before they can be added.
 
 ## Database
 

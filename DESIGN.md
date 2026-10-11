@@ -282,6 +282,24 @@ It downloads only `lib/engine/game/`, `lib/engine/config/tile.rb`, and `LICENSE`
 
 Porting the parser to C# is optional later work.
 
+### 6.5 Extra games from 18xx.net (Phase 5)
+
+18xx.net (Blackwater Station and its Tile Encyclopaedia, last updated about 2009) covers games that 18xx.games does not. Its game pages give
+designer, publisher, status, and release date; its tile manifests give each game's tiles with colour and count. It has no track layouts, so it
+can add games and links to tiles we already have, but not tiles.
+
+1. **Compare.** `tools/import/18xxnet/compare_18xxnet.py` reads the site (cached, one request at a time) and the database (read-only) and writes
+   `18xxnet-diff.json`: every difference as an entry with a stable id and a `decision`, plus a readable `18xxnet-diff.md`. Titles match only when
+   the designers share a name or the tile lists overlap by half (18xx.net's 1858, 1866, 1880, and 1888 are other designs); 1847, 1862, and 18FR
+   are excluded by hand.
+2. **Decide.** Agreed in review (11 October 2026): fill empty publishers (12); keep the database's designers and publishers where they differ (35);
+   add links only for well-matched games where one tile of the same number and colour exists (18); keep all counts; add every game, unit, and
+   variant that has a tile list (49); leave the 646 tile numbers we lack for later.
+3. **Build.** `tools/import/18xxnet/build_games_file.py` writes `18xxnet-games.json` in exactly the `games.json` format, with its own
+   `18xxnet-source.json`, so the unchanged `DataImporter` imports it when the two replace `games.json` and `source.json` (merge mode: adds and
+   fills only). New games get `dir` `18xxnet_<name>`; a title already used by an 18xx.games game gets the designer added (`1862 (Helmut Ohley)`).
+   Unlike the 18xx.games seed files these are kept in git: the source is frozen and the file records decisions.
+
 ## 7. Database schema (app tables, managed by DbUp)
 
 **Baseline (pre-release reset, open item 13).** The development scripts 0001 to 0011 were combined into one script, `0001_CreateSchema.sql`, which
@@ -656,6 +674,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 5.3 | Email: Resend sender (settings `Email:ResendApiKey`, `Email:From`, `App:PublicUrl`; Docker `RESEND_API_KEY`, `EMAIL_FROM`, `PUBLIC_URL`), styled emails, forgot and reset password pages, "Forgot your password?" on sign-in; runbook sections Developer setup and Email, configuration table | Done (verified with a local stand-in for Resend: confirmation and reset emails sent, reset end to end, old password refused, link reuse refused, wrong key logged, missing sender stops startup, no key falls back to the log) |
 | 5.4 | Nightly database snapshots (`Data/Backups/DatabaseBackupService`): `VACUUM INTO` copy at `Backup:RunAt`, kept only when a fingerprint of the data (app tables, accounts, roles; not sign-in counters) changed; last `Backup:RetainCount` (90) kept; sign-in keys copied alongside; runbook sections for snapshots and restore | Done (verified: first run saves, unchanged and failed-sign-in-only runs skip, changes save, retention prunes, the scheduled run fires, a restored snapshot starts with all data) |
 | 5.5 | Going-live guide (`docs/guide/18xx-Tiles-Going-Live.pdf`, source `going-live.html`): title permission, domain, host choice, Railway deploy with volume and variables, domain and HTTPS (`ASPNETCORE_FORWARDEDHEADERS_ENABLED`), Resend email, a hands-on "Download backup" tutorial (C# endpoint and React button), launch checklist, after-launch tasks, VPS with Caddy, settings reference, glossary | Done (the tutorial's code was built and tested on a copy: admin-only, zip with database and keys, integrity check passes; the React steps compile and pass lint) |
+| 5.7 | Extra games from 18xx.net (section 6.5): comparison and reviewed diff, `18xxnet-games.json` in games.json format with `18xxnet-source.json`, import steps in the runbook, credits | Done (verified with the unchanged importer: on a copy of the database, and on a fresh one after the normal seed, 49 games and 1,593 links added, 0 tiles, 12 publishers filled; a second start and the normal files afterwards are skipped; `update_data.py --pinned --no-fetch` restores identical seed files) |
 | 5.6 | Deployment flexibility: website API address from `VITE_API_BASE_URL` (relative `/api` by default, `client.ts` `apiUrl`); Vite port, preview port, `allowedHosts`, proxy target, and proxy `secure` from `web/.env` (`web/.env.example`); API follows `PORT`; optional CORS (`Cors:AllowedOrigins`) with routing, CORS, and sign-in steps ordered explicitly; Docker `APP_PORT` and `CORS_ALLOWED_ORIGINS`; runbook (website settings, how the website finds the API, ports, troubleshooting) and guide updated | Done (verified: PORT, sign-in and admin and 401 and 404 and 429 unchanged, CORS on and off, Vite port and proxy, unknown host blocked and allowed host accepted, secure=true rejects the dev certificate, base URL only built in when set) |
 
 **Phase 4 complete.**
@@ -695,6 +714,9 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 12. ~~**Renderer gaps**~~ Resolved after Phase 4: `halt` is a node (fixes node numbering) drawn as a white circle with its symbol; `border` paints the
     edge in the tile color (typed borders: colored line and cost); `stripes` draws diagonal bands clipped to the hex. Samples added to `/dev/tiles`.
 13. ~~**Pre-release reset**~~ Done after Phase 4: parser fixed (item 11), DbUp scripts combined into `0001_CreateSchema.sql` (the EF Core Identity migration was already a single one), and the development database wiped and re-imported (old copy kept in `data/backup-before-reset/`, not in source control). From now on, schema changes are new numbered scripts; never edit or renumber released ones.
+14. **18xx.net data:** only facts from 18xx.net are used (titles, designer and publisher names, tile numbers, colours, counts), with credit. The
+    site states no license; consider asking its maintainer (Chris Lawson) before a public launch. 646 tile numbers from 18xx.net are not in the
+    database; they need definitions written by hand (undecided in `tools/import/18xxnet/18xxnet-diff.json`).
 
 ## 13. Reference files
 

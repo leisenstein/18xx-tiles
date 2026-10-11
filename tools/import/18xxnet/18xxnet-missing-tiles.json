@@ -1,0 +1,2940 @@
+{
+ "note": "Tiles 18xx.net lists for the new games that the database does not have (or has in several versions); not in 18xxnet-games.json.",
+ "games": {
+  "1825 Expansion Kit K3": [
+   {
+    "number": "48",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "49",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "50",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "51",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "60",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "166",
+    "color": "brown",
+    "count": "4"
+   },
+   {
+    "number": "167",
+    "color": "brown",
+    "count": "4"
+   }
+  ],
+  "1825 Expansion Kit K5": [
+   {
+    "number": "119",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1825 Expansion Kit K6": [
+   {
+    "number": "119",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "200",
+    "color": "brown",
+    "count": "2"
+   }
+  ],
+  "1825 Regional Kit R2 - South West England": [
+   {
+    "number": "W9",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1825 Unit 2": [
+   {
+    "number": "49",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "50",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "51",
+    "color": "brown",
+    "count": "2"
+   }
+  ],
+  "1829 Expansion Kit MSK1": [
+   {
+    "number": "60",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "166",
+    "color": "brown",
+    "count": "4"
+   }
+  ],
+  "1829 Mainline": [
+   {
+    "number": "49",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "50",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "51",
+    "color": "brown",
+    "count": "5"
+   }
+  ],
+  "1830 Coalfields": [
+   {
+    "number": "BA",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "ALT",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1830 Reading": [
+   {
+    "number": "RDG",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1830 Wabash": [
+   {
+    "number": "WA61",
+    "color": "brown",
+    "count": "2"
+   }
+  ],
+  "1838": [
+   {
+    "number": "R04",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "R05",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "R06",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "R07",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "R09",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "R10",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "R01",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "R02",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "R03",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "R08",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "R11",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "R12",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1838TL": [
+   {
+    "number": "TL002",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL001",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL005",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL004",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL008",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL003",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL007",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL010",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL006",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL009",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL011",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL016",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL012",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL013",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL019",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL014",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL015",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL022",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL017",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL018",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL032",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL020",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL021",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL035",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL023",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL024",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL038",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL025",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL026",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL041",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL030",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL027",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL044",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL033",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL028",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL048",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL036",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL029",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL056",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL039",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL031",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL059",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL042",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL034",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL062",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL045",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL037",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL065",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL049",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL040",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL068",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL051",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL043",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL071",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL054",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL046",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL074",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL057",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL047",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL082",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL060",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL050",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL087",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL063",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL052",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL090",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL066",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL053",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL099",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL069",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL055",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL102",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL072",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL058",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL105",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL075",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL061",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL110",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "TL078",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL064",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL080",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL067",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL083",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL070",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL085",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL073",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL088",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL076",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL091",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL077",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL097",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL079",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL100",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL081",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL103",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL084",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL106",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL086",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL108",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL089",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL111",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL092",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL113",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "TL093",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL094",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL095",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL096",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL098",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL101",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL104",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL107",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL109",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL112",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "TL114",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1842": [
+   {
+    "number": "321",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "301",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "326",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "302",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "311",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "312",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "313",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "315",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "316",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1851": [
+   {
+    "number": "512",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1853": [
+   {
+    "number": "109",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "110",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "111",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "112",
+    "color": "brown",
+    "count": "2"
+   }
+  ],
+  "1853 v2": [
+   {
+    "number": "500",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "720",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "109",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "111",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "112",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "900",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "250",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "716",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "717",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "718",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "719",
+    "color": "green",
+    "count": "2"
+   }
+  ],
+  "1862 (Helmut Ohley)": [
+   {
+    "number": "881",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "894",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "896",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "897",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "898",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "889",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "890",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "885",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "891",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "886",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "892",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "893",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1869AM": [
+   {
+    "number": "71",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "72",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "73",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "74",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "75",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "76",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "77",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "78",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "79",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "80",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "81",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "82",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "83",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "84",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "85",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "86",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "87",
+    "color": "brown",
+    "count": "6"
+   },
+   {
+    "number": "428",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1869TGS": [
+   {
+    "number": "211",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "214",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "215",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "249",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "370",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "449B",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "491",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "511",
+    "color": "gray",
+    "count": "3"
+   },
+   {
+    "number": "649",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "749",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "111",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "114",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "115",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "149",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "311",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "270",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "314",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "349",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "315",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "449A",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "549",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1876": [
+   {
+    "number": "363",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "361",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "371",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "365",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "373",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "60",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "362",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "360",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "366",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "364",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "374",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "372",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1876-30": [
+   {
+    "number": "202A",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "63A",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "53A",
+    "color": "green",
+    "count": "2"
+   }
+  ],
+  "1881": [
+   {
+    "number": "825",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "826",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "827",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "828",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "829",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "830",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "816",
+    "color": "yellow",
+    "count": "4"
+   },
+   {
+    "number": "831",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "823",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "832",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "833",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "834",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "835",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "836",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "811",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "837",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "812",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "840",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "813",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "841",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "817",
+    "color": "green",
+    "count": "8"
+   },
+   {
+    "number": "842",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "818",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "843",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "819",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "844",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "820",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "845",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "821",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "822",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "824",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "51",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "838",
+    "color": "brown",
+    "count": "4"
+   },
+   {
+    "number": "839",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "846",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "847",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "848",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "1895": [
+   {
+    "number": "581",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "814",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "815",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "849",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "850",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "889",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "38",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1898": [
+   {
+    "number": "175",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "176",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "177",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "178",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "303",
+    "color": "gray",
+    "count": "4"
+   },
+   {
+    "number": "304",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "308",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "309",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "314",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "330",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "148",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "333",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "149",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "173",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "336",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "150",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "339",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "151",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "195",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "344",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "152",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "196",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "345",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "153",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "165",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "197",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "346",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "154",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "166",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "198",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "347",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "155",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "167",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "199",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "348",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "156",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "179",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "200",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "157",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "180",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "222",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "158",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "181",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "223",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "159",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "182",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "224",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "160",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "183",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "161",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "184",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "162",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "185",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "307",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "163",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "186",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "310",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "164",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "187",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "329",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "188",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "332",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "189",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "335",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "194",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "225",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "340",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "317",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "341",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "318",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "342",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "319",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "343",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "320",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "322",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "323",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "324",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "325",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "327",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "328",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "331",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "334",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "337",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "1899": [
+   {
+    "number": "982",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "983",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "992",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "993",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "996",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "994",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "995",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "998",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "999",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18C2C": [
+   {
+    "number": "124",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "131",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "594",
+    "color": "brown",
+    "count": "8"
+   },
+   {
+    "number": "595",
+    "color": "brown",
+    "count": "32"
+   },
+   {
+    "number": "596",
+    "color": "brown",
+    "count": "4"
+   }
+  ],
+  "18EC": [
+   {
+    "number": "EC1",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "EC2",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "EC3",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "EC4",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "EC5",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "EC6",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "EC7",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18FR (Michael Liebetanz)": [
+   {
+    "number": "FR1",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "FR2",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "FR3",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "FR4",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "FR5",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "FR6",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "FR7",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "FR8",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "FR9",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "FR10",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "FR11",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18GL": [
+   {
+    "number": "740",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "741",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "742",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "743",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "724",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "744",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "725",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "727",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "728",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "745",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "729",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "746",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "730",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "747",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "726",
+    "color": "green",
+    "count": "2"
+   },
+   {
+    "number": "748",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "731",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "894",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "721",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "732",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "722",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "733",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "723",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "734",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "735",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "736",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "737",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "738",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "739",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "18GM": [
+   {
+    "number": "161",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "162",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "211",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "214",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "215",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "321",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "412",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "GMM1",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "491",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "GMM2",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "511",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "GMM3",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "GMM4",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "GMM5",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "GMM6",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "111",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "114",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "115",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "GM053A",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "GMM7",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "312",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "GMM8",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "GM061A",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "GMM9",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "GM061B",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18Kaas": [
+   {
+    "number": "Ka1",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "Ka2",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "Ka3",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18MW": [
+   {
+    "number": "MW1",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "MW2",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "MW3",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "MW4",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "MW5",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "MW6",
+    "color": "brown",
+    "count": "1"
+   }
+  ],
+  "18SX": [
+   {
+    "number": "S01",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "S11",
+    "color": "green",
+    "count": "3"
+   },
+   {
+    "number": "S48",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S02",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "S12",
+    "color": "green",
+    "count": "4"
+   },
+   {
+    "number": "S49",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S03",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "S13",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S50",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "S04",
+    "color": "yellow",
+    "count": "2"
+   },
+   {
+    "number": "S14",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S51",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "S05",
+    "color": "yellow",
+    "count": "7"
+   },
+   {
+    "number": "S15",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S52",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "S06",
+    "color": "yellow",
+    "count": "12"
+   },
+   {
+    "number": "S16",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S53",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S07",
+    "color": "yellow",
+    "count": "13"
+   },
+   {
+    "number": "S17",
+    "color": "green",
+    "count": "5"
+   },
+   {
+    "number": "S54",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "S08",
+    "color": "yellow",
+    "count": "1"
+   },
+   {
+    "number": "S18",
+    "color": "green",
+    "count": "5"
+   },
+   {
+    "number": "S55",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "S09",
+    "color": "yellow",
+    "count": "5"
+   },
+   {
+    "number": "S19",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S56",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S20",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S60",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S21",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S61",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S22",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S62",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S23",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S63",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S24",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S64",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S25",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S65",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S26",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S66",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S27",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S67",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S28",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S68",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S29",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S69",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S30",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S70",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S31",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S71",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S32",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S72",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S33",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S73",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S34",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S74",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S35",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S75",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S36",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S76",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S37",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S77",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S38",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S78",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S40",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S79",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S41",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S84",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S42",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S85",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S43",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S86",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S44",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S87",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S45",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S95",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S46",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S96",
+    "color": "brown",
+    "count": "2"
+   },
+   {
+    "number": "S80",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S97",
+    "color": "brown",
+    "count": "5"
+   },
+   {
+    "number": "S81",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S98",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S82",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S99",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S83",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S88",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S89",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S57",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S91",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S58",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S92",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S59",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "S93",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "S94",
+    "color": "green",
+    "count": "1"
+   }
+  ],
+  "18US": [
+   {
+    "number": "431",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "244",
+    "color": "brown",
+    "count": "3"
+   },
+   {
+    "number": "245",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "242",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "247",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "248",
+    "color": "brown",
+    "count": "1"
+   },
+   {
+    "number": "513",
+    "color": "brown",
+    "count": "2"
+   }
+  ],
+  "Powerrails": [
+   {
+    "number": "161",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "162",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "163",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "164",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "165",
+    "color": "gray",
+    "count": "1"
+   },
+   {
+    "number": "263",
+    "color": "gray",
+    "count": "2"
+   },
+   {
+    "number": "59A",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "59B",
+    "color": "green",
+    "count": "1"
+   },
+   {
+    "number": "59C",
+    "color": "green",
+    "count": "1"
+   }
+  ]
+ }
+}
