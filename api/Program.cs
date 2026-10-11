@@ -103,9 +103,21 @@ if (!Path.IsPathRooted(keysPath))
 }
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keysPath)).SetApplicationName("Tiles18xx");
 
-// A4e. Emails (confirmation link, password reset). Identity calls this "sender" whenever it needs to email someone. Ours writes the email to the API log
-//      instead of sending it, until a real provider is chosen (DESIGN.md open item 2).
-builder.Services.AddSingleton<IEmailSender<IdentityUser>, LogEmailSender>();
+// A4e. Emails (confirmation link, password reset). Identity calls this "sender" whenever it needs to email someone (DESIGN.md open item 2).
+//      With Email:ResendApiKey set, emails go out through Resend; Email:From must then be set too, or startup stops with a clear message.
+//      Without a key (normal in development), they are written to the API log instead.
+if (!string.IsNullOrWhiteSpace(builder.Configuration[ResendEmailSender.ApiKeySetting]))
+{
+    if (string.IsNullOrWhiteSpace(builder.Configuration[ResendEmailSender.FromSetting]))
+    {
+        throw new InvalidOperationException($"{ResendEmailSender.FromSetting} must be set when {ResendEmailSender.ApiKeySetting} is.");
+    }
+    builder.Services.AddHttpClient<IEmailSender<IdentityUser>, ResendEmailSender>(client => ResendEmailSender.Configure(client, builder.Configuration));
+}
+else
+{
+    builder.Services.AddSingleton<IEmailSender<IdentityUser>, LogEmailSender>();
+}
 
 // ---- A5. Rate limiting ----
 // Caps how often one visitor (one IP address) can call the sign-in and registration endpoints: 10 requests per minute, then "429 Too Many Requests"

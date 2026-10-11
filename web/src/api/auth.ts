@@ -23,5 +23,11 @@ export const register = (email: string, password: string) => postJson('/api/auth
 // Send the confirmation email again. Always succeeds, so it does not reveal whether an account exists.
 export const resendConfirmation = (email: string) => postJson('/api/auth/resendConfirmationEmail', { email })
 
+// Ask for a password-reset email (it links to /reset-password). Always succeeds, so it does not reveal whether an account exists.
+export const forgotPassword = (email: string) => postJson('/api/auth/forgotPassword', { email })
+
+// Set a new password with the code from the reset email. Throws ApiError 400 for an invalid or used code, or a password that breaks the rules.
+export const resetPassword = (email: string, resetCode: string, newPassword: string) => postJson('/api/auth/resetPassword', { email, resetCode, newPassword })
+
 // Sign out: the API deletes the sign-in cookie.
 export const signOut = () => postJson('/api/account/logout')

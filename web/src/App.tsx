@@ -7,6 +7,8 @@ import { ADMIN_ROLE } from '@/lib/constants'
 import AboutPage from '@/pages/AboutPage'
 import AdminDocsPage from '@/pages/AdminDocsPage'
 import AdminHistoryPage from '@/pages/AdminHistoryPage'
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import EditGameTilesPage from '@/pages/EditGameTilesPage'
 import AdminImportsPage from '@/pages/AdminImportsPage'
 import AdminQueuePage from '@/pages/AdminQueuePage'
@@ -47,6 +49,8 @@ function App() {
         <Route path="tiles/:id" element={<TileDetailPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
+        <Route path="forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="reset-password" element={<ResetPasswordPage />} />
         {/* Pages for any signed-in user: RequireRole without a role sends visitors to /login first. */}
         <Route
           path="submit"

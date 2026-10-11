@@ -19,6 +19,11 @@ services:
       # First admin account, created at startup if missing (Phase 3). If these are empty, no admin account is created.
       Admin__Email: "${ADMIN_EMAIL:-}"
       Admin__Password: "${ADMIN_PASSWORD:-}"
+      # The site's public address, used in password-reset email links.
+      App__PublicUrl: "${PUBLIC_URL:-http://localhost:8080}"
+      # Email through Resend (optional). Without a key, emails are written to the log (docker compose logs app).
+      Email__ResendApiKey: "${RESEND_API_KEY:-}"
+      Email__From: "${EMAIL_FROM:-}"
 
     # Store /data (the database and keys) on a Docker volume so it is kept
     # when the container is stopped, removed, or rebuilt.

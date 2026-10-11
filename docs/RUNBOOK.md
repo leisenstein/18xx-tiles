@@ -98,9 +98,112 @@ The first start creates `data/tiles.db`, imports 131 games and about 2,000 tiles
 
 Before committing, run lint and format:check in `web`, and `dotnet build` in `api`. Lines are at most 160 characters (`.editorconfig`, Prettier).
 
-### Emails in development
+## Developer setup
 
-There is no email provider yet. Registration confirmation and password-reset emails are written to the **API's console log** instead of being sent. To confirm a new account in development, copy the link from the API log and open it.
+What a developer needs beyond the first-time setup above.
+
+### Editors
+
+| Editor | Use it for | Add |
+|---|---|---|
+| Visual Studio, with the "ASP.NET and web development" workload | The API (`Tiles18xx.slnx`), debugging, `api/Tiles18xx.Api.http` requests | nothing else needed |
+| Visual Studio Code | The website (`web/`) | the ESLint, Prettier, and Tailwind CSS IntelliSense extensions; set Prettier as the formatter and turn on format on save |
+
+Either editor can open the whole repository. Line endings are handled by Git; if Prettier reports formatting problems on files saved in Visual Studio, run `npm run format` in `web`.
+
+### How the code is organized
+
+| Folder | Contents |
+|---|---|
+| `api/Controllers/` | One `*Controller` class per area (`[ApiController]`). Admin-only routes are in `AdminController` |
+| `api/Data/Repositories/` | Database access with Dapper, one `*Repository` per area |
+| `api/Data/Migrations/Scripts/` | DbUp schema scripts, `NNNN_VerbNoun.sql` |
+| `api/Data/Seeding/` | The startup import (`DataImporter`) and the shapes of the seed files |
+| `api/Domain/` | Shared rules: tile colors, sort order, counts, definition validation |
+| `api/Dtos/` | Request and response shapes, named `*Dto` |
+| `api/Auth/` | Sign-in: Identity, admin seeding, email senders, EF Core migrations |
+| `web/src/pages/` | One `*Page.tsx` per route (routes are in `App.tsx`) |
+| `web/src/components/` | Shared components; `ui/` holds shadcn/ui components |
+| `web/src/api/` | Calls to the API, one file per area |
+| `web/src/lib/` | Helpers: tile drawing (`tiles/`), number circles (`circles/`), constants |
+| `web/src/types/` | TypeScript types matching the API's DTOs |
+
+### Conventions
+
+- One type per file. Names: `*Controller`, `*Repository`, `*Dto` in the API; `*Page.tsx` for pages in the website.
+- Lines are at most 160 characters (`.editorconfig` and Prettier: single quotes, no semicolons).
+- Each file starts with a comment saying what it is for, and comments explain why, not what.
+- Dapper results that include `bool` or nullable columns use records with `init` properties, not positional records.
+- All database writes that belong together run in one transaction. Inputs are checked in the controller; the API answers 400 with every problem listed.
+- Anything an admin can do is recorded in the History (ChangeRequests or GameChanges).
+- Settings and secrets come from configuration (user-secrets, environment variables), never from code.
+- Every change is described in `DESIGN.md` (progress table and the affected sections).
+
+### Adding a feature: the usual steps
+
+1. Schema change, if any: a new script in `api/Data/Migrations/Scripts/` (see "Change the schema").
+2. API: DTOs in `api/Dtos/`, queries in a repository, an action in a controller. Add a sample request to `api/Tiles18xx.Api.http`.
+3. Website: the type in `web/src/types/`, the call in `web/src/api/`, then the page or component. Add the route in `App.tsx` and, if needed, a header link in `components/Layout.tsx`. Use `PageHeader`, `EmptyState`, and `LoadingState` so the page matches the rest.
+4. Check: `dotnet build`, `npm run lint`, `npm run format:check`, `npm run build`; try it in the browser, signed out, as a user, and as an admin.
+5. Update `DESIGN.md`, and this runbook if setup or operations changed.
+
+### Testing against a copy of the database
+
+To try something risky without touching your data, run a second API on a copy:
+
+1. Stop the API, then copy `data/tiles.db` (and `tiles.db-wal`, `tiles.db-shm` if present) to a scratch folder.
+2. Start the API with that copy and a different address, for example in the `api` folder:
+
+```bash
+dotnet run --launch-profile https -- --urls https://localhost:7397 --ConnectionStrings:Tiles="Data Source=C:/scratch/tiles.db"
+```
+
+3. Point a second Vite at it, or call it with `curl`. Delete the copy when done.
+
+## Email
+
+The app sends two kinds of email: account confirmation and password reset. It uses [Resend](https://resend.com) through its web API; there is nothing to install.
+
+- **No settings:** emails are written to the **API's console log** instead of being sent. This is the normal setup for development: copy the link from the log and open it.
+- **With a Resend API key:** emails are sent for real. If sending fails (for example a wrong key), the error is in the API log and the user can ask for the email again from the sign-in page.
+
+### Set up Resend (once)
+
+1. Create a free account at https://resend.com (the free plan is far more than this app needs).
+2. Add your domain in Resend and create the DNS records it shows (SPF and DKIM) at your domain registrar. Wait until Resend shows the domain as verified. Without a verified domain, Resend only delivers to your own address.
+3. Create an API key (sending access is enough).
+
+### Configure it when running locally
+
+In the `api` folder, store the key and the sender in user-secrets (never in a file in the repository):
+
+```bash
+dotnet user-secrets set "Email:ResendApiKey" "re_your_key"
+```
+
+```bash
+dotnet user-secrets set "Email:From" "18xx Tiles <no-reply@yourdomain.com>"
+```
+
+Restart the API. To go back to emails in the log, remove the key:
+
+```bash
+dotnet user-secrets remove "Email:ResendApiKey"
+```
+
+Password-reset emails link to the website. Locally the address is `App:PublicUrl` in `api/appsettings.Development.json` (`http://localhost:5173`, the Vite address); change it there if you run the website elsewhere.
+
+### Configure it in Docker
+
+Add to `.env` (see `.env.example`), then run `docker compose up -d` again:
+
+```text
+PUBLIC_URL=https://your-site-address
+RESEND_API_KEY=re_your_key
+EMAIL_FROM=18xx Tiles <no-reply@yourdomain.com>
+```
+
+`PUBLIC_URL` is the address people use to reach the site; it defaults to `http://localhost:8080`. Change it whenever the site moves.
 
 ## Data: games and tiles from tobymao/18xx
 
@@ -208,7 +311,8 @@ WHERE u.NormalizedEmail = UPPER('someone@example.com') AND r.Name = 'Admin';
 
 Docker builds generate the seed data themselves from the pinned commit, so the build needs internet access to github.com.
 
-1. Create `.env` next to `docker-compose.yml` from `.env.example` and fill in `ADMIN_EMAIL` and `ADMIN_PASSWORD`. It is not in git.
+1. Create `.env` next to `docker-compose.yml` from `.env.example` and fill in `ADMIN_EMAIL` and `ADMIN_PASSWORD`. Optionally set `PUBLIC_URL`,
+   `RESEND_API_KEY`, and `EMAIL_FROM` (see "Email"). `.env` is not in git; it holds secrets.
 2. Build and start, then open http://localhost:8080:
 
 ```bash
@@ -240,6 +344,9 @@ The volume name is the folder name plus `_tiles-data`; check it with `docker vol
 | Sign-in keys folder | `DataProtection:KeysPath` | `DataProtection__KeysPath` | `../data/keys` |
 | First admin email | user-secret `Admin:Email` | `Admin__Email` (from `ADMIN_EMAIL` in `.env`) | none: no admin created |
 | First admin password | user-secret `Admin:Password` | `Admin__Password` (from `ADMIN_PASSWORD`) | none |
+| Site's public address (reset links) | `App:PublicUrl` in `appsettings.Development.json` | `App__PublicUrl` (from `PUBLIC_URL`) | `http://localhost:5173` locally; `http://localhost:8080` in Docker |
+| Resend API key | user-secret `Email:ResendApiKey` | `Email__ResendApiKey` (from `RESEND_API_KEY`) | none: emails go to the log |
+| Email sender | user-secret `Email:From` | `Email__From` (from `EMAIL_FROM`) | none; required when the key is set |
 | Environment | `Development` (launch profile) | `Production` | |
 
 Keep `data/keys` private and backed up with the database. Losing it signs everyone out; anyone who has it could forge sign-in cookies.
@@ -253,7 +360,10 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | `dotnet build` fails: file locked by Tiles18xx.Api | The API is still running | Stop it, then build again |
 | "No admin account was created" in the API log | `Admin:Email` or `Admin:Password` not set | Set the user-secrets (or `.env`), restart |
 | Admin password not accepted | Password setting changed after the account was created | Use the old password, or reset the password through the site |
-| Cannot confirm a new account in development | No email provider yet | Copy the confirmation link from the API log |
+| Cannot confirm a new account in development | No Resend key set, so emails go to the log | Copy the confirmation link from the API log |
+| API stops at startup: "Email:From must be set" | The Resend key is set but the sender is not | Set `Email:From` (or `EMAIL_FROM`) |
+| Emails not arriving | Wrong key, or the sender's domain is not verified in Resend | Look for "Email to ... failed" in the API log; check the domain in Resend; check the spam folder |
+| Reset link opens the wrong site | `App:PublicUrl` (or `PUBLIC_URL`) is out of date | Set it to the site's current address and restart |
 | 429 Too Many Requests | Rate limit | Wait a minute (sign-in) or an hour (submissions) |
 | Import notes on **Imports** after an update | Upstream changed something edited here | See "The import report" above |
 | Everyone signed out after a restart | `data/keys` was deleted or not on the Docker volume | Keep the keys folder; check `DataProtection__KeysPath` |
@@ -271,5 +381,6 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | `api/Data/Seeding/DataImporter.cs` | Startup import (seed or merge) |
 | `api/Auth/` | Sign-in: Identity, admin seeding, migrations |
 | `api/Tiles18xx.Api.http` | Sample API requests for Visual Studio |
+| `api/Auth/ResendEmailSender.cs` | Sending email through Resend |
 | `web/src/pages/` | One file per page |
 | `branding/` | Logo SVGs |

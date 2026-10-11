@@ -465,6 +465,7 @@ Notes:
 | `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/login`, `/register` | Auth |
+| `/forgot-password`, `/reset-password` | Ask for a password-reset email; set a new password from its link (`?email=&code=`) |
 
 ### 9.2 Key components
 
@@ -652,6 +653,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.22 | Pre-release reset (open items 11 and 13): parser expands Ruby interpolations and normalizes edge 6 to 0; one baseline DbUp script; dead backfill code removed; development database wiped | Done (verified: no unexpanded code, all 2,628 definitions valid, fresh database has the same tables, columns, and indexes as before; 131 games, 2,022 tiles, 7,275 links) |
 | 5.1 | Licensing and credits: footer on every page, `/about` page, `THIRD-PARTY-NOTICES.md` (tobymao/18xx MIT, OFL fonts, library licenses checked against each package) | Done; permission for game titles still open (item 1) |
 | 5.2 | Admin docs: `docs/RUNBOOK.md` (setup, data import, database, accounts, Docker, configuration, troubleshooting) and `docs/DATABASE.md` (tables, columns, relationships, stored JSON, queries); served by `GET /api/admin/docs/{name}` so only admins can read them; `/admin/docs` page with a small built-in Markdown renderer | Done (verified: 401 when signed out, 404 for other names, every SQL example runs, pages in the browser) |
+| 5.3 | Email: Resend sender (settings `Email:ResendApiKey`, `Email:From`, `App:PublicUrl`; Docker `RESEND_API_KEY`, `EMAIL_FROM`, `PUBLIC_URL`), styled emails, forgot and reset password pages, "Forgot your password?" on sign-in; runbook sections Developer setup and Email, configuration table | Done (verified with a local stand-in for Resend: confirmation and reset emails sent, reset end to end, old password refused, link reuse refused, wrong key logged, missing sender stops startup, no key falls back to the log) |
 
 **Phase 4 complete.**
 
@@ -674,7 +676,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
    says the MIT License does not cover game titles, which 18xx.games shows with the designers' and publishers' permission. Recommended: ask the
    tobymao/18xx maintainers, keep the site non-commercial, show no box art or publisher logos, and add a contact address for removal requests once
    an email address exists (item 2). Not legal advice; confirm with someone qualified if the site will be public.
-2. **Email service:** choose a provider for confirmation and password-reset emails. Until then, development writes emails to the API log (Phase 3 decision).
+2. ~~**Email service**~~ Resolved in Phase 5: Resend through its web API (`Auth/ResendEmailSender.cs`, no extra packages), used when `Email:ResendApiKey` is set; otherwise `LogEmailSender` writes emails to the API log. Password-reset emails link to `/reset-password` on the site's address (`App:PublicUrl`). Needs a domain verified in Resend before going public (with hosting, item 3). Setup is in the runbook.
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
 4. ~~**Display names**~~ Resolved after Phase 4: the section 7 scheme (`#N`, `#N (Game)`, `#N (variant k)`) is kept as is.
 5. ~~**Import refresh**~~ Resolved after Phase 4: merge import that only adds and fills, with a report (section 6.4).
