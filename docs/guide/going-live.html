@@ -64,7 +64,7 @@
   <h1>Going live</h1>
   <div class="sub">A step-by-step guide to putting 18xx Tiles on the internet: hosting, your own address with HTTPS, email, and backups.</div>
   <div class="meta">Written for someone comfortable following instructions but new to web hosting and React.<br />
-    Version 1.1, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
+    Version 1.2, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
 </section>
 
 <!-- ======================================================================================= Contents -->
@@ -476,6 +476,7 @@ changes to the Docker image and a storage account; it is a good later project. A
   <tr><td>Get newer 18xx data</td><td>On your PC: <code>python -I tools/import/update_data.py</code>, review the summary, commit <code>tools/import/18xx-commit.txt</code>, push. After the deploy, check Admin → Imports for notes.</td></tr>
   <tr><td>See what is happening</td><td>Railway → service → Logs. Look for "failed" or "error".</td></tr>
   <tr><td>Take a backup home</td><td>Admin → Imports → Download backup.</td></tr>
+  <tr><td>Add the extra games from 18xx.net</td><td>Not automatic: the host's build only imports the 18xx.games data. On your PC, import <code>tools/import/18xxnet/18xxnet-games.json</code> as the runbook describes ("Data: extra games from 18xx.net"), into the database you will put on the host.</td></tr>
   <tr><td>Change a setting</td><td>Railway → Variables; the service restarts with the new value.</td></tr>
   <tr><td>Add another admin</td><td>See the runbook, "Accounts and admins".</td></tr>
   <tr><td>Renewals</td><td>The domain renews yearly (turn on auto-renew); certificates renew automatically.</td></tr>

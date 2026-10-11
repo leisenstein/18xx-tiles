@@ -84,6 +84,8 @@ npm run dev
 
 The first start creates `data/tiles.db`, imports 131 games and about 2,000 tiles, and creates your admin account. Sign in with the email and password from step 4.
 
+8. Optional: add the extra games from 18xx.net (49 games, units, and variants). Follow "Import it" under [Data: extra games from 18xx.net](#data-extra-games-from-18xx-net).
+
 ## Everyday development
 
 | Task | Command | Where |
@@ -312,6 +314,16 @@ Open **Imports**. Each import lists what it added and notes about upstream chang
 
 It never adds tiles (18xx.net has no track layouts), only games, links, counts, and empty publishers.
 
+### How it works, and why the seed files are swapped
+
+- **The importer reads three fixed files.** At startup `DataImporter` reads `games.json`, `tiles.json`, and `source.json`, which are built into the API from `api/Data/Seeding/SeedFiles/`. It has no setting for "import this other file", so to import the 18xx.net file without changing the importer, you put it in place of `games.json` for one start.
+- **Why `source.json` is swapped too.** The importer remembers the hash in `source.json` of every data set it has applied (in `ImportRuns`) and skips one it has seen. `18xxnet-source.json` carries the 18xx.net file's own hash, so the importer treats it as new data and applies it once.
+- **Why `tiles.json` stays.** It holds the standard numbered tiles. The 18xx.net games refer to them by number, so they must be there, and they are the same in both cases.
+- **Why the database already having data matters.** With existing data the importer runs in merge mode: it only adds games and links and fills empty values. It never deletes or overwrites anything, so the 18xx.games games stay as they are. On an empty database it would load only the 18xx.net file, which is why the normal data is imported first.
+- **Why swapping is safe.** `games.json`, `tiles.json`, and `source.json` are not in git and are never edited by hand; `update_data.py --pinned --no-fetch` rebuilds them exactly from the pinned commit, without a download. The 18xx.net files in `tools/import/18xxnet/` are only copied, never changed.
+- **Why you put the normal files back.** So that later builds, and 18xx.games updates, use the normal data again. The 18xx.net games stay in the database.
+- **What 18xxnet-games.json contains.** New games (their `dir`, stored as `Games.SourceKey`, starts with `18xxnet_`), each with the tiles the database already has. Existing games appear with their usual `dir` and title, listing only the links and the empty publishers to add; a game listed this way keeps its other tiles.
+
 ### Import it
 
 Import the normal data first (a new database gets it on its first start). Then, from the repo root:
@@ -405,6 +417,8 @@ docker run --rm -v 18xx-tiles_tiles-data:/data alpine sh -c "mkdir -p /data/befo
 ### Reset the development database
 
 This deletes all users, changes, and history in development. Stop the API, then delete `data/tiles.db`, `data/tiles.db-wal`, and `data/tiles.db-shm`, and start the API. It rebuilds the database, imports the data, and recreates the admin from user-secrets.
+
+The extra games from 18xx.net are not part of that automatic import. To get them back, follow "Import it" under [Data: extra games from 18xx.net](#data-extra-games-from-18xx-net); the file to import is kept in git (`tools/import/18xxnet/18xxnet-games.json`).
 
 ### Change the schema
 
@@ -528,6 +542,8 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | `THIRD-PARTY-NOTICES.md` | Licenses of the data, fonts, and libraries |
 | `tools/import/update_data.py` | Data import script |
 | `tools/import/18xx-commit.txt` | The pinned tobymao/18xx commit |
+| `tools/import/18xxnet/18xxnet-games.json` | The extra games from 18xx.net, ready to import (with `18xxnet-source.json`) |
+| `tools/import/18xxnet/` | Also the 18xx.net comparison, review, and the scripts that build the import file |
 | `api/Data/Migrations/Scripts/` | Database schema scripts (DbUp) |
 | `api/Data/Seeding/DataImporter.cs` | Startup import (seed or merge) |
 | `api/Data/Backups/DatabaseBackupService.cs` | Nightly snapshots: change check, copy, retention |
