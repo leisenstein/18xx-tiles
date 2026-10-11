@@ -16,6 +16,15 @@ using Tiles18xx.Api.Data.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Hosts such as Railway, Render, and Fly.io tell the app which port to listen on through the PORT environment variable. Use it when it is set, unless
+// an address was given explicitly (--urls or ASPNETCORE_URLS). Without PORT: the launch profile in development (https://localhost:7299), and port
+// 8080 in the Docker image.
+if (int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var hostPort) && hostPort is > 0 and < 65536
+    && string.IsNullOrEmpty(builder.Configuration["urls"]))
+{
+    builder.WebHost.UseUrls($"http://+:{hostPort}");
+}
+
 // =====================================================================================================================
 // Part A: services
 // =====================================================================================================================
@@ -141,6 +150,21 @@ builder.Services.AddRateLimiter(options =>
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 30, Window = TimeSpan.FromHours(1) }));
 });
 
+// ---- A6. Cross-site requests (CORS), optional ----
+// Only needed when the website is served from a different address than the API (VITE_API_BASE_URL in web/.env). List the website's address(es) in
+// Cors:AllowedOrigins, comma-separated, for example "https://example.com" (Docker: Cors__AllowedOrigins). The browser then lets that site call the API
+// with the sign-in cookie. The cookie is limited to the same site (SameSite=Strict), so the website and API must share a domain (example.com and
+// api.example.com). Empty (the default, and the normal setup): no cross-site calls are allowed.
+var corsOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "")
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    .Select(o => o.TrimEnd('/'))
+    .ToArray();
+if (corsOrigins.Length > 0)
+{
+    builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+        policy.WithOrigins(corsOrigins).AllowCredentials().AllowAnyHeader().AllowAnyMethod()));
+}
+
 // =====================================================================================================================
 // Part B: build the app, prepare the database, and set up the request pipeline
 // =====================================================================================================================
@@ -184,8 +208,15 @@ app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-// Note: reading the sign-in cookie (UseAuthentication) and checking [Authorize] (UseAuthorization) are added to the pipeline automatically, because
-// Identity is registered in A4.
+// Find which endpoint the request is for, then (only if Cors:AllowedOrigins is set) answer cross-site checks, then read the sign-in cookie and check
+// [Authorize]. ASP.NET Core would add routing and the sign-in steps by itself, but CORS has to sit between them, so the order is written out here.
+app.UseRouting();
+if (corsOrigins.Length > 0)
+{
+    app.UseCors();
+}
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Rate limiting (A5). Must come before the endpoints it protects.
 app.UseRateLimiter();

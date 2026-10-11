@@ -64,7 +64,7 @@
   <h1>Going live</h1>
   <div class="sub">A step-by-step guide to putting 18xx Tiles on the internet: hosting, your own address with HTTPS, email, and backups.</div>
   <div class="meta">Written for someone comfortable following instructions but new to web hosting and React.<br />
-    Version 1.0, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
+    Version 1.1, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
 </section>
 
 <!-- ======================================================================================= Contents -->
@@ -241,7 +241,7 @@ underscores: <code>Admin__Email</code> means the setting <code>Admin:Email</code
   <tr><td><code>Admin__Email</code></td><td>your personal email</td><td>creates the first admin</td></tr>
   <tr><td><code>Admin__Password</code></td><td>a strong password</td><td>that admin's password (use it to sign in)</td></tr>
   <tr><td><code>ASPNETCORE_FORWARDEDHEADERS_ENABLED</code></td><td><code>true</code></td><td>see chapter 7: lets the app see real visitor addresses and HTTPS</td></tr>
-  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>tells Railway which port the app listens on</td></tr>
+  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>the port Railway sends traffic to; the app listens on whatever <code>PORT</code> says</td></tr>
   <tr><td><code>App__PublicUrl</code></td><td>the Railway address for now (6.4), later your domain</td><td>used in password-reset email links</td></tr>
 </table>
 <div class="box warn"><b class="t">If the log says "Permission denied" or "unable to open database file"</b>
@@ -550,7 +550,8 @@ Copy <code>/data/backups</code> off the server regularly (Download backup, or a 
   <tr><td><code>Backup__RunAt</code></td><td><code>08:00</code></td><td>no</td><td>time of day, UTC</td></tr>
   <tr><td><code>Backup__Enabled</code></td><td><code>true</code></td><td>no</td><td>turn snapshots off with <code>false</code></td></tr>
   <tr><td><code>ASPNETCORE_FORWARDEDHEADERS_ENABLED</code></td><td><code>true</code></td><td>yes, behind a proxy</td><td>real visitor address and HTTPS</td></tr>
-  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>on Railway</td><td>the port Railway sends traffic to</td></tr>
+  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>on Railway</td><td>the port Railway sends traffic to; the app follows it automatically</td></tr>
+  <tr><td><code>Cors__AllowedOrigins</code></td><td>empty</td><td>no</td><td>only if the website is ever hosted on a different address than the API</td></tr>
   <tr><td><code>RAILWAY_RUN_UID</code></td><td><code>0</code></td><td>only if needed</td><td>fixes "permission denied" on the volume (chapter 6.3)</td></tr>
 </table>
 <p class="small">Never put the password or the API key in the code or in GitHub. On your PC, user-secrets hold them; in Docker on your PC, the

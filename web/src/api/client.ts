@@ -24,9 +24,19 @@ export class ApiError extends Error {
   }
 }
 
+// Where the API is. Empty (the default) = the website's own site, so calls use relative addresses such as /api/games: that works in development
+// (Vite forwards /api to the API) and in Docker or on Railway (the API serves the website). VITE_API_BASE_URL in web/.env sets another address,
+// for example https://api.example.com; the sign-in cookie is then sent along ('include'), which the API must allow (Cors:AllowedOrigins).
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/+$/, '')
+const CREDENTIALS: RequestCredentials = API_BASE ? 'include' : 'same-origin'
+
+// The full address for an API path: '/api/games' stays as is, or becomes 'https://api.example.com/api/games' when a base is set.
+export const apiUrl = (path: string) => API_BASE + path
+
 async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: unknown): Promise<T> {
-  const response = await fetch(path, {
+  const response = await fetch(apiUrl(path), {
     method,
+    credentials: CREDENTIALS,
     headers: body === undefined ? { Accept: 'application/json' } : { Accept: 'application/json', 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
@@ -43,7 +53,7 @@ async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: u
 
 // GET a text response as is (for example Markdown). Errors throw ApiError like the JSON helpers.
 export async function getText(path: string): Promise<string> {
-  const response = await fetch(path, { headers: { Accept: 'text/markdown, text/plain' } })
+  const response = await fetch(apiUrl(path), { headers: { Accept: 'text/markdown, text/plain' }, credentials: CREDENTIALS })
   if (!response.ok) {
     const isJson = response.headers.get('Content-Type')?.includes('json') ?? false
     const problem = isJson ? ((await response.json()) as ProblemDetails) : null

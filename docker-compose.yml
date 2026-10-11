@@ -5,10 +5,10 @@ services:
     build: .
     image: tiles18xx:latest
 
-    # Make the app available at http://localhost:8080 on your PC.
+    # Make the app available at http://localhost:8080 on your PC (APP_PORT in .env changes the PC side).
     # Format: "PC port:container port"
     ports:
-      - "8080:8080"
+      - "${APP_PORT:-8080}:8080"
 
     # Settings passed to the app. Values like ${ADMIN_EMAIL} come from the .env file next to this file (not in git; see .env.example).
     environment:
@@ -25,6 +25,8 @@ services:
       Admin__Password: "${ADMIN_PASSWORD:-}"
       # The site's public address, used in password-reset email links.
       App__PublicUrl: "${PUBLIC_URL:-http://localhost:8080}"
+      # Only when the website is served from another address than this API (rare): that site's address(es), comma-separated.
+      Cors__AllowedOrigins: "${CORS_ALLOWED_ORIGINS:-}"
       # Email through Resend (optional). Without a key, emails are written to the log (docker compose logs app).
       Email__ResendApiKey: "${RESEND_API_KEY:-}"
       Email__From: "${EMAIL_FROM:-}"

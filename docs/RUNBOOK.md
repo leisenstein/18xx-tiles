@@ -148,6 +148,49 @@ Either editor can open the whole repository. Line endings are handled by Git; if
 4. Check: `dotnet build`, `npm run lint`, `npm run format:check`, `npm run build`; try it in the browser, signed out, as a user, and as an admin.
 5. Update `DESIGN.md`, and this runbook if setup or operations changed.
 
+### Website settings (web/.env)
+
+The website's development server and build read optional settings from `web/.env` (or `web/.env.local`). Copy `web/.env.example` to start; every
+value has a default, so most people never need the file. Restart `npm run dev` after a change.
+
+| Setting | Default | Use it to |
+|---|---|---|
+| `VITE_PORT` | `5173` | run `npm run dev` on another port |
+| `VITE_PREVIEW_PORT` | `4173` | run `npm run preview` on another port |
+| `VITE_ALLOWED_HOSTS` | localhost only | let other host names reach the dev server, comma-separated (for example a tunnel address), or `all` |
+| `VITE_API_PROXY_TARGET` | `https://localhost:7299` | send `/api` calls to an API on another address or port |
+| `VITE_API_PROXY_SECURE` | `false` | `true` to require a trusted certificate from that API. Keep `false` for the .NET development certificate |
+| `VITE_API_BASE_URL` | empty | built into the website: the API's address when it is not the website's own (see below) |
+
+Example `web/.env` for an API started on port 7397:
+
+```text
+VITE_PORT=5180
+VITE_API_PROXY_TARGET=https://localhost:7397
+```
+
+### How the website finds the API
+
+All API calls go through `web/src/api/client.ts`, which uses relative addresses such as `/api/games`. That works everywhere the app normally runs:
+
+- **Development:** Vite forwards `/api` to the API (`VITE_API_PROXY_TARGET`).
+- **Docker and hosting:** the API serves the website itself, so `/api` is the same site.
+
+Only if you ever host the website and the API on **different addresses**:
+1. Set `VITE_API_BASE_URL` (for example `https://api.example.com`) before `npm run build`.
+2. List the website's address in the API setting `Cors:AllowedOrigins`.
+
+Keep both on one domain (for example `example.com` and `api.example.com`): the sign-in cookie only travels within the same site.
+
+### Ports
+
+| Part | Default | How to change |
+|---|---|---|
+| API in development | https://localhost:7299 (launch profile) | `dotnet run --launch-profile https -- --urls https://localhost:7400`, or edit `api/Properties/launchSettings.json` |
+| API in Docker and on hosts | 8080 | Hosts that set `PORT` (Railway, Render, Fly.io) are followed automatically; `--urls` or `ASPNETCORE_URLS` override it |
+| Docker on your PC | http://localhost:8080 | `APP_PORT` in `.env` |
+| Website dev server | 5173 | `VITE_PORT` in `web/.env` |
+
 ### Testing against a copy of the database
 
 To try something risky without touching your data, run a second API on a copy:
@@ -159,7 +202,8 @@ To try something risky without touching your data, run a second API on a copy:
 dotnet run --launch-profile https -- --urls https://localhost:7397 --ConnectionStrings:Tiles="Data Source=C:/scratch/tiles.db"
 ```
 
-3. Point a second Vite at it, or call it with `curl`. Delete the copy when done.
+3. Point a second website at it with `VITE_API_PROXY_TARGET=https://localhost:7397` and another `VITE_PORT` in `web/.env.local`, or call it
+   with `curl`. Delete the copy when done.
 
 ## Email
 
@@ -356,7 +400,7 @@ Docker builds generate the seed data themselves from the pinned commit, so the b
 
 1. Create `.env` next to `docker-compose.yml` from `.env.example` and fill in `ADMIN_EMAIL` and `ADMIN_PASSWORD`. Optionally set `PUBLIC_URL`,
    `RESEND_API_KEY`, and `EMAIL_FROM` (see "Email"). `.env` is not in git; it holds secrets.
-2. Build and start, then open http://localhost:8080:
+2. Build and start, then open http://localhost:8080 (or the port in `APP_PORT`):
 
 ```bash
 docker compose up --build -d
@@ -391,7 +435,14 @@ The volume name is the folder name plus `_tiles-data`; check it with `docker vol
 | Nightly snapshots | `Backup:Enabled`, `Backup:Folder`, `Backup:RetainCount`, `Backup:RunAt`, `Backup:RunOnStartup` | `Backup__Folder` (`/data/backups`), `Backup__RetainCount` (from `BACKUP_RETAIN_COUNT`), `Backup__RunAt` (from `BACKUP_RUN_AT`) | on, `../data/backups`, 90, `03:00`, off |
 | Resend API key | user-secret `Email:ResendApiKey` | `Email__ResendApiKey` (from `RESEND_API_KEY`) | none: emails go to the log |
 | Email sender | user-secret `Email:From` | `Email__From` (from `EMAIL_FROM`) | none; required when the key is set |
+| Port the API listens on | launch profile (`https://localhost:7299`) | `PORT` if the host sets it, otherwise 8080 | `--urls` or `ASPNETCORE_URLS` override both |
+| Website on another address (CORS) | `Cors:AllowedOrigins` | `Cors__AllowedOrigins` (from `CORS_ALLOWED_ORIGINS`) | empty: no cross-site calls |
+| Docker port on your PC | | `APP_PORT` in `.env` | 8080 |
+| Behind a host's proxy | | `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` | off (needed on Railway and similar; see the going-live guide) |
 | Environment | `Development` (launch profile) | `Production` | |
+
+Website settings (`VITE_PORT`, `VITE_ALLOWED_HOSTS`, `VITE_API_PROXY_TARGET`, `VITE_API_PROXY_SECURE`, `VITE_API_BASE_URL`) are in `web/.env`; see
+"Website settings" under Developer setup.
 
 Keep `data/keys` private and backed up with the database. Losing it signs everyone out; anyone who has it could forge sign-in cookies.
 
@@ -410,6 +461,10 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | Reset link opens the wrong site | `App:PublicUrl` (or `PUBLIC_URL`) is out of date | Set it to the site's current address and restart |
 | 429 Too Many Requests | Rate limit | Wait a minute (sign-in) or an hour (submissions) |
 | Import notes on **Imports** after an update | Upstream changed something edited here | See "The import report" above |
+| Browser shows "Blocked request. This host is not allowed" (development) | The dev server was opened with a host name it does not know (for example a tunnel) | Add it to `VITE_ALLOWED_HOSTS` in `web/.env` and restart `npm run dev` |
+| Vite log: proxy error "self-signed certificate" | `VITE_API_PROXY_SECURE=true` against the development API | Set it back to `false` (or remove it) |
+| Vite says the port is in use | Another program (or a second `npm run dev`) uses 5173 | Stop it, or set `VITE_PORT` |
+| Browser console: "blocked by CORS policy" | The website calls the API on another address that does not allow it | Add the website's address to `Cors:AllowedOrigins`, or leave `VITE_API_BASE_URL` empty to use relative addresses |
 | "Backup failed" in the log | The backup folder is not writable, or the disk is full | Check `Backup:Folder` and free space |
 | Everyone signed out after a restart | `data/keys` was deleted or not on the Docker volume | Keep the keys folder; check `DataProtection__KeysPath` |
 
@@ -428,6 +483,8 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | `data/backups/` | The snapshots (not in git) |
 | `api/Auth/` | Sign-in: Identity, admin seeding, migrations |
 | `api/Tiles18xx.Api.http` | Sample API requests for Visual Studio |
+| `web/.env.example` | The website's optional settings (ports, proxy, allowed hosts, API address) |
+| `web/vite.config.ts` | Development server and proxy, reading `web/.env` |
 | `api/Auth/ResendEmailSender.cs` | Sending email through Resend |
 | `web/src/pages/` | One file per page |
 | `branding/` | Logo SVGs |
