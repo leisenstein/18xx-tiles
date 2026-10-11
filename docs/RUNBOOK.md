@@ -438,6 +438,7 @@ dotnet ef migrations add DescribeTheChange --context AuthDbContext --output-dir 
 
 - **First admin:** created at startup from `Admin:Email` and `Admin:Password` (user-secrets in development; `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` for Docker). It is only created if missing. Changing the password setting later does **not** change an existing account's password.
 - **Other users:** register on the site, then confirm from the email (in development, the link in the API log).
+- **Change your own password:** click your email (or initial) in the header to open **My account**, then **Change password**. It needs your current password; you stay signed in, and your other devices are signed out within a minute. Forgot it? Use **Forgot password** on the sign-in page.
 - **Manage accounts:** the **Users** page (admins only). See the next section.
 
 - **Rate limits:** sign-in, registration, and other `/api/auth` calls allow 10 per minute per IP address; tile submissions allow 30 per hour per user. Over the limit returns 429; wait and try again.

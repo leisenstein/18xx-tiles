@@ -1,4 +1,4 @@
-import { Info } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import PageHeader from '@/components/PageHeader'
 
 // About and credits (/about, DESIGN.md open item 1): where the data comes from, the game-titles disclaimer, and the fonts and libraries the site uses.
@@ -28,7 +28,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function AboutPage() {
   return (
     <div className="max-w-3xl space-y-8">
-      <PageHeader icon={Info} title="About and credits" description="Where the tiles come from, and the work this site is built on." />
+      <PageHeader icon={FileText} title="About and credits" description="Where the tiles come from, and the work this site is built on." />
 
       <Section title="Tile data">
         <p>

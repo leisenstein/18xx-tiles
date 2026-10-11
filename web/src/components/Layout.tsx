@@ -103,13 +103,17 @@ export default function Layout() {
               {!loading &&
                 (user ? (
                   <>
-                    <span
-                      className="flex size-7 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 uppercase"
-                      aria-hidden="true"
-                    >
-                      {user.email.charAt(0)}
-                    </span>
-                    <span className="hidden text-muted-foreground lg:inline">{user.email}</span>
+                    {/* The initial and email open My account (change password). */}
+                    <Link to="/account" className="flex items-center gap-2 rounded-md hover:text-foreground" title="My account">
+                      <span
+                        className="flex size-7 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 uppercase"
+                        aria-hidden="true"
+                      >
+                        {user.email.charAt(0)}
+                      </span>
+                      <span className="hidden text-muted-foreground hover:text-foreground hover:underline lg:inline">{user.email}</span>
+                      <span className="sr-only lg:hidden">My account</span>
+                    </Link>
                     <Button variant="ghost" size="sm" onClick={onSignOut}>
                       <LogOut aria-hidden="true" />
                       Sign out

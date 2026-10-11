@@ -29,5 +29,9 @@ export const forgotPassword = (email: string) => postJson('/api/auth/forgotPassw
 // Set a new password with the code from the reset email. Throws ApiError 400 for an invalid or used code, or a password that breaks the rules.
 export const resetPassword = (email: string, resetCode: string, newPassword: string) => postJson('/api/auth/resetPassword', { email, resetCode, newPassword })
 
+// Change the signed-in user's password (My account page). This session stays signed in; others are signed out within a minute.
+// Throws ApiError 400 with problem.errors for a wrong current password or a new one that breaks the rules; 429 after too many tries.
+export const changePassword = (currentPassword: string, newPassword: string) => postJson('/api/account/password', { currentPassword, newPassword })
+
 // Sign out: the API deletes the sign-in cookie.
 export const signOut = () => postJson('/api/account/logout')

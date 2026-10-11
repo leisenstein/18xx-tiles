@@ -5,6 +5,7 @@ import LoadingState from '@/components/LoadingState'
 import RequireRole from '@/components/RequireRole'
 import { ADMIN_ROLE } from '@/lib/constants'
 import AboutPage from '@/pages/AboutPage'
+import AccountPage from '@/pages/AccountPage'
 import AdminDocsPage from '@/pages/AdminDocsPage'
 import AdminHistoryPage from '@/pages/AdminHistoryPage'
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage'
@@ -66,6 +67,14 @@ function App() {
           element={
             <RequireRole role={ADMIN_ROLE}>
               <EditTilePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="account"
+          element={
+            <RequireRole>
+              <AccountPage />
             </RequireRole>
           }
         />
