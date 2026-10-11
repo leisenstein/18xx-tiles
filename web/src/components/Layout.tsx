@@ -1,4 +1,4 @@
-import { ClipboardCheck, Download, History, Inbox, Layers, LayoutGrid, LogOut, Hexagon, SquarePlus, type LucideIcon } from 'lucide-react'
+import { BookOpen, ClipboardCheck, Download, History, Inbox, Layers, LayoutGrid, LogOut, Hexagon, SquarePlus, type LucideIcon } from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router'
 import Logo from '@/components/Logo'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ interface NavItem {
   to: string
   label: string
   icon: LucideIcon
+  section?: boolean // lit for every page under this address (Docs has /admin/docs/runbook and /admin/docs/database)
 }
 
 // Links shown in the header, left to right: browsing for everyone, contributing for signed-in users, admin tools for admins (after a divider).
@@ -27,6 +28,7 @@ const adminItems: NavItem[] = [
   { to: '/admin/queue', label: 'Review', icon: ClipboardCheck },
   { to: '/admin/history', label: 'History', icon: History },
   { to: '/admin/imports', label: 'Imports', icon: Download },
+  { to: '/admin/docs', label: 'Docs', icon: BookOpen, section: true },
 ]
 
 // One header link: icon and label; the current page gets a soft pill. end = active only on an exact URL match, so "Tiles" is not lit on /tiles/common.
@@ -35,7 +37,7 @@ function NavItemLink({ item }: { item: NavItem }) {
   return (
     <NavLink
       to={item.to}
-      end
+      end={!item.section}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
@@ -129,6 +131,21 @@ export default function Layout() {
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Outlet />
       </main>
+      {/* Credits on every page (DESIGN.md open item 1): data source, license, and the game-titles disclaimer; details on /about. */}
+      <footer className="border-t">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-4 text-xs text-muted-foreground">
+          <p>
+            Tile data from{' '}
+            <a href="https://github.com/tobymao/18xx" className="underline hover:text-foreground">
+              tobymao/18xx
+            </a>{' '}
+            (18xx.games), MIT License. Game titles belong to their designers and publishers. Not affiliated with 18xx.games or any publisher.
+          </p>
+          <Link to="/about" className="underline hover:text-foreground">
+            About and credits
+          </Link>
+        </div>
+      </footer>
     </div>
   )
 }

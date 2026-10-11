@@ -93,6 +93,9 @@ Content-Type: application/json
 
 { "tiles": [{ "tileId": 1, "count": 2, "notes": null }], "reason": "Checked against the box" }
 
+### Admin: a document as Markdown (runbook or database)
+GET {{Tiles18xx.Api_HostAddress}}/api/admin/docs/runbook
+
 ### Admin: import history (each tobymao/18xx commit applied, with notes)
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/imports
 Accept: application/json

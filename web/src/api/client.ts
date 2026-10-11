@@ -41,6 +41,17 @@ async function request<T>(method: 'GET' | 'POST' | 'PUT', path: string, body?: u
   return (text ? JSON.parse(text) : undefined) as T
 }
 
+// GET a text response as is (for example Markdown). Errors throw ApiError like the JSON helpers.
+export async function getText(path: string): Promise<string> {
+  const response = await fetch(path, { headers: { Accept: 'text/markdown, text/plain' } })
+  if (!response.ok) {
+    const isJson = response.headers.get('Content-Type')?.includes('json') ?? false
+    const problem = isJson ? ((await response.json()) as ProblemDetails) : null
+    throw new ApiError('GET', path, response.status, response.statusText, problem)
+  }
+  return response.text()
+}
+
 // GET and parse JSON. <T> is the type of data expected back, e.g. getJson<GameSummary[]>('/api/games').
 export function getJson<T>(path: string): Promise<T> {
   return request<T>('GET', path)

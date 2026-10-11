@@ -1,9 +1,11 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router'
+import { Navigate, Route, Routes } from 'react-router'
 import Layout from '@/components/Layout'
 import LoadingState from '@/components/LoadingState'
 import RequireRole from '@/components/RequireRole'
 import { ADMIN_ROLE } from '@/lib/constants'
+import AboutPage from '@/pages/AboutPage'
+import AdminDocsPage from '@/pages/AdminDocsPage'
 import AdminHistoryPage from '@/pages/AdminHistoryPage'
 import EditGameTilesPage from '@/pages/EditGameTilesPage'
 import AdminImportsPage from '@/pages/AdminImportsPage'
@@ -30,6 +32,7 @@ function App() {
         <Route index element={<HomePage />} />
         <Route path="tiles" element={<TilesPage />} />
         <Route path="tiles/common" element={<CommonTilesPage />} />
+        <Route path="about" element={<AboutPage />} />
         {/* Printable tile number circles (DESIGN.md 9.4): ?tile=ID or ?game=ID. Signed-in users only (any role). */}
         <Route
           path="print/circles"
@@ -83,6 +86,15 @@ function App() {
           element={
             <RequireRole role={ADMIN_ROLE}>
               <EditGameTilesPage />
+            </RequireRole>
+          }
+        />
+        <Route path="admin/docs" element={<Navigate to="/admin/docs/runbook" replace />} />
+        <Route
+          path="admin/docs/:name"
+          element={
+            <RequireRole role={ADMIN_ROLE}>
+              <AdminDocsPage />
             </RequireRole>
           }
         />

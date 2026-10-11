@@ -424,6 +424,7 @@ Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (index
 | GET | `/api/admin/tiles/{id}/history` | Admin | One tile's history |
 | GET | `/api/admin/history?type=&status=&q=&page=&pageSize=` | Admin | Change requests, imports, and game tile list saves, newest first (type Add, Edit, Delete, Import, Game) |
 | GET | `/api/admin/imports` | Admin | Import runs with their reports |
+| GET | `/api/admin/docs/{name}` | Admin | An admin document as Markdown (`runbook`, `database`), embedded in the API at build time; 404 for other names |
 | GET | `/api/admin/games/{id}/tiles` | Admin | A game and every live tile it uses, with counts and notes |
 | PUT | `/api/admin/games/{id}/tiles` | Admin | Replace a game's tile list (`{ tiles: [{ tileId, count, notes }], reason }`); one transaction and one `GameChanges` row; 409 if nothing changed |
 | | Identity endpoints | | Register, confirm email, login, logout, password reset (consider `MapIdentityApi`) |
@@ -457,8 +458,10 @@ Notes:
 | `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
 | `/account/requests` | My change requests |
 | `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
+| `/about` | About and credits: data source and license, game-titles disclaimer, fonts, libraries (linked from the footer on every page) |
 | `/print/circles` | Printable tile number circles (section 9.4): `?tile=ID` or `?game=ID`; PDF sheet, SVG, PNG. Signed-in users only (any role); the links show only when signed in |
 | `/admin/games/:id/tiles` | Edit game tiles (admins only): the game's whole tile list with counts, Unlimited, and notes; add any existing tile by number, remove tiles; saved as one change. Linked from the game-filtered Tiles page ("Edit this game's tiles") |
+| `/admin/docs/:name` | Admin docs (admins only): `runbook` and `database` tabs, rendered from `docs/RUNBOOK.md` and `docs/DATABASE.md`, with a table of contents and copy buttons on commands |
 | `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/login`, `/register` | Auth |
@@ -647,6 +650,8 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.20 | UI polish: logo (`Logo`: option B, a fanned stack of brown, green, and yellow tiles; the full height of the header, with links and the account area wrapping to its right; also the favicon `web/public/favicon.svg`; page title "18xx Tiles"), navbar with icons, active pill, admin group, user initial, tile-color strip; shared `PageHeader` (icon chip colored by area: browse amber, contribute emerald, admin slate) on every page; Games page cards (`GameCard`: color-mix strip, icon stats, search); sign-in and register as cards. `GameSummaryDto` gains per-color design counts | Done (checked in the browser) |
 | 4.21 | Empty and loading states: `EmptyState` (icon, title, hint, optional action such as Clear filters or Propose a new tile) on Games search, Tiles, Common Tiles, My requests, Review ("All caught up"), History, Imports, Edit game tiles, and tile history; `LoadingState` spinner on every page | Done (checked in the browser) |
 | 4.22 | Pre-release reset (open items 11 and 13): parser expands Ruby interpolations and normalizes edge 6 to 0; one baseline DbUp script; dead backfill code removed; development database wiped | Done (verified: no unexpanded code, all 2,628 definitions valid, fresh database has the same tables, columns, and indexes as before; 131 games, 2,022 tiles, 7,275 links) |
+| 5.1 | Licensing and credits: footer on every page, `/about` page, `THIRD-PARTY-NOTICES.md` (tobymao/18xx MIT, OFL fonts, library licenses checked against each package) | Done; permission for game titles still open (item 1) |
+| 5.2 | Admin docs: `docs/RUNBOOK.md` (setup, data import, database, accounts, Docker, configuration, troubleshooting) and `docs/DATABASE.md` (tables, columns, relationships, stored JSON, queries); served by `GET /api/admin/docs/{name}` so only admins can read them; `/admin/docs` page with a small built-in Markdown renderer | Done (verified: 401 when signed out, 404 for other names, every SQL example runs, pages in the browser) |
 
 **Phase 4 complete.**
 
@@ -664,7 +669,11 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 ## 12. Open items
 
-1. **Licensing:** confirm what may be published publicly for game titles and tile data.
+1. **Licensing:** partly done in Phase 5. Credits and notices are in place: a footer on every page, the `/about` page, and `THIRD-PARTY-NOTICES.md`
+   (tobymao/18xx MIT notice, fonts under the SIL Open Font License, and library licenses). Still open before a public launch: tobymao/18xx's license
+   says the MIT License does not cover game titles, which 18xx.games shows with the designers' and publishers' permission. Recommended: ask the
+   tobymao/18xx maintainers, keep the site non-commercial, show no box art or publisher logos, and add a contact address for removal requests once
+   an email address exists (item 2). Not legal advice; confirm with someone qualified if the site will be public.
 2. **Email service:** choose a provider for confirmation and password-reset emails. Until then, development writes emails to the API log (Phase 3 decision).
 3. **Hosting:** choose a Docker host that supports persistent volumes; plan backups of the `/data` volume.
 4. ~~**Display names**~~ Resolved after Phase 4: the section 7 scheme (`#N`, `#N (Game)`, `#N (variant k)`) is kept as is.

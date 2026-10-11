@@ -23,8 +23,10 @@
   <ItemGroup>
     <!-- DbUp schema scripts; DbUp records each script by its resource name. -->
     <EmbeddedResource Include="Data\Migrations\Scripts\*.sql" />
-    <!-- Seed snapshots (not in source control), read by DataSeeder as Seed.games.json and Seed.tiles.json. -->
+    <!-- Seed files (not in source control), read by DataImporter as Seed.games.json, Seed.tiles.json, and Seed.source.json. -->
     <EmbeddedResource Include="Data\Seeding\SeedFiles\*.json" LogicalName="Seed.%(Filename)%(Extension)" />
+    <!-- Admin documents (docs/RUNBOOK.md, docs/DATABASE.md), served only to admins by GET /api/admin/docs/{name}. -->
+    <EmbeddedResource Include="..\docs\*.md" LogicalName="Docs.%(Filename)%(Extension)" />
   </ItemGroup>
 
 </Project>

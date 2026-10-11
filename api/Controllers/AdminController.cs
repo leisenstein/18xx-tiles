@@ -142,6 +142,31 @@ public sealed class AdminController(
         return result.Succeeded ? Ok(gameTiles.Get(id)) : Problem(statusCode: StatusCodes.Status409Conflict, title: "Not changed", detail: result.Message);
     }
 
+    // Admin documents in docs/, embedded at build time: name in the URL -> file.
+    private static readonly Dictionary<string, string> Docs = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["runbook"] = "RUNBOOK.md",
+        ["database"] = "DATABASE.md",
+    };
+
+    // GET /api/admin/docs/runbook or /api/admin/docs/database -> the document as Markdown. Served from the API rather than bundled into the website, so
+    // only signed-in admins can read them. 404 for any other name.
+    [HttpGet("docs/{name}")]
+    public IActionResult Doc(string name)
+    {
+        if (!Docs.TryGetValue(name, out var file))
+        {
+            return NotFound();
+        }
+        using var stream = typeof(AdminController).Assembly.GetManifestResourceStream("Docs." + file);
+        if (stream is null)
+        {
+            return NotFound();
+        }
+        using var reader = new StreamReader(stream);
+        return Content(reader.ReadToEnd(), "text/markdown; charset=utf-8");
+    }
+
     // GET /api/admin/imports -> every import of the tobymao/18xx seed files, newest first, with notes about upstream changes that were not applied.
     [HttpGet("imports")]
     public ActionResult<IReadOnlyList<ImportRunDto>> Imports() => Ok(imports.GetAll());

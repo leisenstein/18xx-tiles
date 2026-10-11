@@ -38,6 +38,8 @@ RUN dotnet restore api/Tiles18xx.Api.csproj
 
 # Copy the rest of the API code, add the seed files generated in stage 2 (embedded in the API), and publish it.
 COPY api/ api/
+# Admin documents (runbook, database), embedded in the API and served only to admins.
+COPY docs/*.md docs/
 COPY --from=seed-data /seed/ api/Data/Seeding/SeedFiles/
 RUN dotnet publish api/Tiles18xx.Api.csproj -c Release -o /app/publish --no-restore
 
