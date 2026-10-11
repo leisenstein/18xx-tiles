@@ -132,16 +132,9 @@ export default function Layout() {
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Outlet />
       </main>
-      {/* Credits on every page (DESIGN.md open item 1): data source, license, and the game-titles disclaimer; details on /about. */}
+      {/* A link to the credits on every page (DESIGN.md open item 1); the data sources, licenses, and disclaimers are on /about. */}
       <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-4 text-xs text-muted-foreground">
-          <p>
-            Tile data from{' '}
-            <a href="https://github.com/tobymao/18xx" className="underline hover:text-foreground">
-              tobymao/18xx
-            </a>{' '}
-            (18xx.games), MIT License. Game titles belong to their designers and publishers. Not affiliated with 18xx.games or any publisher.
-          </p>
+        <div className="mx-auto flex max-w-6xl justify-end px-4 py-4 text-xs text-muted-foreground">
           <Link to="/about" className="underline hover:text-foreground">
             About and credits
           </Link>

@@ -703,7 +703,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 ## 12. Open items
 
-1. **Licensing:** partly done in Phase 5. Credits and notices are in place: a footer on every page, the `/about` page, and `THIRD-PARTY-NOTICES.md`
+1. **Licensing:** partly done in Phase 5. Credits and notices are in place: the `/about` page (linked from the footer on every page), and `THIRD-PARTY-NOTICES.md`
    (tobymao/18xx MIT notice, fonts under the SIL Open Font License, and library licenses). Still open before a public launch: tobymao/18xx's license
    says the MIT License does not cover game titles, which 18xx.games shows with the designers' and publishers' permission. Recommended: ask the
    tobymao/18xx maintainers, keep the site non-commercial, show no box art or publisher logos, and add a contact address for removal requests once
