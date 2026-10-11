@@ -119,6 +119,7 @@ Either editor can open the whole repository. Line endings are handled by Git; if
 | `api/Data/Repositories/` | Database access with Dapper, one `*Repository` per area |
 | `api/Data/Migrations/Scripts/` | DbUp schema scripts, `NNNN_VerbNoun.sql` |
 | `api/Data/Seeding/` | The startup import (`DataImporter`) and the shapes of the seed files |
+| `api/Data/Backups/` | Nightly snapshots (`DatabaseBackupService`) and their settings (`BackupSettings`) |
 | `api/Domain/` | Shared rules: tile colors, sort order, counts, definition validation |
 | `api/Dtos/` | Request and response shapes, named `*Dto` |
 | `api/Auth/` | Sign-in: Identity, admin seeding, email senders, EF Core migrations |
@@ -256,13 +257,55 @@ Open **Imports**. Each import lists what it added and notes about upstream chang
 
 `data/tiles.db` (in Docker: `/data/tiles.db` on the `tiles-data` volume). SQLite in WAL mode, so `tiles.db-wal` and `tiles.db-shm` sit next to it while the API runs; they belong to the database.
 
-### Back up
+### Nightly snapshots (automatic)
 
-Stop the API first, then copy all three files (`tiles.db`, `tiles.db-wal`, `tiles.db-shm`) and the `data/keys` folder somewhere safe. With the API stopped, the WAL is usually merged and only `tiles.db` remains.
+The API saves a snapshot of the database once a night, but **only when the data changed** since the last snapshot. A night with no changes (or only sign-ins) keeps nothing. Each snapshot is a complete, ready-to-use database file, taken safely while the app runs.
+
+| Item | Detail |
+|---|---|
+| Where | `data/backups/` (Docker: `/data/backups` on the volume) |
+| Files | `tiles-YYYYMMDD-HHmmss.db` (the database), `.sha256` next to it (its data fingerprint), and `keys/` (a copy of the sign-in keys) |
+| When | 03:00 server time by default; Docker containers use UTC |
+| How many | The last 90 snapshots; older ones are deleted |
+| Log | "Backup saved", "Backup skipped: no changes since ...", "Backup removed", or "Backup failed" |
+
+Settings (see the configuration reference):
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `Backup:Enabled` | `true` | Turn snapshots off with `false` |
+| `Backup:Folder` | `../data/backups` | Where they go (relative to the `api` folder) |
+| `Backup:RetainCount` | `90` | How many to keep |
+| `Backup:RunAt` | `03:00` | Time of day, 24-hour, server time |
+| `Backup:RunOnStartup` | `false` | Also check for changes when the API starts |
+
+To change one locally, for example keep 30:
+
+```bash
+dotnet user-secrets set "Backup:RetainCount" "30"
+```
+
+In Docker, set `BACKUP_RETAIN_COUNT` or `BACKUP_RUN_AT` in `.env`.
+
+> Snapshots live next to the database, so they protect against mistakes, not against losing the server. Copy them somewhere else too: download `data/backups` now and then, or set up an off-site copy when hosting (see the hosting notes in `DESIGN.md`).
+
+### Back up by hand
+
+Stop the API first, then copy all three files (`tiles.db`, `tiles.db-wal`, `tiles.db-shm`) and the `data/keys` folder somewhere safe. With the API stopped, the WAL is usually merged and only `tiles.db` remains. Or simply copy the newest file from `data/backups`.
 
 ### Restore
 
-Stop the API, put the backed-up files back in `data/`, and start the API.
+1. Stop the API.
+2. Move the current `data/tiles.db`, `tiles.db-wal`, and `tiles.db-shm` aside (do not delete them until the restore works).
+3. Copy the snapshot you want, for example `data/backups/tiles-20261010-030000.db`, to `data/tiles.db`.
+4. If the sign-in keys were lost too, copy `data/backups/keys/` to `data/keys/`.
+5. Start the API. It upgrades the schema if needed and skips data it already imported.
+
+In Docker, do the same inside the volume: stop the app, then for example:
+
+```bash
+docker run --rm -v 18xx-tiles_tiles-data:/data alpine sh -c "mkdir -p /data/before-restore && mv /data/tiles.db* /data/before-restore/ && cp /data/backups/tiles-20261010-030000.db /data/tiles.db"
+```
 
 ### Reset the development database
 
@@ -345,6 +388,7 @@ The volume name is the folder name plus `_tiles-data`; check it with `docker vol
 | First admin email | user-secret `Admin:Email` | `Admin__Email` (from `ADMIN_EMAIL` in `.env`) | none: no admin created |
 | First admin password | user-secret `Admin:Password` | `Admin__Password` (from `ADMIN_PASSWORD`) | none |
 | Site's public address (reset links) | `App:PublicUrl` in `appsettings.Development.json` | `App__PublicUrl` (from `PUBLIC_URL`) | `http://localhost:5173` locally; `http://localhost:8080` in Docker |
+| Nightly snapshots | `Backup:Enabled`, `Backup:Folder`, `Backup:RetainCount`, `Backup:RunAt`, `Backup:RunOnStartup` | `Backup__Folder` (`/data/backups`), `Backup__RetainCount` (from `BACKUP_RETAIN_COUNT`), `Backup__RunAt` (from `BACKUP_RUN_AT`) | on, `../data/backups`, 90, `03:00`, off |
 | Resend API key | user-secret `Email:ResendApiKey` | `Email__ResendApiKey` (from `RESEND_API_KEY`) | none: emails go to the log |
 | Email sender | user-secret `Email:From` | `Email__From` (from `EMAIL_FROM`) | none; required when the key is set |
 | Environment | `Development` (launch profile) | `Production` | |
@@ -366,6 +410,7 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | Reset link opens the wrong site | `App:PublicUrl` (or `PUBLIC_URL`) is out of date | Set it to the site's current address and restart |
 | 429 Too Many Requests | Rate limit | Wait a minute (sign-in) or an hour (submissions) |
 | Import notes on **Imports** after an update | Upstream changed something edited here | See "The import report" above |
+| "Backup failed" in the log | The backup folder is not writable, or the disk is full | Check `Backup:Folder` and free space |
 | Everyone signed out after a restart | `data/keys` was deleted or not on the Docker volume | Keep the keys folder; check `DataProtection__KeysPath` |
 
 ## Important files
@@ -379,6 +424,8 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 | `tools/import/18xx-commit.txt` | The pinned tobymao/18xx commit |
 | `api/Data/Migrations/Scripts/` | Database schema scripts (DbUp) |
 | `api/Data/Seeding/DataImporter.cs` | Startup import (seed or merge) |
+| `api/Data/Backups/DatabaseBackupService.cs` | Nightly snapshots: change check, copy, retention |
+| `data/backups/` | The snapshots (not in git) |
 | `api/Auth/` | Sign-in: Identity, admin seeding, migrations |
 | `api/Tiles18xx.Api.http` | Sample API requests for Visual Studio |
 | `api/Auth/ResendEmailSender.cs` | Sending email through Resend |

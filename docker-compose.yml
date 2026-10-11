@@ -16,6 +16,10 @@ services:
       ConnectionStrings__Tiles: "Data Source=/data/tiles.db"
       # Keys that protect the sign-in cookie, kept on the volume so users stay signed in across restarts and rebuilds (DESIGN.md section 11a).
       DataProtection__KeysPath: "/data/keys"
+      # Nightly snapshots of the database, kept only when the data changed (runbook "Back up"). Copy /data/backups off the server too.
+      Backup__Folder: "/data/backups"
+      Backup__RetainCount: "${BACKUP_RETAIN_COUNT:-90}"
+      Backup__RunAt: "${BACKUP_RUN_AT:-03:00}"
       # First admin account, created at startup if missing (Phase 3). If these are empty, no admin account is created.
       Admin__Email: "${ADMIN_EMAIL:-}"
       Admin__Password: "${ADMIN_PASSWORD:-}"

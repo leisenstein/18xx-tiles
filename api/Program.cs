@@ -5,6 +5,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Tiles18xx.Api.Auth;
 using Tiles18xx.Api.Data;
+using Tiles18xx.Api.Data.Backups;
 using Tiles18xx.Api.Data.Migrations;
 using Tiles18xx.Api.Data.Repositories;
 using Tiles18xx.Api.Data.Seeding;
@@ -102,6 +103,10 @@ if (!Path.IsPathRooted(keysPath))
     keysPath = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, keysPath));
 }
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(keysPath)).SetApplicationName("Tiles18xx");
+
+// A4f. Nightly database snapshots, kept only when the data changed (Data/Backups; settings under Backup:, see BackupSettings and the runbook).
+builder.Services.AddSingleton(BackupSettings.From(builder.Configuration, builder.Environment.ContentRootPath, keysPath));
+builder.Services.AddHostedService<DatabaseBackupService>();
 
 // A4e. Emails (confirmation link, password reset). Identity calls this "sender" whenever it needs to email someone (DESIGN.md open item 2).
 //      With Email:ResendApiKey set, emails go out through Resend; Email:From must then be set too, or startup stops with a clear message.
