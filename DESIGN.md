@@ -655,6 +655,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 5.2 | Admin docs: `docs/RUNBOOK.md` (setup, data import, database, accounts, Docker, configuration, troubleshooting) and `docs/DATABASE.md` (tables, columns, relationships, stored JSON, queries); served by `GET /api/admin/docs/{name}` so only admins can read them; `/admin/docs` page with a small built-in Markdown renderer | Done (verified: 401 when signed out, 404 for other names, every SQL example runs, pages in the browser) |
 | 5.3 | Email: Resend sender (settings `Email:ResendApiKey`, `Email:From`, `App:PublicUrl`; Docker `RESEND_API_KEY`, `EMAIL_FROM`, `PUBLIC_URL`), styled emails, forgot and reset password pages, "Forgot your password?" on sign-in; runbook sections Developer setup and Email, configuration table | Done (verified with a local stand-in for Resend: confirmation and reset emails sent, reset end to end, old password refused, link reuse refused, wrong key logged, missing sender stops startup, no key falls back to the log) |
 | 5.4 | Nightly database snapshots (`Data/Backups/DatabaseBackupService`): `VACUUM INTO` copy at `Backup:RunAt`, kept only when a fingerprint of the data (app tables, accounts, roles; not sign-in counters) changed; last `Backup:RetainCount` (90) kept; sign-in keys copied alongside; runbook sections for snapshots and restore | Done (verified: first run saves, unchanged and failed-sign-in-only runs skip, changes save, retention prunes, the scheduled run fires, a restored snapshot starts with all data) |
+| 5.5 | Going-live guide (`docs/guide/18xx-Tiles-Going-Live.pdf`, source `going-live.html`): title permission, domain, host choice, Railway deploy with volume and variables, domain and HTTPS (`ASPNETCORE_FORWARDEDHEADERS_ENABLED`), Resend email, a hands-on "Download backup" tutorial (C# endpoint and React button), launch checklist, after-launch tasks, VPS with Caddy, settings reference, glossary | Done (the tutorial's code was built and tested on a copy: admin-only, zip with database and keys, integrity check passes; the React steps compile and pass lint) |
 
 **Phase 4 complete.**
 
@@ -698,6 +699,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 
 | File | Contents |
 |---|---|
+| `docs/guide/18xx-Tiles-Going-Live.pdf` | Step-by-step guide to going live (hosting, domain, HTTPS, email, backups); source `docs/guide/going-live.html` |
 | `tools/import/18xx-commit.txt` | The pinned tobymao/18xx commit the seed files are generated from (in source control) |
 | `tools/import/update_data.py` | Downloads tobymao/18xx and regenerates the seed files, with counts (section 6.4). Replaces the two prototype scripts below |
 | `reference/parse_games.py` | Prototype game-manifest parser |

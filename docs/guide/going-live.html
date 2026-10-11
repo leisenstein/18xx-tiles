@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>18xx Tiles: Going Live</title>
+<!-- Source of docs/guide/18xx-Tiles-Going-Live.pdf. To rebuild the PDF, see the comment at the end of this file. -->
+<style>
+  @page { size: Letter; margin: 0.75in 0.8in 0.8in; }
+  :root { --ink: #1a1a1a; --muted: #5f5f5f; --line: #e3e1dc; --yellow: #F2C230; --green: #5FAE57; --brown: #B9814B; --gray: #ABABAB; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: var(--ink); font-size: 10.5pt; line-height: 1.5; margin: 0; }
+  h1 { font-size: 20pt; margin: 0 0 4pt; letter-spacing: -0.01em; break-before: page; padding-top: 4pt; }
+  h1 .num { display: inline-block; min-width: 26pt; height: 26pt; line-height: 26pt; text-align: center; border-radius: 6pt; background: var(--ink); color: #fff;
+            font-size: 13pt; margin-right: 8pt; vertical-align: 3pt; }
+  h2 { font-size: 13.5pt; margin: 16pt 0 4pt; break-after: avoid; }
+  h3 { font-size: 11pt; margin: 12pt 0 3pt; break-after: avoid; }
+  p { margin: 0 0 7pt; }
+  .lead { color: var(--muted); font-size: 11pt; margin-bottom: 10pt; }
+  .strip { display: flex; height: 5pt; margin: 6pt 0 12pt; }
+  .strip span { flex: 1; }
+  ul, ol { margin: 0 0 8pt; padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9.2pt; background: #f2f1ee; padding: 0.5pt 3pt; border-radius: 3pt; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.8pt; line-height: 1.4; background: #16181d; color: #e8e8e8; padding: 8pt 10pt; border-radius: 6pt;
+        white-space: pre-wrap; word-break: break-word; margin: 4pt 0 9pt; break-inside: avoid; }
+  pre .c { color: #8fa3b8; }
+  pre .add { color: #8ee28e; }
+  table { width: 100%; border-collapse: collapse; margin: 4pt 0 10pt; font-size: 9.6pt; break-inside: avoid; }
+  th, td { border: 1px solid var(--line); padding: 4pt 6pt; text-align: left; vertical-align: top; }
+  th { background: #f5f4f1; font-weight: 600; }
+  .box { border-radius: 6pt; padding: 7pt 10pt; margin: 6pt 0 10pt; break-inside: avoid; border-left: 4pt solid; }
+  .box b.t { display: block; margin-bottom: 2pt; }
+  .tip { background: #eef7ee; border-color: var(--green); }
+  .warn { background: #fdf3e2; border-color: #d98e04; }
+  .note { background: #eef4fb; border-color: #3a7bd5; }
+  .do { background: #f7f6f3; border-color: var(--ink); }
+  .steps { counter-reset: step; list-style: none; padding-left: 0; }
+  .steps > li { counter-increment: step; position: relative; padding-left: 26pt; margin-bottom: 7pt; }
+  .steps > li::before { content: counter(step); position: absolute; left: 0; top: 0; width: 17pt; height: 17pt; border-radius: 50%; background: var(--yellow);
+                        color: var(--ink); font-weight: 700; font-size: 9pt; text-align: center; line-height: 17pt; }
+  .check { list-style: none; padding-left: 0; }
+  .check li::before { content: "☐"; margin-right: 6pt; font-size: 11pt; }
+  .cover { height: 9.2in; display: flex; flex-direction: column; justify-content: center; }
+  .cover img { width: 3.6in; }
+  .cover h1 { break-before: auto; font-size: 30pt; margin-top: 18pt; }
+  .cover .sub { font-size: 14pt; color: var(--muted); }
+  .cover .meta { margin-top: 28pt; color: var(--muted); font-size: 10pt; }
+  .toc { columns: 1; }
+  .toc li { margin-bottom: 4pt; }
+  .diagram { display: flex; align-items: stretch; gap: 6pt; margin: 8pt 0 12pt; break-inside: avoid; font-size: 9.2pt; }
+  .diagram .n { flex: 1; border: 1.5pt solid var(--ink); border-radius: 6pt; padding: 6pt; text-align: center; }
+  .diagram .n b { display: block; margin-bottom: 2pt; }
+  .diagram .a { align-self: center; font-size: 14pt; }
+  .small { font-size: 9pt; color: var(--muted); }
+  .kbd { font-family: Consolas, monospace; border: 1px solid #bbb; border-bottom-width: 2px; border-radius: 3pt; padding: 0 3pt; font-size: 9pt; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================================================= Cover -->
+<section class="cover">
+  <img src="../../branding/18xx-tiles-logo-wordmark.svg" alt="18xx Tiles" />
+  <div class="strip"><span style="background:var(--yellow)"></span><span style="background:var(--green)"></span><span style="background:var(--brown)"></span><span style="background:var(--gray)"></span></div>
+  <h1>Going live</h1>
+  <div class="sub">A step-by-step guide to putting 18xx Tiles on the internet: hosting, your own address with HTTPS, email, and backups.</div>
+  <div class="meta">Written for someone comfortable following instructions but new to web hosting and React.<br />
+    Version 1.0, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
+</section>
+
+<!-- ======================================================================================= Contents -->
+<h1>Contents</h1>
+<div class="strip"><span style="background:var(--yellow)"></span><span style="background:var(--green)"></span><span style="background:var(--brown)"></span><span style="background:var(--gray)"></span></div>
+<ol class="toc">
+  <li><b>The big picture</b>: what "going live" means, what it costs, and the order of the work</li>
+  <li><b>Ask about the game titles</b>: a message to the tobymao/18xx maintainers</li>
+  <li><b>Buy a domain</b>: your own web address</li>
+  <li><b>Choose a host</b>: where the app runs (this guide uses Railway)</li>
+  <li><b>Get the code ready</b>: GitHub and a final check</li>
+  <li><b>Deploy to Railway</b>: the app on the internet for the first time</li>
+  <li><b>Your address and HTTPS</b>: connect the domain; the padlock comes for free</li>
+  <li><b>Email</b>: confirmation and password-reset emails through Resend</li>
+  <li><b>Backups you can take home</b>: a hands-on React tutorial for a "Download backup" button</li>
+  <li><b>Launch checklist</b>: test everything before you tell anyone</li>
+  <li><b>After launch</b>: updates, new data, logs, and restoring</li>
+</ol>
+<p><b>Appendices:</b> A. Running on your own server (VPS) instead &nbsp;·&nbsp; B. Production settings reference &nbsp;·&nbsp; C. Glossary</p>
+
+<div class="box note"><b class="t">How to read this guide</b>
+Do the chapters in order. Each one starts with what you will have at the end and roughly how long it takes. Green boxes are tips, orange boxes are
+warnings, and dark boxes are "do this" summaries. Commands go in a terminal (PowerShell or the Visual Studio terminal) unless a step says otherwise.
+Anything in <code>this style</code> is typed exactly.</div>
+
+<div class="box tip"><b class="t">You already have a lot of this</b>
+The app is finished and tested. It already sends email (once configured), takes nightly backups, and runs in Docker. Going live is mostly setup in
+web dashboards, plus one small, guided code change in chapter 9. The runbook (Admin, then Docs, then Runbook, in the app) has the day-to-day details.</div>
+
+<!-- ======================================================================================= 1 -->
+<h1><span class="num">1</span>The big picture</h1>
+<p class="lead">What happens when someone opens your site, and the order to do the work.</p>
+
+<div class="diagram">
+  <div class="n"><b>A visitor's browser</b>types your address, for example tiles.example.com</div><div class="a">→</div>
+  <div class="n"><b>Railway</b>the host: answers on HTTPS (the padlock) and passes the request on</div><div class="a">→</div>
+  <div class="n"><b>Your app container</b>the API and the website, exactly the Docker image you run today</div><div class="a">→</div>
+  <div class="n"><b>Volume /data</b>a disk that survives restarts: database, sign-in keys, nightly backups</div>
+</div>
+<p>Two outside services help: <b>Resend</b> sends the emails, and <b>GitHub</b> holds your code. Railway builds a new version of the app each time
+you push code to GitHub.</p>
+
+<h2>What it costs</h2>
+<table>
+  <tr><th>Item</th><th>Roughly</th><th>Notes</th></tr>
+  <tr><td>Hosting (Railway)</td><td>about $5–6 a month</td><td>$5 plan plus small usage; a volume this size costs cents</td></tr>
+  <tr><td>Domain name</td><td>about $10–15 a year</td><td>for example from Cloudflare or Namecheap</td></tr>
+  <tr><td>Email (Resend)</td><td>free</td><td>the free plan is far more than this app needs</td></tr>
+  <tr><td>Certificates (HTTPS)</td><td>free</td><td>Railway gets and renews them automatically</td></tr>
+</table>
+
+<h2>The order of the work</h2>
+<table>
+  <tr><th>#</th><th>Chapter</th><th>Time</th><th>Can wait for something?</th></tr>
+  <tr><td>2</td><td>Ask about the game titles</td><td>10 minutes</td><td>the reply can take days; you can carry on, but wait for it before you announce the site</td></tr>
+  <tr><td>3</td><td>Buy a domain</td><td>15 minutes</td><td></td></tr>
+  <tr><td>4–6</td><td>Choose a host, prepare the code, deploy</td><td>1–2 hours</td><td></td></tr>
+  <tr><td>7</td><td>Your address and HTTPS</td><td>30 minutes</td><td>DNS changes can take up to a few hours to spread</td></tr>
+  <tr><td>8</td><td>Email</td><td>30 minutes</td><td>domain verification can take a little while</td></tr>
+  <tr><td>9</td><td>Download backup button</td><td>1 hour</td><td></td></tr>
+  <tr><td>10</td><td>Launch checklist</td><td>30 minutes</td><td></td></tr>
+</table>
+
+<!-- ======================================================================================= 2 -->
+<h1><span class="num">2</span>Ask about the game titles</h1>
+<p class="lead">You end with: a polite question on record with the people whose data the site uses. About 10 minutes, plus waiting for a reply.</p>
+<p>The tile data comes from <b>tobymao/18xx</b>, the open-source code behind 18xx.games, under the MIT License, which lets you reuse it. But their
+license says it does <b>not</b> cover the game titles: 18xx.games shows those with permission from each game's designer or publisher. That permission
+was given to them, not to you. The site already credits them and says it is not affiliated (see About and credits), but asking is the right thing to
+do before going public.</p>
+
+<ol class="steps">
+  <li>Go to <code>https://github.com/tobymao/18xx</code> and sign in to GitHub (create a free account if you do not have one).</li>
+  <li>Open the <b>Discussions</b> tab if it exists; otherwise <b>Issues</b>, then <b>New issue</b>.</li>
+  <li>Post something like the message below, in your own words.</li>
+</ol>
+<pre>Title: Permission question: a non-commercial tile reference built from your data
+
+Hi! I've built a small, non-commercial site that lists the tiles used in 18xx games,
+generated from this repository's game files (tile definitions, counts, titles,
+designers and publishers). It credits tobymao/18xx and 18xx.games, links to both,
+includes your MIT notice, and states it isn't affiliated with you or any publisher.
+
+Your LICENSE notes that the MIT License doesn't cover the game titles. Are you
+comfortable with this use, and is there anything you'd like me to change (for
+example how the source is credited)? Happy to take it down or adjust anything.
+
+Thanks for all the work on 18xx.games!</pre>
+<div class="box tip"><b class="t">While you wait</b>
+Carry on with the other chapters; just do not share the address until you have an answer you are comfortable with. If a designer or publisher
+ever asks you to remove a game, an admin can do that in the app.</div>
+<p class="small">This guide is not legal advice. If the site will be widely public or ever commercial, ask someone qualified.</p>
+
+<!-- ======================================================================================= 3 -->
+<h1><span class="num">3</span>Buy a domain</h1>
+<p class="lead">You end with: your own web address, for example <code>18xxtiles.com</code>, and access to its DNS settings. About 15 minutes.</p>
+<p>A <b>domain</b> is your site's name on the internet. Its <b>DNS settings</b> are a small list of records that tell the world where your site and
+email live. You will add records there in chapters 7 and 8; you do not need to understand DNS beyond copying values.</p>
+<ol class="steps">
+  <li>Pick a registrar. <b>Cloudflare Registrar</b> sells domains at cost with good DNS tools; <b>Namecheap</b> is also simple. Either is fine.</li>
+  <li>Search for a name and buy it (usually one year; turn on auto-renew so it does not lapse).</li>
+  <li>Find the <b>DNS</b> page for the domain in the registrar's dashboard and keep that tab handy.</li>
+</ol>
+<div class="box tip"><b class="t">Use a subdomain if you like</b>
+You can put the site on <code>tiles.yourdomain.com</code> (a subdomain) and keep the main name for something else. The steps are the same.</div>
+<div class="box warn"><b class="t">Personal, not work</b>
+This is a personal project: use your personal email and payment details for the domain, the host, and the email service, never work accounts.</div>
+
+<!-- ======================================================================================= 4 -->
+<h1><span class="num">4</span>Choose a host</h1>
+<p class="lead">You end with: a decision. This guide uses Railway; appendix A covers a cheaper do-it-yourself server.</p>
+<table>
+  <tr><th>Host</th><th>About per month</th><th>HTTPS</th><th>Effort</th><th>Good for</th></tr>
+  <tr><td><b>Railway</b> (recommended)</td><td>$5–6</td><td>automatic</td><td>least</td><td>easiest and reliable; deploys from GitHub</td></tr>
+  <tr><td>Fly.io</td><td>$2–3 plus storage</td><td>automatic</td><td>low (command line)</td><td>a bit cheaper, more hands-on</td></tr>
+  <tr><td>A VPS such as Hetzner</td><td>€4–7</td><td>Caddy (appendix A)</td><td>most: you look after a Linux server</td><td>cheapest; full control</td></tr>
+  <tr><td>Render</td><td>$7 and up</td><td>automatic</td><td>low</td><td>its free tier sleeps and suits SQLite poorly</td></tr>
+</table>
+<p class="small">Prices from 2026 comparison articles; check each provider's pricing page before signing up.</p>
+<p>Whatever you pick, the app needs the same three things: run the Docker image, keep the <code>/data</code> folder on a persistent disk, and
+answer on HTTPS. Railway does all three with a few clicks.</p>
+
+<!-- ======================================================================================= 5 -->
+<h1><span class="num">5</span>Get the code ready</h1>
+<p class="lead">You end with: everything committed and on GitHub, in a private repository. About 20 minutes.</p>
+
+<h2>Check that secrets are not in the code</h2>
+<p>Your admin password and email key must never be in GitHub. They are already kept out (user-secrets and the <code>.env</code> file are ignored by
+git). Confirm it in the repository root:</p>
+<pre>git status
+git check-ignore .env</pre>
+<p>The second command should print <code>.env</code>, meaning git ignores it. If <code>git status</code> lists <code>.env</code> or anything under
+<code>data/</code>, stop and ask for help before going further.</p>
+
+<h2>Put the code on GitHub</h2>
+<ol class="steps">
+  <li>On github.com, choose <b>New repository</b>. Name it, for example <code>18xx-tiles</code>, and choose <b>Private</b>. Do not add a README
+      (you already have files).</li>
+  <li>GitHub shows commands for "push an existing repository". In the repository root, run them; they look like this:</li>
+</ol>
+<pre>git remote add origin https://github.com/YOUR-NAME/18xx-tiles.git
+git branch -M main
+git push -u origin main</pre>
+<div class="box note"><b class="t">What about the data files?</b>
+The games and tiles data are not in git on purpose. Railway's build runs the import script itself, for the version pinned in
+<code>tools/import/18xx-commit.txt</code>. Nothing to upload.</div>
+
+<!-- ======================================================================================= 6 -->
+<h1><span class="num">6</span>Deploy to Railway</h1>
+<p class="lead">You end with: the app running on a temporary Railway address, with its own disk. About 45 minutes.</p>
+
+<h2>6.1 Create the project</h2>
+<ol class="steps">
+  <li>Sign up at <code>https://railway.com</code> with your GitHub account, and choose the Hobby plan.</li>
+  <li><b>New Project</b> → <b>Deploy from GitHub repo</b> → pick your <code>18xx-tiles</code> repository. Allow Railway to read it when asked.</li>
+  <li>Railway finds the <code>Dockerfile</code> and starts a first build. It will fail or restart until the next steps are done; that is expected.</li>
+</ol>
+
+<h2>6.2 Give it a disk (volume)</h2>
+<p>Without a volume, the database would vanish every time the app restarts.</p>
+<ol class="steps">
+  <li>In the project, add a <b>Volume</b> (from the project canvas or the service's menu) and attach it to your app service.</li>
+  <li>Set its <b>mount path</b> to <code>/data</code>. That is where the app keeps the database, keys, and backups.</li>
+</ol>
+
+<h2>6.3 Settings (variables)</h2>
+<p>Open the service → <b>Variables</b>, and add these. They replace the <code>.env</code> file you use with Docker on your PC. Note the double
+underscores: <code>Admin__Email</code> means the setting <code>Admin:Email</code>.</p>
+<table>
+  <tr><th>Variable</th><th>Value</th><th>Why</th></tr>
+  <tr><td><code>ConnectionStrings__Tiles</code></td><td><code>Data Source=/data/tiles.db</code></td><td>database on the volume</td></tr>
+  <tr><td><code>DataProtection__KeysPath</code></td><td><code>/data/keys</code></td><td>sign-in keys on the volume, so nobody is signed out on restart</td></tr>
+  <tr><td><code>Backup__Folder</code></td><td><code>/data/backups</code></td><td>nightly snapshots on the volume</td></tr>
+  <tr><td><code>Admin__Email</code></td><td>your personal email</td><td>creates the first admin</td></tr>
+  <tr><td><code>Admin__Password</code></td><td>a strong password</td><td>that admin's password (use it to sign in)</td></tr>
+  <tr><td><code>ASPNETCORE_FORWARDEDHEADERS_ENABLED</code></td><td><code>true</code></td><td>see chapter 7: lets the app see real visitor addresses and HTTPS</td></tr>
+  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>tells Railway which port the app listens on</td></tr>
+  <tr><td><code>App__PublicUrl</code></td><td>the Railway address for now (6.4), later your domain</td><td>used in password-reset email links</td></tr>
+</table>
+<div class="box warn"><b class="t">If the log says "Permission denied" or "unable to open database file"</b>
+For security the app runs as a normal user, but some hosts attach volumes owned by the system's administrator account ("root"), so the app cannot
+write to <code>/data</code>. On Railway, add the variable <code>RAILWAY_RUN_UID</code> = <code>0</code>, which runs the app with permission to
+write to the volume, and redeploy. Check Railway's volume documentation if the message persists.</div>
+
+<h2>6.4 Address and health check</h2>
+<ol class="steps">
+  <li>Service → <b>Settings</b> → <b>Networking</b>: <b>Generate Domain</b>. You get a temporary address like
+      <code>18xx-tiles-production.up.railway.app</code>. If asked for a port, enter <code>8080</code>.</li>
+  <li>Put that address, with <code>https://</code> in front, in the <code>App__PublicUrl</code> variable.</li>
+  <li>Service → <b>Settings</b> → <b>Deploy</b>: set the <b>Healthcheck Path</b> to <code>/api/health</code>. Railway then waits until the app
+      really answers before switching to a new version.</li>
+</ol>
+
+<h2>6.5 Deploy and check the log</h2>
+<p>Railway redeploys when variables change (or use <b>Deploy</b>). Open the deployment's <b>Logs</b>. A good first start shows lines like these:</p>
+<pre>Executing Database Server script '...0001_CreateSchema.sql'
+Imported commit 46a592e... (seed): 131 games, 2022 tiles, 7275 game-tile links added; ...
+Created admin account you@example.com.
+Nightly backups at 03:00 server time into /data/backups, keeping 90.
+Now listening on: http://[::]:8080</pre>
+<p>Open the temporary address in your browser. You should see the Games page with 131 games, and be able to sign in with
+<code>Admin__Email</code> and <code>Admin__Password</code>.</p>
+<div class="box tip"><b class="t">Backup time is UTC</b>
+Containers use UTC, so 03:00 is late evening in the US. To change it, add <code>Backup__RunAt</code>, for example <code>08:00</code> (UTC).</div>
+
+<!-- ======================================================================================= 7 -->
+<h1><span class="num">7</span>Your address and HTTPS</h1>
+<p class="lead">You end with: the site on your own domain with the padlock. About 30 minutes, plus DNS waiting.</p>
+
+<h2>7.1 What HTTPS needs here</h2>
+<p>HTTPS needs a <b>certificate</b> for your domain. Railway gets one from Let's Encrypt and renews it automatically; you only prove the domain is
+yours by adding a DNS record. Railway then sits in front of the app as a <b>proxy</b>: visitors talk to Railway over HTTPS, and Railway passes each
+request to the app.</p>
+<p>Behind a proxy, the app would otherwise think every visitor is Railway, using plain HTTP. That matters for the sign-in limits (10 tries a minute
+per visitor would become 10 for everyone together) and for links the app builds. The variable you set in 6.3,
+<code>ASPNETCORE_FORWARDEDHEADERS_ENABLED=true</code>, makes ASP.NET Core read the visitor's real address and the original <code>https</code> from
+headers that Railway adds. No code change is needed; Microsoft documents this switch for apps behind cloud proxies.</p>
+
+<h2>7.2 Connect your domain</h2>
+<ol class="steps">
+  <li>Railway: service → <b>Settings</b> → <b>Networking</b> → <b>Custom Domain</b>. Enter your address, for example
+      <code>tiles.yourdomain.com</code>.</li>
+  <li>Railway shows a DNS record to add, usually a <b>CNAME</b> with a name and a value. Copy both.</li>
+  <li>At your registrar's DNS page, add that record exactly. On Cloudflare, set the record to <b>DNS only</b> (gray cloud) so Railway can issue the
+      certificate.</li>
+  <li>Wait until Railway shows the domain as active with a certificate. Minutes to a few hours.</li>
+  <li>Change <code>App__PublicUrl</code> to <code>https://tiles.yourdomain.com</code> (your real address) so reset links use it.</li>
+</ol>
+<div class="box do"><b class="t">Check</b>
+Open <code>https://tiles.yourdomain.com</code>: the browser shows a padlock and the Games page. Also try <code>http://</code>: it should switch to
+<code>https://</code> by itself.</div>
+
+<!-- ======================================================================================= 8 -->
+<h1><span class="num">8</span>Email</h1>
+<p class="lead">You end with: real confirmation and password-reset emails. About 30 minutes, plus domain verification.</p>
+<p>Until now, emails were written to the log. The app switches to real email as soon as it has a Resend key and a sender address.</p>
+<ol class="steps">
+  <li>Create a free account at <code>https://resend.com</code>.</li>
+  <li><b>Domains</b> → <b>Add domain</b>: your domain (or a subdomain such as <code>mail.yourdomain.com</code>).</li>
+  <li>Resend lists DNS records (for SPF and DKIM, which prove the emails really come from you). Add each one at your registrar exactly as shown,
+      then click <b>Verify</b>. Wait until it says verified.</li>
+  <li><b>API Keys</b> → <b>Create API key</b> with sending access. Copy it now; Resend shows it only once.</li>
+  <li>In Railway's variables, add:</li>
+</ol>
+<table>
+  <tr><th>Variable</th><th>Value</th></tr>
+  <tr><td><code>Email__ResendApiKey</code></td><td>the key from step 4 (starts with <code>re_</code>)</td></tr>
+  <tr><td><code>Email__From</code></td><td><code>18xx Tiles &lt;no-reply@yourdomain.com&gt;</code> (on the domain you verified)</td></tr>
+</table>
+<div class="box do"><b class="t">Check</b>
+After the redeploy, register a test account with another email address you own. The confirmation email should arrive within a minute (check spam the
+first time). Then use <b>Forgot your password?</b> on the sign-in page and follow the email's link. If nothing arrives, look in the Railway log for
+<code>Email to ... failed</code>; the message after it says why.</div>
+
+<!-- ======================================================================================= 9 -->
+<h1><span class="num">9</span>Backups you can take home</h1>
+<p class="lead">You end with: a <b>Download backup</b> button for admins, and the habit of using it. About 1 hour, including a first taste of React.</p>
+
+<p>The app already saves a snapshot every night when data changed, and keeps 90. But those snapshots live on the same Railway disk as the database.
+If the disk or the account had a problem, they would go too. A copy on your own PC or cloud drive fixes that. This chapter adds a button that
+downloads a zip of the database and the sign-in keys. It is a good first React change because it is small.</p>
+
+<h2>9.1 A two-minute introduction to the pieces</h2>
+<table>
+  <tr><th>Piece</th><th>What it is</th><th>Here</th></tr>
+  <tr><td><b>API endpoint</b> (C#)</td><td>A URL the server answers. Only the server can read the database, so the backup is made here.</td>
+      <td><code>GET /api/admin/backup</code> in <code>AdminController.cs</code></td></tr>
+  <tr><td><b>React component</b></td><td>A function that returns what a part of the page looks like. Pages are components made of smaller ones.</td>
+      <td><code>AdminImportsPage</code> in <code>web/src/pages/AdminImportsPage.tsx</code></td></tr>
+  <tr><td><b>JSX</b></td><td>The HTML-like code inside a component. <code>&lt;Button&gt;</code> is a component from the site's library; <code>&lt;a&gt;</code> is a normal link.</td>
+      <td>the <code>actions</code> of the page header</td></tr>
+</table>
+<p>The button is just a link to the endpoint. When an admin clicks it, the browser asks the server for the file, sending the sign-in cookie
+automatically, and saves what comes back. No JavaScript code is needed for that, only one element in the page.</p>
+
+<h2>9.2 The server part (C#)</h2>
+<p>Open <code>api/Controllers/AdminController.cs</code>. Every action in this controller is already admin-only, because the class has
+<code>[Authorize(Roles = ...)]</code>.</p>
+<p><b>Step 1.</b> At the top, add the four <code>using</code> lines marked green so C# can find the zip, database, and backup-settings code:</p>
+<pre><span class="add">using System.IO.Compression;</span>
+using System.Security.Claims;
+<span class="add">using Dapper;</span>
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+<span class="add">using Microsoft.Data.Sqlite;</span>
+using Tiles18xx.Api.Auth;
+<span class="add">using Tiles18xx.Api.Data;
+using Tiles18xx.Api.Data.Backups;</span>
+using Tiles18xx.Api.Data.Repositories;
+...</pre>
+<p><b>Step 2.</b> Find the line <code>private string ReviewerId()</code> near the bottom, and paste this method just above it:</p>
+<pre><span class="c">// GET /api/admin/backup -> a zip file with a fresh copy of the database (tiles.db) and the sign-in keys (keys/), for keeping off the server.</span>
+[HttpGet("backup")]
+public IActionResult DownloadBackup([FromServices] SqliteConnectionFactory db, [FromServices] BackupSettings backup)
+{
+    <span class="c">// 1. A consistent copy of the database, made safely while the app runs (the same method the nightly snapshots use).</span>
+    var copy = Path.Combine(Path.GetTempPath(), $"tiles-{Guid.NewGuid():N}.db");
+    using (var connection = db.Open())
+    {
+        connection.Execute($"VACUUM INTO '{copy.Replace("'", "''")}';");
+    }
+    SqliteConnection.ClearAllPools();
+
+    <span class="c">// 2. Put the copy and the sign-in keys in one zip file.</span>
+    var zipPath = copy + ".zip";
+    using (var zip = ZipFile.Open(zipPath, ZipArchiveMode.Create))
+    {
+        zip.CreateEntryFromFile(copy, "tiles.db");
+        if (Directory.Exists(backup.KeysFolder))
+        {
+            foreach (var key in Directory.GetFiles(backup.KeysFolder))
+            {
+                zip.CreateEntryFromFile(key, "keys/" + Path.GetFileName(key));
+            }
+        }
+    }
+    System.IO.File.Delete(copy);
+
+    <span class="c">// 3. Send it. DeleteOnClose removes the temporary zip once the download has been sent.</span>
+    var stream = new FileStream(zipPath, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+    return File(stream, "application/zip", $"18xx-tiles-backup-{DateTime.UtcNow:yyyyMMdd-HHmm}.zip");
+}</pre>
+<div class="box note"><b class="t">What the C# does, in plain words</b>
+<code>[HttpGet("backup")]</code> makes the method answer <code>/api/admin/backup</code>. <code>[FromServices]</code> asks ASP.NET Core for two
+things the app already has: the database connection maker and the backup settings (which know where the keys are). <code>VACUUM INTO</code> is
+SQLite's way to write a complete copy of a database while it is in use. The method zips the copy with the keys, deletes the copy, and returns the zip
+as a download. <code>System.IO.File.Delete</code> is written out in full because inside a controller <code>File(...)</code> means "send a file".</div>
+<p><b>Step 3.</b> Build the API (<code>dotnet build</code> in the <code>api</code> folder, or Build in Visual Studio). It should succeed.</p>
+
+<h2>9.3 The page part (React)</h2>
+<p>Open <code>web/src/pages/AdminImportsPage.tsx</code>. Near the top of what the component returns, find the page header. It looks like this
+(your line breaks may differ):</p>
+<pre>&lt;PageHeader icon={Download} area="admin" title="Imports" description="Each time the site's data was loaded from tobymao/18xx." /&gt;</pre>
+<p><b>Step 1.</b> Replace it with this version, which adds an <code>actions</code> setting holding the button:</p>
+<pre>&lt;PageHeader
+  icon={Download}
+  area="admin"
+  title="Imports"
+  description="Each time the site's data was loaded from tobymao/18xx."
+<span class="add">  actions={
+    &lt;Button asChild size="sm"&gt;
+      &lt;a href="/api/admin/backup"&gt;
+        &lt;DatabaseBackup aria-hidden="true" /&gt;
+        Download backup
+      &lt;/a&gt;
+    &lt;/Button&gt;
+  }</span>
+/&gt;</pre>
+<p><b>Step 2.</b> At the top of the file, make two names available: the button component and the icon. Change the first lines to:</p>
+<pre>import { useEffect, useState } from 'react'
+import { <span class="add">DatabaseBackup, </span>Download } from 'lucide-react'
+import { getImports } from '@/api/admin'
+...
+import PageHeader from '@/components/PageHeader'
+<span class="add">import { Button } from '@/components/ui/button'</span></pre>
+<div class="box note"><b class="t">Reading the JSX</b>
+<code>actions={...}</code> passes a piece of page to <code>PageHeader</code>, which shows it on the right of the title (open
+<code>components/PageHeader.tsx</code> to see how). <code>&lt;Button asChild&gt;</code> means "style the element inside me as a button", so the
+link <code>&lt;a href=...&gt;</code> looks like the site's other buttons. <code>&lt;DatabaseBackup /&gt;</code> is an icon from the Lucide icon set.
+Curly braces <code>{ }</code> switch from page markup back to JavaScript, for values like <code>actions</code>.</div>
+<p><b>Step 3.</b> Check the website code, in the <code>web</code> folder:</p>
+<pre>npm run lint
+npm run format
+npm run build</pre>
+<p>All three should finish without errors. <code>format</code> tidies spacing for you.</p>
+
+<h2>9.4 Try it, then ship it</h2>
+<ol class="steps">
+  <li>Run the app locally (API and <code>npm run dev</code>), sign in as admin, open <b>Imports</b>, and click <b>Download backup</b>.
+      A file like <code>18xx-tiles-backup-20261011-0139.zip</code> downloads. Inside: <code>tiles.db</code> and a <code>keys</code> folder.</li>
+  <li>Sign out and open <code>https://localhost:5173/api/admin/backup</code> directly: it should be refused. Only admins can download.</li>
+  <li>Commit and push. Railway rebuilds and deploys the new version by itself:</li>
+</ol>
+<pre>git add -A
+git commit -m "Admin: download a backup"
+git push</pre>
+<div class="box do"><b class="t">Make it a habit</b>
+Download a backup after any big editing session, and at least monthly. Keep a few in a folder on your PC or cloud drive. The zip contains the sign-in
+keys: treat it like a password and do not share it.</div>
+<div class="box tip"><b class="t">Optional: automatic off-site copies</b>
+For hands-off protection, <b>Litestream</b> can stream every database change to cheap storage (for example Cloudflare R2 or Backblaze B2). It needs
+changes to the Docker image and a storage account; it is a good later project. Also look in Railway's volume settings for its own backup feature.</div>
+
+<!-- ======================================================================================= 10 -->
+<h1><span class="num">10</span>Launch checklist</h1>
+<p class="lead">You end with: confidence that everything works, before you share the address.</p>
+<ul class="check">
+  <li>The tobymao/18xx maintainers replied, and you are comfortable going public (chapter 2).</li>
+  <li><code>https://</code> your domain shows the padlock; <code>http://</code> switches to <code>https://</code>.</li>
+  <li>Games page shows 131 games; a game's Tiles page shows tiles with counts; a tile page draws correctly.</li>
+  <li>Register a new account with a second email address; the confirmation email arrives; the link confirms it.</li>
+  <li>Forgot your password: the email arrives; the link opens the reset page; the new password works and the old one does not.</li>
+  <li>As the new (non-admin) user: Submit a tile works; the Admin links are not shown; Print number circles downloads a PDF.</li>
+  <li>As admin: the proposed tile appears in Review; approve it; it shows in History.</li>
+  <li>Download backup works, and the zip opens.</li>
+  <li>The Railway log shows "Nightly backups at ..." after start, and no errors.</li>
+  <li>Restart the service in Railway: you stay signed in, and the data is still there (the volume works).</li>
+  <li>About and credits page and the footer show the tobymao/18xx credit.</li>
+  <li>Delete the test tile and test account you created, or keep them as examples.</li>
+</ul>
+
+<!-- ======================================================================================= 11 -->
+<h1><span class="num">11</span>After launch</h1>
+<p class="lead">How to look after the site week to week. The runbook in the app has more detail on each.</p>
+<table>
+  <tr><th>Task</th><th>How</th></tr>
+  <tr><td>Ship a code change</td><td>Commit and <code>git push</code>. Railway builds and deploys automatically; the health check keeps the old version running until the new one answers.</td></tr>
+  <tr><td>Get newer 18xx data</td><td>On your PC: <code>python -I tools/import/update_data.py</code>, review the summary, commit <code>tools/import/18xx-commit.txt</code>, push. After the deploy, check Admin → Imports for notes.</td></tr>
+  <tr><td>See what is happening</td><td>Railway → service → Logs. Look for "failed" or "error".</td></tr>
+  <tr><td>Take a backup home</td><td>Admin → Imports → Download backup.</td></tr>
+  <tr><td>Change a setting</td><td>Railway → Variables; the service restarts with the new value.</td></tr>
+  <tr><td>Add another admin</td><td>See the runbook, "Accounts and admins".</td></tr>
+  <tr><td>Renewals</td><td>The domain renews yearly (turn on auto-renew); certificates renew automatically.</td></tr>
+</table>
+
+<h2>Restoring from a backup</h2>
+<p>If data is lost or damaged, put a good copy back. Use a nightly snapshot (on the volume, in <code>/data/backups</code>) or a downloaded zip.</p>
+<ol class="steps">
+  <li>Open a shell in the running service, using Railway's shell or SSH feature, or the Railway command-line tool; check Railway's current
+      documentation for the exact way.</li>
+  <li>Move the current files aside, then copy the chosen snapshot into place, for example:</li>
+</ol>
+<pre>mkdir -p /data/before-restore
+mv /data/tiles.db* /data/before-restore/
+cp /data/backups/tiles-20261010-030000.db /data/tiles.db</pre>
+<ol class="steps" start="3">
+  <li>Restart the service. If the sign-in keys were lost too, copy <code>/data/backups/keys/*</code> into <code>/data/keys/</code> first.</li>
+  <li>Check the site, then delete <code>/data/before-restore</code> once you are sure.</li>
+</ol>
+
+<!-- ======================================================================================= A -->
+<h1><span class="num">A</span>Running on your own server (VPS)</h1>
+<p class="lead">The cheaper route: a small Linux server, Docker, and Caddy for HTTPS. More work, because you look after the server.</p>
+<ol class="steps">
+  <li>Rent a small server (for example Hetzner, 2 GB of memory is plenty) with Ubuntu, and add your SSH key when creating it.</li>
+  <li>Install Docker by following Docker's official instructions for Ubuntu. Turn on automatic security updates.</li>
+  <li>At your registrar, add an <b>A record</b> pointing your domain at the server's IP address.</li>
+  <li>Copy the repository to the server (<code>git clone</code>), create <code>.env</code> from <code>.env.example</code>, and set
+      <code>PUBLIC_URL=https://tiles.yourdomain.com</code> plus the admin and email values.</li>
+  <li>Add Caddy. Create <code>Caddyfile</code> next to <code>docker-compose.yml</code>:</li>
+</ol>
+<pre>tiles.yourdomain.com {
+    reverse_proxy app:8080
+}</pre>
+<p>Then, in <code>docker-compose.yml</code>, change the app's <code>ports:</code> lines to <code>expose: ["8080"]</code> (so only Caddy can reach
+it), add <code>ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"</code> to the app's <code>environment:</code>, and add this service and volume:</p>
+<pre>  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+    depends_on:
+      - app
+
+volumes:
+  tiles-data:
+  caddy-data:</pre>
+<ol class="steps" start="6">
+  <li>Start everything with <code>docker compose up --build -d</code>. Caddy gets the certificate on the first visit and renews it itself.</li>
+  <li>Allow only ports 22 (SSH), 80, and 443 through the firewall.</li>
+</ol>
+<div class="box warn"><b class="t">On a VPS, backups are all yours</b>
+Copy <code>/data/backups</code> off the server regularly (Download backup, or a scheduled copy to cloud storage). A server can fail.</div>
+
+<!-- ======================================================================================= B -->
+<h1><span class="num">B</span>Production settings reference</h1>
+<p class="lead">Every setting the app reads, with the name to use in Railway (environment variables).</p>
+<table>
+  <tr><th>Variable</th><th>Example</th><th>Required?</th><th>Meaning</th></tr>
+  <tr><td><code>ConnectionStrings__Tiles</code></td><td><code>Data Source=/data/tiles.db</code></td><td>yes</td><td>where the database file is</td></tr>
+  <tr><td><code>DataProtection__KeysPath</code></td><td><code>/data/keys</code></td><td>yes</td><td>where the sign-in keys are kept</td></tr>
+  <tr><td><code>Admin__Email</code>, <code>Admin__Password</code></td><td>you, a strong password</td><td>for the first start</td><td>creates the first admin if missing</td></tr>
+  <tr><td><code>App__PublicUrl</code></td><td><code>https://tiles.yourdomain.com</code></td><td>for email</td><td>the site's address, used in reset links</td></tr>
+  <tr><td><code>Email__ResendApiKey</code></td><td><code>re_...</code></td><td>for email</td><td>without it, emails go to the log</td></tr>
+  <tr><td><code>Email__From</code></td><td><code>18xx Tiles &lt;no-reply@yourdomain.com&gt;</code></td><td>with the key</td><td>sender address on a verified domain</td></tr>
+  <tr><td><code>Backup__Folder</code></td><td><code>/data/backups</code></td><td>recommended</td><td>nightly snapshots</td></tr>
+  <tr><td><code>Backup__RetainCount</code></td><td><code>90</code></td><td>no</td><td>snapshots to keep</td></tr>
+  <tr><td><code>Backup__RunAt</code></td><td><code>08:00</code></td><td>no</td><td>time of day, UTC</td></tr>
+  <tr><td><code>Backup__Enabled</code></td><td><code>true</code></td><td>no</td><td>turn snapshots off with <code>false</code></td></tr>
+  <tr><td><code>ASPNETCORE_FORWARDEDHEADERS_ENABLED</code></td><td><code>true</code></td><td>yes, behind a proxy</td><td>real visitor address and HTTPS</td></tr>
+  <tr><td><code>PORT</code></td><td><code>8080</code></td><td>on Railway</td><td>the port Railway sends traffic to</td></tr>
+  <tr><td><code>RAILWAY_RUN_UID</code></td><td><code>0</code></td><td>only if needed</td><td>fixes "permission denied" on the volume (chapter 6.3)</td></tr>
+</table>
+<p class="small">Never put the password or the API key in the code or in GitHub. On your PC, user-secrets hold them; in Docker on your PC, the
+<code>.env</code> file; on Railway, the Variables page.</p>
+
+<!-- ======================================================================================= C -->
+<h1><span class="num">C</span>Glossary</h1>
+<table>
+  <tr><th>Term</th><th>Meaning</th></tr>
+  <tr><td>Container, image</td><td>An image is a packaged copy of the app with everything it needs; a container is that image running. <code>Dockerfile</code> says how to build the image.</td></tr>
+  <tr><td>Volume</td><td>A disk attached to a container that keeps its files when the container is replaced. The app's is mounted at <code>/data</code>.</td></tr>
+  <tr><td>Deploy</td><td>Build a new image from the latest code and start it in place of the old one.</td></tr>
+  <tr><td>Environment variable</td><td>A named setting given to the app from outside, such as <code>Admin__Email</code>. <code>__</code> stands for <code>:</code> in setting names.</td></tr>
+  <tr><td>Domain, DNS</td><td>Your site's name, and the list of records that say where its site and email are.</td></tr>
+  <tr><td>A, CNAME, TXT records</td><td>DNS record types: A points a name at an IP address; CNAME points a name at another name; TXT holds text, used to prove ownership and for email checks.</td></tr>
+  <tr><td>HTTPS, certificate</td><td>Encrypted web traffic (the padlock). A certificate proves the site is really yours; Let's Encrypt issues them free.</td></tr>
+  <tr><td>Proxy, reverse proxy</td><td>A server in front of the app that receives visitors' requests and passes them on (Railway's edge, or Caddy).</td></tr>
+  <tr><td>Forwarded headers</td><td>Notes a proxy adds to each request (visitor address, original <code>https</code>) so the app knows who and how.</td></tr>
+  <tr><td>SPF, DKIM</td><td>DNS records that let email providers check that mail from your domain is genuine, so it does not land in spam.</td></tr>
+  <tr><td>API key</td><td>A secret string that lets the app use a service (here Resend). Treat it like a password.</td></tr>
+  <tr><td>Endpoint</td><td>One URL the API answers, such as <code>/api/admin/backup</code>.</td></tr>
+  <tr><td>Component, JSX</td><td>In React, a component is a function that returns a piece of page; JSX is the HTML-like code it returns.</td></tr>
+  <tr><td>Snapshot</td><td>A complete copy of the database at one moment, saved by the nightly backup job.</td></tr>
+</table>
+
+<!-- To rebuild the PDF (Windows, from the repository root):
+     "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless --disable-gpu --no-pdf-header-footer ^
+       --print-to-pdf="docs\guide\18xx-Tiles-Going-Live.pdf" "file:///%CD%/docs/guide/going-live.html" -->
+</body>
+</html>
