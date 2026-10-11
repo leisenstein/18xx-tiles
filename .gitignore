@@ -505,5 +505,3 @@ $RECYCLE.BIN/
 # Local secrets for docker compose (see .env.example)
 .env
 
-# Promo video (about 30 MB; rebuild with promo/tools)
-/promo/*.mp4
