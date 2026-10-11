@@ -8,8 +8,7 @@ const when = (utc: string) => new Date(utc).toLocaleString()
 // One data import in the admin History list: which tobymao/18xx commit, when, what it added, and how many notes it left for review.
 // The full report (each note) is on the Imports page.
 export default function ImportEntry({ run }: { run: ImportRun }) {
-  const backfilled = run.notes.some((n) => n.kind === 'backfilled')
-  const notes = run.notes.filter((n) => n.kind !== 'backfilled').length
+  const notes = run.notes.length
 
   return (
     // Light blue panel with a sky-blue left border, so data imports stand apart from tile changes (which have white panels and type-colored borders).
@@ -40,7 +39,6 @@ export default function ImportEntry({ run }: { run: ImportRun }) {
           <span className="text-muted-foreground">Nothing to review.</span>
         )}
       </p>
-      {backfilled && <p className="text-xs text-muted-foreground">Recorded later: this import ran before the import log existed.</p>}
     </li>
   )
 }

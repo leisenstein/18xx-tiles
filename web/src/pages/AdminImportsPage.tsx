@@ -21,7 +21,6 @@ const NOTE_GROUPS: Record<string, string> = {
   'game-not-renamed': 'Game not renamed',
   'game-renamed': 'Game renamed',
   'game-details': 'Designers and publishers updated',
-  backfilled: 'About this entry',
 }
 
 // Notes grouped by kind, in NOTE_GROUPS order.

@@ -11,7 +11,7 @@ public sealed class ImportRunsRepository(SqliteConnectionFactory db)
         SELECT Id, SourceCommit, CommittedUtc, ImportedUtc, Mode, GamesAdded, TilesAdded, LinksAdded, CountsFilled, NotesJson FROM ImportRuns
         """;
 
-    // Every import, newest first, with its report. Sorted by time, not id: a backfilled first import (script 0009) has a higher id than later runs.
+    // Every import, newest first, with its report.
     public IReadOnlyList<ImportRunDto> GetAll() => Query(SelectRuns + " ORDER BY ImportedUtc DESC, Id DESC;", null);
 
     // Several imports by id (the admin History page), in no particular order.

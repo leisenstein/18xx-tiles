@@ -236,6 +236,7 @@ Version 1.1 expected 584 tiles (476 + 108). The difference: game-specific tiles 
 8. Known gaps: Rolling Stock and Rolling Stock Stars have no track tiles. Optional rules that add or remove tiles in code are not reflected. Fixed after Phase 4: Harzbahn 1873 returns its manifest directly from `def game_tiles` (now read, 39 tiles); 18Mag's `FIXED_ROTATION_TILES` hash is not a manifest and hid its custom tile `L33` (hashes whose name contains `ROTATION` are now skipped). With these fixes a fresh import has 2,024 tiles and 7,275 game links.
 9. Counts (implemented after Phase 4): an integer count from 1 to 100 as given, `unlimited` (string or symbol) as 999, anything else (constants, formulas) as NULL. Imported counts get `Notes` = "Count from 18xx.games manifest", so they can be told apart from counts verified against a physical box. At commit 46a592e: 7,235 links, 7,234 with a count (458 unlimited).
 10. Process game folders in folder-name order, not full-path order: on Windows the backslash sorts after digits, which put `g_18_los_angeles1` before its parent `g_18_los_angeles` and left it with no tiles. Resolve inherited manifests repeatedly until nothing changes, so chains work in any order. Read each folder's `.rb` files in sorted order.
+11. Expand Ruby interpolations in custom codes (fixed in the pre-release reset): `#{NAME}` and `#{NAME[:key]}` come from string and hash constants in the game's folder or the games it builds on (alias and Meta parent), for example 18ZOO's `LABEL_O` and 18USA's `RESOURCE_LABELS`; `#{Engine::Config::Tile::YELLOW['3']}` is the generic tile's definition. Path ends on edge 6 are written as edge 0 (the engine applies `% 6` to every edge). At commit 46a592e every one of the 2,628 definitions passes the app's validator.
 
 ### 6.4 Import plan (Phase 1; refresh added after Phase 4)
 
@@ -282,6 +283,10 @@ It downloads only `lib/engine/game/`, `lib/engine/config/tile.rb`, and `LICENSE`
 Porting the parser to C# is optional later work.
 
 ## 7. Database schema (app tables, managed by DbUp)
+
+**Baseline (pre-release reset, open item 13).** The development scripts 0001 to 0011 were combined into one script, `0001_CreateSchema.sql`, which
+creates the final tables directly. Script numbers mentioned elsewhere in this document (0005 to 0011) describe how the schema got there during
+development; they no longer exist. Every schema change after the first release is a new numbered script on top of the baseline.
 
 User IDs are TEXT to match `AspNetUsers.Id`. Scripts: `api/Data/Migrations/Scripts/0001` to `0005`. The schema below is the result after all scripts (`0005_DropGamesDevStage.sql` removed `Games.DevStage`, which was 18xx.games' own implementation status and not relevant to this project).
 
@@ -641,6 +646,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 4.19 | Action links as buttons with icons: game panel on the Tiles page (Print number circles; Edit this game's tiles for admins), tile page (Print number circle, Edit tile, Delete tile), Back button on Edit game tiles | Done (checked in the browser) |
 | 4.20 | UI polish: logo (`Logo`: option B, a fanned stack of brown, green, and yellow tiles; the full height of the header, with links and the account area wrapping to its right; also the favicon `web/public/favicon.svg`; page title "18xx Tiles"), navbar with icons, active pill, admin group, user initial, tile-color strip; shared `PageHeader` (icon chip colored by area: browse amber, contribute emerald, admin slate) on every page; Games page cards (`GameCard`: color-mix strip, icon stats, search); sign-in and register as cards. `GameSummaryDto` gains per-color design counts | Done (checked in the browser) |
 | 4.21 | Empty and loading states: `EmptyState` (icon, title, hint, optional action such as Clear filters or Propose a new tile) on Games search, Tiles, Common Tiles, My requests, Review ("All caught up"), History, Imports, Edit game tiles, and tile history; `LoadingState` spinner on every page | Done (checked in the browser) |
+| 4.22 | Pre-release reset (open items 11 and 13): parser expands Ruby interpolations and normalizes edge 6 to 0; one baseline DbUp script; dead backfill code removed; development database wiped | Done (verified: no unexpanded code, all 2,628 definitions valid, fresh database has the same tables, columns, and indexes as before; 131 games, 2,022 tiles, 7,275 links) |
 
 **Phase 4 complete.**
 
@@ -668,18 +674,12 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 8. ~~**Seed file distribution**~~ Resolved after Phase 4: never stored in git; generated from tobymao/18xx for the commit pinned in `tools/import/18xx-commit.txt`, by the developer locally and by Docker stage 2 (sections 6.4, 11a).
 9. ~~**Game metadata**~~ Resolved after Phase 4: designer and publisher from each game's `meta.rb` (inherited from the parent game's Meta module when not set), publisher names from `lib/engine/publisher.rb`. 130 of 131 games have a designer and 89 a publisher at commit 46a592e. Shown on Home and the game-filtered Tiles page.
 10. ~~**Tile number circles**~~ Built after Phase 4 (section 9.4). Only the crossing-sign style for now.
-11. **Broken imported definitions (found in Phase 4):** 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
+11. ~~**Broken imported definitions (found in Phase 4)**~~ Resolved in the pre-release reset (section 6.3 rule 11). 93 game-specific tiles contain unexpanded Ruby placeholders from the prototype parser
     (for example `#{TILE_O_O}`, `#{Engine::Config::Tile::YELLOW['3']}`), and 9 path ends use edges outside 0 to 5. Fix them through change
     requests (the validator rejects these forms, so a corrected edit is required), or fix the parser and re-import.
 12. ~~**Renderer gaps**~~ Resolved after Phase 4: `halt` is a node (fixes node numbering) drawn as a white circle with its symbol; `border` paints the
     edge in the tile color (typed borders: colored line and cost); `stripes` draws diagonal bands clipped to the hex. Samples added to `/dev/tiles`.
-13. **Pre-release reset (decided after Phase 4; do last, before the first production release):** until then, schema changes keep adding numbered
-    DbUp scripts as usual. At the end of development:
-    1. Fix the parser (item 11), regenerate the seed files, and check them.
-    2. Replace DbUp scripts `0001` to `00NN` with one baseline script, `0001_CreateSchema.sql`, holding the final schema (no ALTERs, no backfills such
-       as `0009`). Also keep a single EF Core Identity migration (regenerate it if more were added).
-    3. Delete `data/tiles.db*` (and `docker compose down -v`) and start the API: a clean database, seeded by DataImporter with counts.
-    After the first production release, every schema change is a new numbered script on top of the baseline; never edit or renumber released scripts.
+13. ~~**Pre-release reset**~~ Done after Phase 4: parser fixed (item 11), DbUp scripts combined into `0001_CreateSchema.sql` (the EF Core Identity migration was already a single one), and the development database wiped and re-imported (old copy kept in `data/backup-before-reset/`, not in source control). From now on, schema changes are new numbered scripts; never edit or renumber released ones.
 
 ## 13. Reference files
 

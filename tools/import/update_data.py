@@ -243,11 +243,83 @@ def parse_publisher(text, publishers):
     return ', '.join(names) or None
 
 
-def parse_games(game_root, publishers):
+def read_generic_codes(tile_rb):
+    """Generic tile definitions from config/tile.rb by color constant: { 'YELLOW': { '3': 'town=...' }, ... }."""
+    codes = {}
+    for color, body in re.findall(r'(\w+) = \{(.*?)\}\.freeze', read(tile_rb), re.S):
+        if color in GENERIC_COLORS:
+            codes[color] = dict(re.findall(r"^\s+'([^']+)' => '([^']*)'", body, re.M))
+    return codes
+
+
+# A Ruby string literal in single or double quotes, with backslash escapes.
+LITERAL = r"""(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")"""
+
+
+def parse_constants(source):
+    """Ruby constants a game's tile codes refer to with #{...}: strings (LABEL_O = 'label=O;...', possibly joined across lines with a backslash)
+    and hashes of strings (RESOURCE_LABELS = { coal: '...', ... }). Returns (strings, hashes)."""
+    strings, hashes = {}, {}
+    joined = LITERAL + r'(?:\s*\\\s*\n\s*' + LITERAL + ')*'
+    for m in re.finditer(r'^\s*([A-Z][A-Z0-9_]*)\s*=\s*(' + joined + ')', source, re.M):
+        strings[m.group(1)] = string_literal(m.group(2))
+    for m in re.finditer(r'^\s*([A-Z][A-Z0-9_]*)\s*=\s*\{([^{}]*)\}', source, re.M):
+        pairs = re.findall(r"""(?:(\w+):(?!:)|['":]?(\w+)['"]?\s*=>)\s*(""" + LITERAL + ')', m.group(2))
+        entries = {(a or b): string_literal(v) for a, b, v in pairs}
+        if entries:
+            hashes[m.group(1)] = entries
+    return strings, hashes
+
+
+INTERPOLATION = re.compile(r'#\{([^}]*)\}')
+
+
+def expand_code(code, scopes, generic_codes, problems, where):
+    """Replace Ruby #{...} interpolations left in a tile code with their values (DESIGN.md section 6.3 rule 11). scopes: (strings, hashes) pairs to try
+    in order, the game's own first. Unresolved interpolations are kept and reported."""
+    def value(expr):
+        expr = expr.strip()
+        m = re.fullmatch(r"""(?:Engine::)?(?:Config::)?Tile::(\w+)\[['"]([^'"]+)['"]\]""", expr)
+        if m:
+            return generic_codes.get(m.group(1), {}).get(m.group(2))
+        m = re.fullmatch(r"""(?:\w+::)*([A-Z][A-Z0-9_]*)\[(?::(\w+)|['"](\w+)['"])\]""", expr)
+        if m:
+            key = m.group(2) or m.group(3)
+            return next((h[m.group(1)][key] for _, h in scopes if m.group(1) in h and key in h[m.group(1)]), None)
+        m = re.fullmatch(r'(?:\w+::)*([A-Z][A-Z0-9_]*)', expr)
+        if m:
+            return next((st[m.group(1)] for st, _ in scopes if m.group(1) in st), None)
+        return None
+
+    def replace(m):
+        found = value(m.group(1))
+        return found if found is not None else m.group(0)
+
+    for _ in range(5):  # a constant may itself contain #{...}
+        if '#{' not in code:
+            break
+        code = INTERPOLATION.sub(replace, code)
+    for m in INTERPOLATION.finditer(code):
+        problems.append(f'{where}: could not expand #{{{m.group(1)}}}')
+    return code
+
+
+def normalize_edges(code):
+    """Path ends on edge 6 or more mean that edge mod 6: the 18xx.games engine applies % 6 wherever it uses an edge (Part::Edge#rotate, Tile), and a
+    few upstream tiles write edge 0 as 6 (18FL 405, 18FR FRY, ...). Writing them as 0 to 5 keeps the meaning and passes the app's validator."""
+    def fix(part):
+        if not part.strip().startswith('path='):
+            return part
+        return re.sub(r'\b([ab]):(\d+)\b', lambda m: f'{m.group(1)}:{int(m.group(2)) % 6}', part)
+    return ';'.join(fix(part) for part in code.split(';'))
+
+
+def parse_games(game_root, publishers, generic_codes):
     """Every game folder (g_*) with a meta.rb: title, designer, publisher, dev stage, folder name, and its tile manifest. Keyed by Ruby module name,
     e.g. G1830."""
     games = {}
     meta_parents = {}
+    constants = {}  # module -> (strings, hashes) read from its folder
     # Sorted by folder name, the same on every operating system (sorting full paths puts g_18_los_angeles1 first on Windows, because of the backslash).
     for meta in sorted(glob.glob(os.path.join(game_root, 'g_*', 'meta.rb')), key=lambda p: os.path.basename(os.path.dirname(p))):
         folder = os.path.dirname(meta)
@@ -265,9 +337,13 @@ def parse_games(game_root, publishers):
 
         tiles = {}
         alias = None
+        strings, hashes = {}, {}
         # Sorted so that when two files define the same tile number, the result does not depend on the file system.
         for path in sorted(glob.glob(os.path.join(folder, '*.rb'))):
             source = strip_comments(read(path))
+            file_strings, file_hashes = parse_constants(source)
+            strings.update(file_strings)
+            hashes.update(file_hashes)
             # Manifests: "TILES = {", other "*_TILES = {" sets (optional variants), "tiles = {" inside a method, or a method that returns the hash
             # directly ("def game_tiles" followed by "{", as Harzbahn 1873 does).
             for m in re.finditer(r'(?:\b(\w*TILES)\s*=|\btiles\s*=|\bdef\s+game_tiles)\s*\{', source):
@@ -286,6 +362,7 @@ def parse_games(game_root, publishers):
                 alias = m.group(1)
         games[module] = {'title': title, 'designer': designer, 'publisher': publisher, 'stage': stage, 'dir': os.path.basename(folder), 'tiles': tiles,
                          'alias': alias}
+        constants[module] = (strings, hashes)
 
     # Designer and publisher not set in a game's meta.rb come from the Meta module it includes (for example 1822CA ERS from 1822CA), up the chain.
     def inherited(module, key, seen=()):
@@ -310,6 +387,24 @@ def parse_games(game_root, publishers):
                 game['tiles'] = parent['tiles']
                 game['aliased'] = True
                 changed = True
+
+    # Expand #{...} in custom codes and normalize edge numbers. Constants are looked up in the game's own folder first, then in the games it builds on
+    # (its alias and Meta parent, up the chain); the 18ZOO maps, for example, use 18ZOO's LABEL_O.
+    problems = []
+    for module, game in games.items():
+        chain, seen, todo = [], set(), [module]
+        while todo:
+            m = todo.pop(0)
+            if m in seen or m not in games:
+                continue
+            seen.add(m)
+            chain.append(constants[m])
+            todo += [games[m]['alias'], meta_parents.get(m)]
+        for number, entry in game['tiles'].items():
+            if entry.get('code'):
+                entry['code'] = normalize_edges(expand_code(entry['code'], chain, generic_codes, problems, f"{game['dir']} tile {number}"))
+    for problem in sorted(set(problems)):
+        print('  warning:', problem)
     return games
 
 
@@ -320,13 +415,7 @@ def normalize(code):
 
 def parse_generic_tiles(tile_rb, games):
     """The generic numbered tiles from config/tile.rb, with which games use each one as is and which games have their own version."""
-    text = read(tile_rb)
-    tiles = []
-    for color, body in re.findall(r'(\w+) = \{(.*?)\}\.freeze', text, re.S):
-        if color not in GENERIC_COLORS:
-            continue
-        for m in re.finditer(r"^\s+'([^']+)' => '([^']*)'", body, re.M):
-            tiles.append({'name': m.group(1), 'color': color.lower(), 'code': m.group(2)})
+    tiles = [{'name': name, 'color': color.lower(), 'code': code} for color, codes in read_generic_codes(tile_rb).items() for name, code in codes.items()]
 
     for tile in tiles:
         users, variants = [], []
@@ -422,8 +511,10 @@ def main():
     commit, committed = current_commit()
     print(f'Parsing commit {commit} ({committed})')
 
-    games = parse_games(os.path.join(CACHE, 'lib', 'engine', 'game'), parse_publishers(os.path.join(CACHE, 'lib', 'engine', 'publisher.rb')))
-    tiles = parse_generic_tiles(os.path.join(CACHE, 'lib', 'engine', 'config', 'tile.rb'), games)
+    tile_rb = os.path.join(CACHE, 'lib', 'engine', 'config', 'tile.rb')
+    games = parse_games(os.path.join(CACHE, 'lib', 'engine', 'game'), parse_publishers(os.path.join(CACHE, 'lib', 'engine', 'publisher.rb')),
+                        read_generic_codes(tile_rb))
+    tiles = parse_generic_tiles(tile_rb, games)
     entries = [e for g in games.values() for e in g['tiles'].values()]
     print(f'{len(games)} games ({sum(1 for g in games.values() if g["tiles"])} with tiles, {sum(1 for g in games.values() if g["designer"])} with a '
           f'designer, {sum(1 for g in games.values() if g["publisher"])} with a publisher), {len(tiles)} generic tiles, {len(entries)} manifest entries, '
