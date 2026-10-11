@@ -20,11 +20,17 @@ export interface CircleShape {
   dash?: number[]
 }
 
+// One sticker's drawing: a number circle (crossingSign), or a tile picture on a hex (tileHex.ts).
 export interface CircleArt {
   shapes: CircleShape[]
-  extent: number // drawn radius including bleed, in the same units (50 + bleed)
+  extent: number // half the drawn height including bleed, in the same units (circle: its radius, 50 + bleed)
+  extentX?: number // half the drawn width when it differs from the height (hex: corner to corner is wider)
+  outline?: 'circle' | 'hex' // the cut shape (default circle)
   numberPoints: number // printed size of the number in points (font size), for the readability check
 }
+
+// Half the drawn width of a sticker.
+export const extentX = (art: CircleArt) => art.extentX ?? art.extent
 
 // Full circle as path data (two arcs), so circles and everything else go through the same path drawing in SVG and PDF.
 export const circlePath = (r: number) => `M${r} 0A${r} ${r} 0 1 1 ${-r} 0A${r} ${r} 0 1 1 ${r} 0Z`

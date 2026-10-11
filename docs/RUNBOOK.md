@@ -474,7 +474,7 @@ Roles: the site has one role, **Admin**. Accounts are created by people register
 | See every change | **History** | Filter by type (Add, Edit, Delete, Import, Game) and status; search by tile, email, game, or commit |
 | See imports | **Imports** | What each import added, and notes to review |
 | Manage accounts | **Users** | Admin role, confirm email, password reset, disable, delete; see "The Users page" |
-| Print tile numbers | a tile or a game: **Print number circle(s)** | Any signed-in user; PDF sheet, SVG, or PNG |
+| Print tile stickers | a tile or a game: **Print tray stickers** | Any signed-in user; stickers for tile trays: a number circle (1/2, 3/4, or 1 inch) or a picture of the tile on a 3/4 or 1 inch hex (very busy tiles may look jumbled); PDF sheet, SVG, or PNG |
 
 ## Docker
 

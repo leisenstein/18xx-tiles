@@ -1,6 +1,6 @@
-import type { CircleArt, CircleShape } from './crossingSign'
+import { extentX, type CircleArt, type CircleShape } from './crossingSign'
 
-// Single-circle downloads (DESIGN.md section 9.4): a standalone SVG file sized in inches, and a 300 DPI PNG made from that SVG.
+// Single-sticker downloads (DESIGN.md section 9.4): a standalone SVG file sized in inches, and a 300 DPI PNG made from that SVG.
 
 export const PNG_DPI = 300
 
@@ -10,12 +10,16 @@ const shapeSvg = ({ d, fill, stroke, strokeWidth, dash }: CircleShape) =>
   (dash ? ` stroke-dasharray="${dash.join(' ')}"` : '') +
   '/>'
 
-// A complete SVG document. Its printed size is the circle's diameter plus any bleed, in inches.
+// Printed width and height in inches (100 drawing units = the chosen size), bleed included.
+const inchesOf = (art: CircleArt, sizeInches: number) => ({ width: (sizeInches * extentX(art)) / 50, height: (sizeInches * art.extent) / 50 })
+
+// A complete SVG document at its printed size: the circle's diameter (or the hex's height across its flats) plus any bleed, in inches.
 export function circleSvg(art: CircleArt, diameterInches: number): string {
   const e = art.extent
-  const inches = (diameterInches * e) / 50
+  const ex = extentX(art)
+  const { width, height } = inchesOf(art, diameterInches)
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${inches}in" height="${inches}in" viewBox="${-e} ${-e} ${2 * e} ${2 * e}">` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}in" height="${height}in" viewBox="${-ex} ${-e} ${2 * ex} ${2 * e}">` +
     art.shapes.map(shapeSvg).join('') +
     '</svg>'
   )
@@ -23,17 +27,20 @@ export function circleSvg(art: CircleArt, diameterInches: number): string {
 
 // Draws the SVG onto a canvas at 300 pixels per inch and returns it as a PNG. The SVG has no external fonts or images, so it draws the same in a canvas.
 export function circlePng(art: CircleArt, diameterInches: number): Promise<Blob> {
-  const pixels = Math.round(((diameterInches * art.extent) / 50) * PNG_DPI)
+  const { width, height } = inchesOf(art, diameterInches)
+  const pixelsX = Math.round(width * PNG_DPI)
+  const pixelsY = Math.round(height * PNG_DPI)
   const url = URL.createObjectURL(new Blob([circleSvg(art, diameterInches)], { type: 'image/svg+xml' }))
   return new Promise<Blob>((resolve, reject) => {
     const image = new Image()
     image.onload = () => {
       const canvas = document.createElement('canvas')
-      canvas.width = canvas.height = pixels
-      canvas.getContext('2d')!.drawImage(image, 0, 0, pixels, pixels)
+      canvas.width = pixelsX
+      canvas.height = pixelsY
+      canvas.getContext('2d')!.drawImage(image, 0, 0, pixelsX, pixelsY)
       canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not create the PNG.'))), 'image/png')
     }
-    image.onerror = () => reject(new Error('Could not draw the circle.'))
+    image.onerror = () => reject(new Error('Could not draw the sticker.'))
     image.src = url
   }).finally(() => URL.revokeObjectURL(url))
 }

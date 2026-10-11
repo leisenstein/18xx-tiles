@@ -97,7 +97,7 @@ export default function TilesPage() {
               <Button asChild size="sm">
                 <Link to={`/print/circles?game=${selectedGame.id}`}>
                   <Printer aria-hidden="true" />
-                  Print number circles
+                  Print tray stickers
                 </Link>
               </Button>
               {user.roles.includes(ADMIN_ROLE) && (

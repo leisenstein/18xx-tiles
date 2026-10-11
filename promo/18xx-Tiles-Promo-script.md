@@ -2,33 +2,33 @@
 
 ## 1. Title
 
-If you play 18xx, you know the moment. Halfway through the game, somebody asks: is there another number fifty-seven left? Or, which green tile can this city upgrade to? 18xx Tiles is built to answer that, fast.
+18xx Tiles is a reference for the track tiles in 18xx games. Every tile, from every game, in one place.
 
-## 2. 180 games in one place
+## 2. A growing library of games
 
-It covers a hundred and eighty games. That's the whole 18xx.games collection, plus older games and variants from 18xx.net. Every card shows the designer, the publisher, and how many tiles come in the box.
+It covers a large and growing library of 18xx games. Each one shows its designer, its publisher, how many tiles come in the box, and a strip showing its mix of tile colors.
 
 ## 3. Every tile a game uses, with box counts
 
-Pick a game, and you get every tile it uses, drawn cleanly in yellow, green, brown, and gray, with how many of each you should have. You can filter by color, by cities or towns, or just type a tile number.
+Pick a game, and you see every tile it uses, drawn cleanly in its own color, with how many of each come in the box. You can filter by color, by cities or towns, or look up a tile by its number.
 
 ## 4. See every game that uses a tile
 
-Open any tile to see the full drawing, and every game that uses it. Tile fifty-seven, for example, turns up in a hundred and thirty-four games.
+Open any tile to see the full drawing, and every game that uses it, with the count in each box. Tile fifty-seven, for example, turns up in many games.
 
 ## 5. The tiles most games share
 
-The common tiles page shows the workhorses, the tiles shared by game after game. Handy when you're building a set, or replacing lost pieces.
+The common tiles page shows the standard tiles that game after game shares, all in one view.
 
-## 6. Print number circles for a whole game
+## 6. Print number stickers for your tile trays
 
-Lost a tile number, or making your own copy of a game? Sign in, and you can print number circles for every tile in a game. Pick the size, and you get a PDF sheet that's ready for paper or round labels.
+Sign in, and you can print tile-number stickers for your tile trays. Pick a game, choose the sticker size, and download a sheet that's ready for round labels.
 
 ## 7. Missing a tile? Submit it
 
-And if you spot a tile that's missing, you can submit it. Every suggestion gets reviewed before it goes live, so the reference stays right.
+Spot a tile that's missing? Submit it. Every suggestion is reviewed before it's published, so the reference stays accurate.
 
 ## 8. Closing
 
-18xx Tiles. Every track tile, every game, one place. Bring it to your next game night.
+18xx Tiles. Every track tile, every game, one place.
 

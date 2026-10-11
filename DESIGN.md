@@ -536,7 +536,7 @@ Sorting is done in the API with the shared sort helper.
 size in a browser mockup.
 
 **Implementation.** Page `/print/circles?tile=ID` or `?game=ID` (signed-in users only, any role; loaded on demand because the PDF and font libraries are about
-1 MB). Links: "Print number circle" on the tile page; "Print number circles for this game" on the game-filtered Tiles page. Code in
+1 MB). Links: "Print tray stickers" on the tile page and on the game-filtered Tiles page. Code in
 `web/src/lib/circles/`: `numberFont.ts` (Roboto Condensed Bold via `@fontsource/roboto-condensed`, read with `@pdf-lib/fontkit`; text is turned into
 outlines), `crossingSign.ts` (the shapes, in a radius-50 unit circle), `circleFiles.ts` (SVG and 300 DPI PNG), `printSheet.ts` (layout and PDF via
 `pdf-lib`). Components `NumberCircle` and `SheetPreview` draw the same shapes on screen. Defaults: 3/4 inch, Letter, 0.5 in margins, 1/8 in spacing,
@@ -551,6 +551,12 @@ with a dashed outer edge.
 Considered and dropped: "Track ring" and "Plain city" circle styles (not needed for now), and hex-shaped markers with simplified track (a small
 hex cannot show every tile's track cleanly at 1/2 to 1 inch).
 
+**Tile picture (hex) stickers (added in Phase 5).** A second sticker style on the same page: the tile itself, drawn exactly as on the site
+(`buildTileDrawing`), on a hex-shaped sticker for tile trays. **3/4 or 1 inch**, measured across the flat sides (1 inch is about 1.15 in corner to corner); 1/2 inch
+is not offered, and the page shows a red note that very busy tiles may look jumbled, especially at 3/4 inch. `lib/circles/tileHex.ts` turns the drawing into the same path shapes the circles use (text as outlines in the number font), so the
+preview, SVG, PNG, and PDF match. Bleed is a larger hex in the tile color(s); the cut line is a hex. The sheet layout handles stickers wider than tall
+(`pitchX`, `pitchY`): 45 per Letter page with the defaults (5 x 9), 40 with 1/16 in bleed.
+
 **Number text.** Roboto Condensed Bold. Sized from the font's real measurements to the largest size that fits the city (width about 84% of its
 diameter, digit height about 62%). Numbers of 6 or more characters go on two lines, split at a hyphen or a letter/digit boundary nearest the middle
 (`X17` / `coaloil`). On small circles the city grows and the decorations slim down. Minimum 6 pt: a long number that would print smaller (for example
@@ -558,8 +564,8 @@ diameter, digit height about 62%). Numbers of 6 or more characters go on two lin
 
 **Sizes (decided).** Diameter 1/2, 3/4, or 1 inch. (1/4 inch dropped: numbers of 5+ characters fall below 4 pt.)
 
-**Selection.** A single tile from the detail page, or a game's tiles from the filtered tile list. Quantity per tile comes from `GameTiles.Count`;
-when Count is NULL or 999, the user enters the quantity (default 1). For a game, each tile has a checkbox (all checked at first; unchecking keeps its
+**Selection.** A single tile from the detail page, or a game's tiles from the filtered tile list. Quantity per tile starts at 1 (one sticker for
+the tile's slot in a storage tray), and the game's box count is shown next to it for reference. For a game, each tile has a checkbox (all checked at first; unchecking keeps its
 quantity), with quick buttons All, None, and Only <color> for the colors the game uses; the page shows "N of M tiles, X circles".
 
 **Output (decided).** Generated in the browser, no server work: `pdf-lib` for the PDF print sheet (Letter or A4; user sets margins and spacing;
@@ -688,6 +694,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 5.8 | Users page (`/admin/users`, `UsersController`): list and search accounts; give or take roles; disable and enable; confirm email; send password reset; delete. Own account, the `Admin:Email` account, and the last admin are protected. Sign-in cookies are re-checked every minute (`SecurityStampValidatorOptions`), so changes reach signed-in people within a minute; runbook "The Users page" | Done (verified on a database copy: each action, the 409 refusals, 401 and 403 for others, disabled and deleted accounts signed out and a new Admin role applied about a minute later) |
 | 5.9 | My account page (`/account`, from the header email) with Change password; `POST /api/account/password` (`ChangePasswordAsync`, then `RefreshSignInAsync`), rate-limited; footer shows only the About and credits link | Done (verified on a database copy: 401 when signed out, wrong current password and weak new password rejected with reasons, old password refused and new one accepted, this session still signed in and another session signed out a minute later) |
 | 5.10 | Game card color strip shows every tile color: `GameSummaryDto.ColorCounts` (designs per color, all colors) replaces the four main-color counts; two-color tiles drawn as a split segment, white outlined, order yellow, green, green-brown, brown, brown-sepia, brown-gray, gray, then red, orange, blue, purple, white | Done (checked: counts add up to each game's designs; 1840 red and purple, 1822PNW blue and white, 1825 two-color tiles) |
+| 5.11 | Tile picture stickers on the print page: Sticker style "Number circle" or "Tile picture (hex)" (1 inch across the flats only); `tileHex.ts`; sheet layout with separate across and down pitch; hex cut line and bleed; page wording "stickers" for tile trays | Done (checked in the browser on a database copy: 1830 hex list, enlarged and actual size previews, page preview; PDF built for all 46 tiles with bleed, 5 x 8 per page; number circles unchanged) |
 | 5.6 | Deployment flexibility: website API address from `VITE_API_BASE_URL` (relative `/api` by default, `client.ts` `apiUrl`); Vite port, preview port, `allowedHosts`, proxy target, and proxy `secure` from `web/.env` (`web/.env.example`); API follows `PORT`; optional CORS (`Cors:AllowedOrigins`) with routing, CORS, and sign-in steps ordered explicitly; Docker `APP_PORT` and `CORS_ALLOWED_ORIGINS`; runbook (website settings, how the website finds the API, ports, troubleshooting) and guide updated | Done (verified: PORT, sign-in and admin and 401 and 404 and 429 unchanged, CORS on and off, Vite port and proxy, unknown host blocked and allowed host accepted, secure=true rejects the dev certificate, base URL only built in when set) |
 
 **Phase 4 complete.**

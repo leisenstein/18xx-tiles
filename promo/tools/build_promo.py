@@ -1,5 +1,5 @@
 """Build the 18xx Tiles promo video: title cards (HTML -> Edge screenshot), slides (site screenshots + headline), neural voice-over
-(edge-tts), captions (SRT), and the MP4 (ffmpeg: slow zoom per slide, fades)."""
+(edge-tts), captions (SRT), and the MP4 (ffmpeg: still slides with fades)."""
 import asyncio, os, re, subprocess, sys
 import edge_tts
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
@@ -18,25 +18,25 @@ FONT_REG = r'C:\Windows\Fonts\segoeui.ttf'
 # (id, image, headline, narration). Narration spells 18xx the way players say it.
 SLIDES = [
     ('s1', 'title', None,
-     "If you play eighteen ex ex, you know the moment. Halfway through the game, somebody asks: is there another number fifty-seven left? "
-     "Or, which green tile can this city upgrade to? Eighteen ex ex Tiles is built to answer that, fast."),
-    ('s2', '01-home', '180 games in one place',
-     "It covers a hundred and eighty games. That's the whole eighteen ex ex dot games collection, plus older games and variants from "
-     "eighteen ex ex dot net. Every card shows the designer, the publisher, and how many tiles come in the box."),
+     "Eighteen ex ex Tiles is a reference for the track tiles in eighteen ex ex games. Every tile, from every game, in one place."),
+    ('s2', '01-home', 'A growing library of games',
+     "It covers a large and growing library of eighteen ex ex games. Each one shows its designer, its publisher, how many tiles come in the box, "
+     "and a strip showing its mix of tile colors."),
     ('s3', '02-game-tiles', 'Every tile a game uses, with box counts',
-     "Pick a game, and you get every tile it uses, drawn cleanly in yellow, green, brown, and gray, with how many of each you should have. "
-     "You can filter by color, by cities or towns, or just type a tile number."),
+     "Pick a game, and you see every tile it uses, drawn cleanly in its own color, with how many of each come in the box. "
+     "You can filter by color, by cities or towns, or look up a tile by its number."),
     ('s4', '03-tile-detail', 'See every game that uses a tile',
-     "Open any tile to see the full drawing, and every game that uses it. Tile fifty-seven, for example, turns up in a hundred and thirty-four games."),
+     "Open any tile to see the full drawing, and every game that uses it, with the count in each box. "
+     "Tile fifty-seven, for example, turns up in many games."),
     ('s5', '04-common', 'The tiles most games share',
-     "The common tiles page shows the workhorses, the tiles shared by game after game. Handy when you're building a set, or replacing lost pieces."),
-    ('s6', '05-print', 'Print number circles for a whole game',
-     "Lost a tile number, or making your own copy of a game? Sign in, and you can print number circles for every tile in a game. "
-     "Pick the size, and you get a PDF sheet that's ready for paper or round labels."),
+     "The common tiles page shows the standard tiles that game after game shares, all in one view."),
+    ('s6', '05-print', 'Print number stickers for your tile trays',
+     "Sign in, and you can print tile-number stickers for your tile trays. Pick a game, choose the sticker size, "
+     "and download a sheet that's ready for round labels."),
     ('s7', '06-submit', 'Missing a tile? Submit it',
-     "And if you spot a tile that's missing, you can submit it. Every suggestion gets reviewed before it goes live, so the reference stays right."),
+     "Spot a tile that's missing? Submit it. Every suggestion is reviewed before it's published, so the reference stays accurate."),
     ('s8', 'end', None,
-     "Eighteen ex ex Tiles. Every track tile, every game, one place. Bring it to your next game night."),
+     "Eighteen ex ex Tiles. Every track tile, every game, one place."),
 ]
 
 CARD = """<!doctype html><html><head><meta charset="utf-8"><style>
@@ -67,28 +67,20 @@ def card(name, tag, extra=''):
 
 
 def slide(shot, headline, dst):
-    """The screenshot, slightly inset on a dark backdrop, with a headline band at the bottom."""
+    """The screenshot, slightly inset on a dark backdrop. (Headlines are only section titles in the script; a band over the screenshot got in the way.)"""
     bg = Image.new('RGB', (W, H), (20, 22, 28))
     img = Image.open(os.path.join(WORK, 'shots', shot + '.png')).convert('RGB').resize((W, H), Image.LANCZOS)
     if headline is None:
         img.save(dst)
         return
     inset = img.resize((1760, 990), Image.LANCZOS)
+    # Centered vertically now that there is no headline band.
     shadow = Image.new('RGBA', (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).rounded_rectangle((80, 40, 80 + 1760, 40 + 990), 24, fill=(0, 0, 0, 160))
+    ImageDraw.Draw(shadow).rounded_rectangle((80, 45, 80 + 1760, 45 + 990), 24, fill=(0, 0, 0, 160))
     bg.paste(shadow.filter(ImageFilter.GaussianBlur(18)), (0, 12), shadow.filter(ImageFilter.GaussianBlur(18)))
     mask = Image.new('L', inset.size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, *inset.size), 24, fill=255)
-    bg.paste(inset, (80, 40), mask)
-    d = ImageDraw.Draw(bg, 'RGBA')
-    font = ImageFont.truetype(FONT, 64)
-    tw = d.textlength(headline, font=font)
-    x0, y0 = (W - tw) / 2 - 48, H - 210
-    d.rounded_rectangle((x0, y0, x0 + tw + 96, y0 + 120), 28, fill=(20, 22, 28, 235))
-    d.text((x0 + 48, y0 + 20), headline, font=font, fill=(255, 255, 255))
-    for i, c in enumerate([(242, 194, 48), (95, 174, 87), (185, 129, 75), (154, 154, 154)]):   # tile-color underline
-        seg = (tw + 96 - 56) / 4
-        d.rectangle((x0 + 28 + i * seg, y0 + 104, x0 + 28 + (i + 1) * seg - 6, y0 + 110), fill=c)
+    bg.paste(inset, (80, 45), mask)
     bg.save(dst)
 
 
@@ -144,8 +136,8 @@ def main():
             srt.append((clock + PRE + a, clock + PRE + b, caption(t)))
         n = int(dur * FPS)
         seg = os.path.join(WORK, sid + '.mp4')
-        zoom = f"zoompan=z='1+0.05*on/{n}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps={FPS}"
-        vf = f"scale=3840:2160,{zoom},fade=t=in:st=0:d=0.4,fade=t=out:st={dur - 0.4:.3f}:d=0.4,format=yuv420p"
+        # Still frames with fades only (a slow zoom looked choppy).
+        vf = f"scale={W}:{H},fps={FPS},fade=t=in:st=0:d=0.4,fade=t=out:st={dur - 0.4:.3f}:d=0.4,format=yuv420p"
         af = f"adelay={int(PRE * 1000)}:all=1,apad,atrim=0:{dur:.3f},afade=t=in:st=0:d=0.2"
         subprocess.run([FFMPEG, '-y', '-v', 'error', '-loop', '1', '-framerate', str(FPS), '-t', f'{dur:.3f}', '-i', frame, '-i', mp3,
                         '-vf', vf, '-af', af, '-t', f'{dur:.3f}', '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',

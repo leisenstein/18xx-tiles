@@ -81,7 +81,7 @@ export default function TileDetailPage() {
               <Button asChild size="sm">
                 <Link to={`/print/circles?tile=${tile.id}`}>
                   <Printer aria-hidden="true" />
-                  Print number circle
+                  Print tray stickers
                 </Link>
               </Button>
               {isAdmin && <AdminTileActions tileId={tile.id} displayName={tile.displayName} />}
