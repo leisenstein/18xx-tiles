@@ -19,6 +19,7 @@ const NOTE_GROUPS: Record<string, string> = {
   'not-upstream': 'In the app but not upstream (kept)',
   'game-not-upstream': 'Game no longer upstream (kept)',
   'game-not-renamed': 'Game not renamed',
+  'game-edited-in-app': 'Game edited in the app (app values kept)',
   'game-renamed': 'Game renamed',
   'game-details': 'Designers and publishers updated',
 }

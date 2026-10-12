@@ -38,10 +38,22 @@ export interface GameTileChange {
   afterNotes: string | null
 }
 
+// A game's title, designer, and publisher (one side of an edit).
+export interface GameDetails {
+  title: string
+  designer: string | null
+  publisher: string | null
+}
+
+// One change to a game on the History page. kind: tiles = a saved tile list; created = New game; edited = details changed (details); deleted = the
+// game was deleted (changes lists the tile links it had, as removed).
 export interface GameChange {
   id: number
   gameId: number
   gameTitle: string
+  gameDeleted: boolean // deleted since: its title is not linked
+  kind: 'tiles' | 'created' | 'edited' | 'deleted'
+  details: { before: GameDetails; after: GameDetails } | null
   changedByEmail: string | null
   changedUtc: string
   reason: string | null

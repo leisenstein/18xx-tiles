@@ -31,6 +31,7 @@ public static class DataImporter
         public const string GameDetails = "game-details";              // applied: designer or publisher filled or changed (one summary note)
         public const string GameNotRenamed = "game-not-renamed";       // the new title belongs to another game
         public const string GameNotUpstream = "game-not-upstream";     // kept
+        public const string GameEditedInApp = "game-edited-in-app";    // the app's title, designer, and publisher kept
         public const string GenericChanged = "generic-changed";        // not applied
         public const string DefinitionChanged = "definition-changed";  // not applied
         public const string DeletedInApp = "deleted-in-app";           // not linked again
@@ -226,10 +227,12 @@ public static class DataImporter
         public void Merge(List<KeyValuePair<string, SeedGame>> games, List<PlannedTile> tiles, List<PlannedLink> links)
         {
             // Games, matched by folder name (SourceKey), which does not change when a title does.
-            var dbGames = connection.Query<GameRow>("SELECT Id, Title, SourceKey, Designer, Publisher FROM Games;", transaction: transaction)
+            var dbGames = connection.Query<GameRow>(
+                    "SELECT Id, Title, SourceKey, Designer, Publisher, IsDeleted, UpdatedUtc FROM Games;", transaction: transaction)
                 .ToDictionary(g => g.SourceKey, StringComparer.Ordinal);
             var titles = dbGames.Values.Select(g => g.Title).ToHashSet(StringComparer.Ordinal);
             var gameIds = new Dictionary<string, long>(StringComparer.Ordinal);
+            var deletedGameIds = new HashSet<long>();
             var detailsChanged = 0;
             foreach (var (gameKey, game) in games)
             {
@@ -240,8 +243,24 @@ public static class DataImporter
                     continue;
                 }
                 gameIds[gameKey] = row.Id;
-                // Designer and publisher come only from upstream (the app cannot edit games), so take upstream's values. A value upstream no longer
-                // lists is kept.
+                // Deleted in the app: left deleted, with no links added back.
+                if (row.IsDeleted)
+                {
+                    deletedGameIds.Add(row.Id);
+                    Note(NoteKinds.DeletedInApp, $"Game {row.Title} was deleted in the app. Not added back.");
+                    continue;
+                }
+                // Edited in the app (title, designer, or publisher): the app's values are kept.
+                if (row.UpdatedUtc is not null)
+                {
+                    if (row.Title != game.Title || (game.Designer ?? row.Designer) != row.Designer || (game.Publisher ?? row.Publisher) != row.Publisher)
+                    {
+                        Note(NoteKinds.GameEditedInApp, $"{row.Title} was edited in the app; upstream lists \"{game.Title}\" by {game.Designer ?? "?"} "
+                            + $"({game.Publisher ?? "no publisher"}). The app's values were kept.");
+                    }
+                    continue;
+                }
+                // Designer and publisher otherwise follow upstream. A value upstream no longer lists is kept.
                 var designer = game.Designer ?? row.Designer;
                 var publisher = game.Publisher ?? row.Publisher;
                 if (designer != row.Designer || publisher != row.Publisher)
@@ -270,7 +289,10 @@ public static class DataImporter
                 Note(NoteKinds.GameDetails, $"Filled or updated the designer or publisher of {detailsChanged} {noun}, as upstream.");
             }
             var upstreamDirs = games.Select(g => g.Value.Dir).ToHashSet(StringComparer.Ordinal);
-            foreach (var row in dbGames.Values.Where(g => !upstreamDirs.Contains(g.SourceKey)).OrderBy(g => g.Title, StringComparer.OrdinalIgnoreCase))
+            // Games added in the app (New game) were never upstream, so they are not reported.
+            var notUpstream = dbGames.Values.Where(g =>
+                !g.IsDeleted && !upstreamDirs.Contains(g.SourceKey) && !g.SourceKey.StartsWith(GamesRepository.AppKeyPrefix, StringComparison.Ordinal));
+            foreach (var row in notUpstream.OrderBy(g => g.Title, StringComparer.OrdinalIgnoreCase))
             {
                 Note(NoteKinds.GameNotUpstream, $"{row.Title} is no longer in the upstream repository. Kept.");
             }
@@ -316,6 +338,10 @@ public static class DataImporter
             foreach (var link in links)
             {
                 var gameId = gameIds[link.GameKey];
+                if (deletedGameIds.Contains(gameId))
+                {
+                    continue;
+                }
                 upstreamLinks.Add((gameId, link.Tile.Number));
                 var existing = dbLinks[(gameId, link.Tile.Number)].ToList();
 
@@ -500,6 +526,8 @@ public static class DataImporter
         public string SourceKey { get; init; } = "";
         public string? Designer { get; init; }
         public string? Publisher { get; init; }
+        public bool IsDeleted { get; init; }
+        public string? UpdatedUtc { get; init; }
     }
 
     private sealed record TileRow

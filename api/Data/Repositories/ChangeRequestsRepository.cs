@@ -71,7 +71,7 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
     {
         var ids = gameIds.Distinct().ToList();
         using var connection = db.Open();
-        var found = connection.Query<long>("SELECT Id FROM Games WHERE Id IN @ids;", new { ids }).ToHashSet();
+        var found = connection.Query<long>("SELECT Id FROM Games WHERE Id IN @ids AND IsDeleted = 0;", new { ids }).ToHashSet();
         return ids.Where(id => !found.Contains(id)).ToList();
     }
 

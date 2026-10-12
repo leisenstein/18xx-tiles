@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes, useParams } from 'react-router'
 import Layout from '@/components/Layout'
 import LoadingState from '@/components/LoadingState'
 import RequireRole from '@/components/RequireRole'
@@ -9,6 +9,7 @@ import AccountPage from '@/pages/AccountPage'
 import AdminDocsPage from '@/pages/AdminDocsPage'
 import AdminHistoryPage from '@/pages/AdminHistoryPage'
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage'
+import GameFormPage from '@/pages/GameFormPage'
 import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import EditGameTilesPage from '@/pages/EditGameTilesPage'
 import AdminImportsPage from '@/pages/AdminImportsPage'
@@ -96,6 +97,23 @@ function App() {
           }
         />
         <Route
+          path="admin/games/new"
+          element={
+            <RequireRole role={ADMIN_ROLE}>
+              <GameFormPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="admin/games/:id/edit"
+          element={
+            <RequireRole role={ADMIN_ROLE}>
+              {/* key: a fresh form when moving from one game to another */}
+              <GameFormKeyed />
+            </RequireRole>
+          }
+        />
+        <Route
           path="admin/games/:id/tiles"
           element={
             <RequireRole role={ADMIN_ROLE}>
@@ -145,3 +163,9 @@ function App() {
 }
 
 export default App
+
+// The Edit game form, remounted for each game id so its fields start from that game.
+function GameFormKeyed() {
+  const { id } = useParams()
+  return <GameFormPage key={id} />
+}

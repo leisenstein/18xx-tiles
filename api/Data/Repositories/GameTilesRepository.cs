@@ -17,11 +17,11 @@ public sealed class GameTilesRepository(SqliteConnectionFactory db)
         WHERE gt.GameId = @gameId AND t.IsDeleted = 0
         """;
 
-    // The game and its live tiles in the usual tile order, or null if the game does not exist.
+    // The game and its live tiles in the usual tile order, or null if the game does not exist or was deleted.
     public GameTilesDto? Get(long gameId)
     {
         using var connection = db.Open();
-        var title = connection.ExecuteScalar<string?>("SELECT Title FROM Games WHERE Id = @gameId;", new { gameId });
+        var title = connection.ExecuteScalar<string?>("SELECT Title FROM Games WHERE Id = @gameId AND IsDeleted = 0;", new { gameId });
         if (title is null)
         {
             return null;
@@ -45,7 +45,7 @@ public sealed class GameTilesRepository(SqliteConnectionFactory db)
     {
         using var connection = db.Open();
         using var transaction = connection.BeginTransaction();
-        if (connection.ExecuteScalar<long>("SELECT COUNT(*) FROM Games WHERE Id = @gameId;", new { gameId }, transaction) == 0)
+        if (connection.ExecuteScalar<long>("SELECT COUNT(*) FROM Games WHERE Id = @gameId AND IsDeleted = 0;", new { gameId }, transaction) == 0)
         {
             return ReviewResult.NotFound;
         }
@@ -110,7 +110,8 @@ public sealed class GameTilesRepository(SqliteConnectionFactory db)
         using var connection = db.Open();
         var rows = connection.Query<ChangeRow>(
                 """
-                SELECT gc.Id, gc.GameId, g.Title AS GameTitle, u.Email AS ChangedByEmail, gc.ChangedUtc, gc.Reason, gc.BeforeJson, gc.AfterJson
+                SELECT gc.Id, gc.GameId, g.Title AS GameTitle, g.IsDeleted AS GameDeleted, u.Email AS ChangedByEmail, gc.ChangedUtc, gc.Reason,
+                       gc.BeforeJson, gc.AfterJson, gc.Kind, gc.DetailsJson
                 FROM GameChanges gc
                 JOIN Games g ON g.Id = gc.GameId
                 LEFT JOIN AspNetUsers u ON u.Id = gc.ChangedBy
@@ -128,6 +129,9 @@ public sealed class GameTilesRepository(SqliteConnectionFactory db)
             Id = p.Row.Id,
             GameId = p.Row.GameId,
             GameTitle = p.Row.GameTitle,
+            GameDeleted = p.Row.GameDeleted,
+            Kind = p.Row.Kind,
+            Details = p.Row.DetailsJson is null ? null : JsonSerializer.Deserialize<GameDetailsChangeDto>(p.Row.DetailsJson, Json),
             ChangedByEmail = p.Row.ChangedByEmail,
             ChangedUtc = p.Row.ChangedUtc,
             Reason = p.Row.Reason,
@@ -201,10 +205,13 @@ public sealed class GameTilesRepository(SqliteConnectionFactory db)
         public long Id { get; init; }
         public long GameId { get; init; }
         public string GameTitle { get; init; } = "";
+        public bool GameDeleted { get; init; }
         public string? ChangedByEmail { get; init; }
         public string ChangedUtc { get; init; } = "";
         public string? Reason { get; init; }
         public string BeforeJson { get; init; } = "[]";
         public string AfterJson { get; init; } = "[]";
+        public string Kind { get; init; } = "tiles";
+        public string? DetailsJson { get; init; }
     }
 }

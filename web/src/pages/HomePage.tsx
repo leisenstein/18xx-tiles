@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { Layers, LayoutGrid, Search, SearchX } from 'lucide-react'
+import { Layers, LayoutGrid, Search, SearchX, SquarePlus } from 'lucide-react'
 import { getGames } from '@/api/games'
 import EmptyState from '@/components/EmptyState'
 import GameCard from '@/components/GameCard'
@@ -8,11 +8,15 @@ import LoadingState from '@/components/LoadingState'
 import PageHeader from '@/components/PageHeader'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useAuth } from '@/hooks/useAuth'
+import { ADMIN_ROLE } from '@/lib/constants'
 import type { GameSummary } from '@/types/game'
 
 // Home page (DESIGN.md section 9.1): every game as a card (GameCard) linking to its tiles (/tiles?game={id}), a search box that filters the cards by
-// title, designer, or publisher, and a link to the Common Tiles page (section 9.3).
+// title, designer, or publisher, and a link to the Common Tiles page (section 9.3). Admins also get New game.
 export default function HomePage() {
+  const { user } = useAuth()
+  const isAdmin = user?.roles.includes(ADMIN_ROLE) ?? false
   // null means "still loading".
   const [games, setGames] = useState<GameSummary[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -42,14 +46,24 @@ export default function HomePage() {
       <PageHeader
         icon={LayoutGrid}
         title="Games"
-        description={games ? `${games.length} games from 18xx.games. Pick one to see its tiles.` : 'Games from 18xx.games.'}
+        description={games ? `${games.length} games. Pick one to see its tiles.` : 'Pick a game to see its tiles.'}
         actions={
-          <Button asChild variant="outline" size="sm">
-            <Link to="/tiles/common">
-              <Layers aria-hidden="true" />
-              Tiles common to many games
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {isAdmin && (
+              <Button asChild size="sm">
+                <Link to="/admin/games/new">
+                  <SquarePlus aria-hidden="true" />
+                  New game
+                </Link>
+              </Button>
+            )}
+            <Button asChild variant="outline" size="sm">
+              <Link to="/tiles/common">
+                <Layers aria-hidden="true" />
+                Tiles common to many games
+              </Link>
+            </Button>
+          </div>
         }
       />
 

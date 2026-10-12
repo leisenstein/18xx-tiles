@@ -45,16 +45,19 @@ User ids in app tables are plain text columns holding `AspNetUsers.Id`, without 
 
 ## Games
 
-One row per game, imported from tobymao/18xx. Not editable in the app.
+One row per game: imported from tobymao/18xx (or the 18xx.net file), or added in the app by an admin (**New game**). Admins can edit a game's title,
+designer, and publisher, and delete it (schema script `0002_GameEditing.sql`).
 
 | Column | Type | Null | Meaning |
 |---|---|---|---|
 | `Id` | INTEGER | no | Primary key |
 | `Title` | TEXT | no | Game title, unique, for example `1830` |
-| `SourceKey` | TEXT | no | Upstream folder name, unique, for example `g_1830`; `18xxnet_<name>` for games imported from 18xx.net (runbook). Imports match games by this, so a title can change upstream |
+| `SourceKey` | TEXT | no | Unique. Upstream folder name, for example `g_1830`; `18xxnet_<name>` for games imported from 18xx.net (runbook); `app:<id>` for games added in the app. Imports match games by this, so a title can change upstream |
 | `Designer` | TEXT | yes | From the game's `meta.rb`; NULL when upstream lists none |
 | `Publisher` | TEXT | yes | One or more names, comma-separated |
-| `CreatedUtc` | TEXT | no | When the import added it |
+| `CreatedUtc` | TEXT | no | When the import (or an admin) added it |
+| `IsDeleted` | INTEGER | no | 1 = deleted by an admin: hidden everywhere, its `GameTiles` rows removed (kept in `GameChanges`); imports leave it deleted and add no links |
+| `UpdatedUtc`, `UpdatedBy` | TEXT | yes | Last edit or delete in the app, and the admin. Set = imports keep the app's title, designer, and publisher |
 
 ## Tiles
 
@@ -111,7 +114,7 @@ Indexes: `IX_ChangeRequests_Status` (review queue), `IX_ChangeRequests_Submitted
 
 ## GameChanges
 
-One row per save on **Edit game tiles**.
+One row per change to a game in the app: a save on **Edit game tiles**, or a game added, edited, or deleted.
 
 | Column | Type | Null | Meaning |
 |---|---|---|---|
@@ -119,7 +122,9 @@ One row per save on **Edit game tiles**.
 | `GameId` | INTEGER | no | References `Games.Id` |
 | `ChangedBy`, `ChangedUtc` | TEXT | no | The admin, and when |
 | `Reason` | TEXT | yes | Optional reason |
-| `BeforeJson`, `AfterJson` | TEXT | no | The game's live tile links before and after the save; History shows the difference |
+| `BeforeJson`, `AfterJson` | TEXT | no | The game's live tile links before and after the save; History shows the difference. For a delete, `BeforeJson` holds the links the game had |
+| `Kind` | TEXT | no | `tiles` (a tile list save), `created`, `edited`, or `deleted` |
+| `DetailsJson` | TEXT | yes | `edited` only: `{ before: { title, designer, publisher }, after: { ... } }` |
 
 Index: `IX_GameChanges_GameId`.
 

@@ -4,6 +4,7 @@ import type { ImportRun } from '@/types/importRun'
 import type { PagedResult } from '@/types/paged'
 import type { GameTileInput, GameTiles } from '@/types/gameTiles'
 import type { AdminUser } from '@/types/adminUser'
+import type { GameSummary } from '@/types/game'
 import { deleteJson, getJson, getText, postJson, putJson } from './client'
 
 // API calls for admins only. The API answers 401 when not signed in and 403 without the Admin role (AdminController).
@@ -35,6 +36,24 @@ export const getHistory = (query: HistoryQuery) => {
   for (const [name, value] of Object.entries(query)) if (value !== '') params.set(name, String(value))
   return getJson<PagedResult<HistoryEntry>>(`/api/admin/history?${params}`)
 }
+
+// Add a game made in the app (New game page); its tiles are added next on the Edit game tiles page. Throws ApiError 409 if the title is taken,
+// 400 for a missing title or a value that is too long. Empty designer or publisher are sent as missing.
+export const createGame = (title: string, designer: string, publisher: string) =>
+  postJson<GameSummary>('/api/admin/games', { title: title.trim(), designer: designer.trim() || null, publisher: publisher.trim() || null })
+
+// Change a game's title, designer, and publisher (Edit game page). Throws ApiError 409 if the title is taken or nothing changed.
+export const updateGame = (id: number, title: string, designer: string, publisher: string, reason: string) =>
+  putJson<GameSummary>(`/api/admin/games/${id}`, {
+    title: title.trim(),
+    designer: designer.trim() || null,
+    publisher: publisher.trim() || null,
+    reason: reason.trim() || null,
+  })
+
+// Delete a game: hidden everywhere, its tile links removed (kept on the History page). The tiles stay.
+export const deleteGame = (id: number, reason: string) =>
+  deleteJson(`/api/admin/games/${id}${reason.trim() ? `?reason=${encodeURIComponent(reason.trim())}` : ''}`)
 
 // A game and every live tile it uses, with counts and notes (Edit game tiles page).
 export const getGameTiles = (gameId: number) => getJson<GameTiles>(`/api/admin/games/${gameId}/tiles`)

@@ -15,7 +15,8 @@ namespace Tiles18xx.Api.Controllers;
 [Route("api/admin")]
 [Authorize(Roles = AdminSeeder.AdminRole)]
 public sealed class AdminController(
-    ChangeRequestsRepository requests, ImportRunsRepository imports, HistoryRepository history, GameTilesRepository gameTiles) : ControllerBase
+    ChangeRequestsRepository requests, ImportRunsRepository imports, HistoryRepository history, GameTilesRepository gameTiles, GamesRepository games)
+    : ControllerBase
 {
     public const int MaxNoteLength = 1000;
 
@@ -98,6 +99,79 @@ public sealed class AdminController(
         }
         return Ok(history.Search(query));
     }
+
+    public const int MaxGameTextLength = 200;
+
+    // POST /api/admin/games with { title, designer, publisher } -> adds a game made in the app, with no tiles yet (New game). 201 with the game;
+    // 400 if the title is missing or a value is too long; 409 if another game (deleted ones included) has the title. Tiles are added on Edit game tiles.
+    [HttpPost("games")]
+    public IActionResult CreateGame(GameCreateDto body)
+    {
+        if (CleanGame(body) is not { } game)
+        {
+            return ValidationProblem();
+        }
+        if (games.Create(game.Title, game.Designer, game.Publisher, ReviewerId()) is not { } id)
+        {
+            return TitleTaken(game.Title);
+        }
+        return Created($"/api/games/{id}", games.GetById(id));
+    }
+
+    // PUT /api/admin/games/25 with { title, designer, publisher, reason } -> changes the game's details (Edit game). Imports keep these values from
+    // now on. 200 with the game; 400 as for a new game; 404 if it does not exist or was deleted; 409 if the title is taken or nothing changed.
+    [HttpPut("games/{id:long}")]
+    public IActionResult UpdateGame(long id, GameCreateDto body)
+    {
+        if (CleanGame(body) is not { } game)
+        {
+            return ValidationProblem();
+        }
+        return games.Update(id, game.Title, game.Designer, game.Publisher, game.Reason, ReviewerId()) switch
+        {
+            GamesRepository.ChangeOutcome.NotFound => NotFound(),
+            GamesRepository.ChangeOutcome.TitleTaken => TitleTaken(game.Title),
+            GamesRepository.ChangeOutcome.NothingChanged => Problem(statusCode: StatusCodes.Status409Conflict, title: "Not changed", detail: "Nothing changed."),
+            _ => Ok(games.GetById(id)),
+        };
+    }
+
+    // DELETE /api/admin/games/25?reason=... -> deletes the game: hidden everywhere, its tile links removed (kept in History), never added back by an
+    // import. The tiles themselves stay. 204; 404 if it does not exist or was already deleted.
+    [HttpDelete("games/{id:long}")]
+    public IActionResult DeleteGame(long id, [FromQuery] string? reason = null)
+    {
+        var note = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();
+        if (note is { Length: > MaxNoteLength })
+        {
+            ModelState.AddModelError("reason", $"The reason must be {MaxNoteLength} characters or fewer.");
+            return ValidationProblem();
+        }
+        return games.Delete(id, note, ReviewerId()) == GamesRepository.ChangeOutcome.NotFound ? NotFound() : NoContent();
+    }
+
+    // Trimmed values (empty -> null), or null with ModelState errors when the title is missing or something is too long.
+    private GameCreateDto? CleanGame(GameCreateDto body)
+    {
+        static string? Clean(string? text) => string.IsNullOrWhiteSpace(text) ? null : text.Trim();
+        var game = new GameCreateDto { Title = Clean(body.Title) ?? "", Designer = Clean(body.Designer), Publisher = Clean(body.Publisher), Reason = Clean(body.Reason) };
+        if (game.Title.Length == 0)
+        {
+            ModelState.AddModelError("title", "Enter the game's title.");
+        }
+        foreach (var (field, value, max) in new[] { ("title", game.Title, MaxGameTextLength), ("designer", game.Designer, MaxGameTextLength),
+                     ("publisher", game.Publisher, MaxGameTextLength), ("reason", game.Reason, MaxNoteLength) })
+        {
+            if (value is { Length: var length } && length > max)
+            {
+                ModelState.AddModelError(field, $"The {field} must be {max} characters or fewer.");
+            }
+        }
+        return ModelState.IsValid ? game : null;
+    }
+
+    private ObjectResult TitleTaken(string title) =>
+        Problem(statusCode: StatusCodes.Status409Conflict, title: "Title taken", detail: $"A game called \"{title}\" already exists (or was deleted). Choose another title.");
 
     // GET /api/admin/games/25/tiles -> the game and every live tile it uses, with counts and notes (Edit game tiles page).
     [HttpGet("games/{id:long}/tiles")]

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
-import { Hexagon, ListChecks, Printer, SearchX } from 'lucide-react'
+import { Hexagon, ListChecks, Pencil, Printer, SearchX } from 'lucide-react'
 import { getGames } from '@/api/games'
 import { getTiles } from '@/api/tiles'
 import EmptyState from '@/components/EmptyState'
@@ -101,12 +101,20 @@ export default function TilesPage() {
                 </Link>
               </Button>
               {user.roles.includes(ADMIN_ROLE) && (
-                <Button asChild size="sm" variant="outline">
-                  <Link to={`/admin/games/${selectedGame.id}/tiles`}>
-                    <ListChecks aria-hidden="true" />
-                    Edit this game&apos;s tiles
-                  </Link>
-                </Button>
+                <>
+                  <Button asChild size="sm" variant="outline">
+                    <Link to={`/admin/games/${selectedGame.id}/tiles`}>
+                      <ListChecks aria-hidden="true" />
+                      Edit this game&apos;s tiles
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline">
+                    <Link to={`/admin/games/${selectedGame.id}/edit`}>
+                      <Pencil aria-hidden="true" />
+                      Edit or delete game
+                    </Link>
+                  </Button>
+                </>
               )}
             </div>
           )}

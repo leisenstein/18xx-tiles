@@ -83,6 +83,21 @@ Content-Type: application/json
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/history?type=Edit&status=Approved&q=57&page=1&pageSize=25
 Accept: application/json
 
+### Admin: add a game (New game); 409 if the title is taken
+POST {{Tiles18xx.Api_HostAddress}}/api/admin/games
+Content-Type: application/json
+
+{ "title": "My Test Game", "designer": "A. Designer", "publisher": null }
+
+### Admin: edit a game's title, designer, and publisher; imports keep these values afterwards
+PUT {{Tiles18xx.Api_HostAddress}}/api/admin/games/25
+Content-Type: application/json
+
+{ "title": "1830", "designer": "Francis Tresham", "publisher": "Lookout Games", "reason": "Checked against the box" }
+
+### Admin: delete a game (hidden everywhere; its tile links kept in History)
+DELETE {{Tiles18xx.Api_HostAddress}}/api/admin/games/181?reason=Added%20by%20mistake
+
 ### Admin: a game's tile list (Edit game tiles page)
 GET {{Tiles18xx.Api_HostAddress}}/api/admin/games/25/tiles
 Accept: application/json
