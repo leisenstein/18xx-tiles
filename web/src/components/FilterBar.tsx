@@ -18,7 +18,10 @@ const KINDS: { value: 'city' | 'town' | undefined; label: string }[] = [
   { value: 'town', label: 'Towns' },
 ]
 
-// Filters for the tile list: game, color, city/town, and number search.
+// Exits choices: how many of the hex's sides track leaves from.
+const EXITS = [0, 1, 2, 3, 4, 5, 6]
+
+// Filters for the tile list: game, color, city/town, exits, and number search.
 // It only shows the current filters and reports changes; useTileFilters stores them in the URL.
 export default function FilterBar({ filters, games, onChange }: FilterBarProps) {
   return (
@@ -37,6 +40,19 @@ export default function FilterBar({ filters, games, onChange }: FilterBarProps) 
         {TILE_COLORS.map((color) => (
           <NativeSelectOption key={color} value={color}>
             {color}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
+
+      <NativeSelect
+        aria-label="Exits"
+        value={filters.exits ?? ''}
+        onChange={(e) => onChange('exits', e.target.value === '' ? undefined : Number(e.target.value))}
+      >
+        <NativeSelectOption value="">Any exits</NativeSelectOption>
+        {EXITS.map((n) => (
+          <NativeSelectOption key={n} value={n}>
+            {n} {n === 1 ? 'exit' : 'exits'}
           </NativeSelectOption>
         ))}
       </NativeSelect>

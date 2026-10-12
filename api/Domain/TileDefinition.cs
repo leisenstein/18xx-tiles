@@ -67,6 +67,18 @@ public static class TileDefinition
     // Does the definition have a part of this type? Used for Tiles.HasCity and Tiles.HasTown, which are derived on save.
     public static bool Has(string code, string partType) => Split(code).Any(p => p.Type == partType);
 
+    // How many of the hex's six sides track leaves from (0 to 6): the distinct edges named by any path end ("a:3", not node ends like "_0").
+    // Used by the Exits filter on the Tiles page. Billings-c (one path to edge 5) has 1; tile 9 (edge 0 to edge 3) has 2.
+    public static int ExitCount(string code) =>
+        Split(code)
+            .Where(p => p.Type == "path")
+            .SelectMany(p => new[] { p.Values.GetValueOrDefault("a"), p.Values.GetValueOrDefault("b") })
+            .Where(end => end is { Length: > 0 } && !end.StartsWith('_') && int.TryParse(end, NumberStyles.None, CultureInfo.InvariantCulture, out var edge) && edge <= 5)
+            .Distinct()
+            .Count();
+
+    public const int MaxExits = 6;
+
     private sealed record Part(string Type, Dictionary<string, string> Values);
 
     // "city=revenue:20,slots:2" -> Part("city", { revenue: "20", slots: "2" }). Same rules as the frontend's parse.ts.

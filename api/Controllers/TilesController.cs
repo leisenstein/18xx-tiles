@@ -10,7 +10,7 @@ namespace Tiles18xx.Api.Controllers;
 [Route("api/tiles")]
 public sealed class TilesController(TilesRepository tiles, GamesRepository games) : ControllerBase
 {
-    // GET /api/tiles?game=&color=&kind=city|town&q=&page=&pageSize=
+    // GET /api/tiles?game=&color=&kind=city|town&exits=0..6&q=&page=&pageSize=
     [HttpGet]
     public ActionResult<PagedResultDto<TileSummaryDto>> Search([FromQuery] TileQueryDto query)
     {
@@ -22,6 +22,10 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
         if (query.Kind is not null && query.Kind is not ("city" or "town"))
         {
             ModelState.AddModelError("kind", "Kind must be 'city' or 'town'.");
+        }
+        if (query.Exits is < 0 or > TileDefinition.MaxExits)
+        {
+            ModelState.AddModelError("exits", $"Exits must be from 0 to {TileDefinition.MaxExits}.");
         }
         if (query.Q is { Length: > TileQueryDto.MaxSearchLength })
         {

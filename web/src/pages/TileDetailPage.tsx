@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
-import { Printer } from 'lucide-react'
+import { Printer, RotateCcw } from 'lucide-react'
 import { ApiError } from '@/api/client'
 import { getTile } from '@/api/tiles'
 import AdminTileActions from '@/components/AdminTileActions'
 import LoadingState from '@/components/LoadingState'
 import TileCard from '@/components/TileCard'
 import TileHistory from '@/components/TileHistory'
+import RotateButton from '@/components/RotateButton'
 import TileSvg from '@/components/TileSvg'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useAuth'
@@ -23,6 +24,11 @@ export default function TileDetailPage() {
   const validId = Number.isInteger(id) && id > 0
   const { user } = useAuth()
   const isAdmin = user?.roles.includes(ADMIN_ROLE) ?? false
+  // How far the drawing is turned, in 60 degree steps (view only). Tagged with the tile id, so opening another tile starts unrotated.
+  const [turned, setTurned] = useState({ id, steps: 0 })
+  const rotation = turned.id === id ? turned.steps : 0
+  const setRotation = (steps: number) => setTurned({ id, steps })
+  const angle = (((rotation % 6) + 6) % 6) * 60
 
   // The loaded tile, tagged with its id so a stale tile is never shown for a new URL.
   const [data, setData] = useState<{ id: number; tile: TileDetail } | null>(null)
@@ -71,7 +77,26 @@ export default function TileDetailPage() {
     <div className="space-y-8">
       {/* Drawing beside the facts on wide screens; stacked on phones. */}
       <div className="flex flex-col gap-6 sm:flex-row">
-        <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} className="w-full max-w-80 shrink-0" />
+        {/* The drawing with its rotate controls: 60 degrees per click, view only. */}
+        <div className="w-full max-w-80 shrink-0 space-y-2">
+          <TileSvg definitionCode={tile.definitionCode} color={tile.color} number={tile.number} rotation={rotation} className="w-full" />
+          <div className="flex items-center justify-center gap-2 text-sm">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              onClick={() => setRotation(rotation - 1)}
+              title="Rotate 60° counterclockwise"
+              aria-label="Rotate 60 degrees counterclockwise"
+            >
+              <RotateCcw aria-hidden="true" />
+            </Button>
+            <RotateButton onClick={() => setRotation(rotation + 1)} />
+            <Button type="button" variant="ghost" size="sm" disabled={angle === 0} onClick={() => setRotation(0)}>
+              {angle === 0 ? 'Not rotated' : `Rotated ${angle}° · Reset`}
+            </Button>
+          </div>
+        </div>
         <div className="min-w-0 space-y-3">
           <h1 className="text-2xl font-semibold">{tile.displayName}</h1>
           {/* Actions: print this tile's number circle (signed-in users, DESIGN.md 9.4); edit or delete it (admins only; everyone else can propose new

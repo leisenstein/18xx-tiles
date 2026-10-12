@@ -21,7 +21,7 @@ import type { TileSummary } from '@/types/tile'
 // Filters live in the URL, so /tiles?game=25 opens already filtered to 1830.
 export default function TilesPage() {
   const { filters, setFilter } = useTileFilters()
-  const { game, color, kind, q, page } = filters
+  const { game, color, kind, exits, q, page } = filters
   const { user } = useAuth()
 
   const [games, setGames] = useState<GameSummary[]>([])
@@ -33,7 +33,7 @@ export default function TilesPage() {
   const [error, setError] = useState<string | null>(null)
 
   // The filters as one string; when it differs from data.key, new results are loading.
-  const key = JSON.stringify([game, color, kind, q, page])
+  const key = JSON.stringify([game, color, kind, exits, q, page])
   const loading = data?.key !== key
 
   // Games for the game filter, loaded once.
@@ -54,10 +54,10 @@ export default function TilesPage() {
   // Tiles, reloaded whenever a filter or the page changes.
   useEffect(() => {
     let ignore = false
-    getTiles({ game, color, kind, q, page, pageSize: TILES_PAGE_SIZE })
+    getTiles({ game, color, kind, exits, q, page, pageSize: TILES_PAGE_SIZE })
       .then((result) => {
         if (ignore) return
-        setData({ key: JSON.stringify([game, color, kind, q, page]), result })
+        setData({ key, result })
         setError(null)
       })
       .catch((err: unknown) => {
@@ -67,7 +67,7 @@ export default function TilesPage() {
     return () => {
       ignore = true
     }
-  }, [game, color, kind, q, page])
+  }, [key, game, color, kind, exits, q, page])
 
   const result = data?.result
   const selectedGame = games.find((g) => g.id === game)
@@ -80,7 +80,11 @@ export default function TilesPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader icon={Hexagon} title="Tiles" description="Every tile from every game. Filter by game, color, or city and town, or search by number." />
+      <PageHeader
+        icon={Hexagon}
+        title="Tiles"
+        description="Every tile from every game. Filter by game, color, city and town, or number of exits, or search by number."
+      />
       <FilterBar filters={filters} games={games} onChange={setFilter} />
       {/* Filtered to one game: how many tiles come in its box. */}
       {selectedGame && (

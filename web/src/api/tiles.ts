@@ -9,12 +9,13 @@ export interface TileQuery {
   game?: number
   color?: string
   kind?: 'city' | 'town'
+  exits?: number // 0 to 6
   q?: string // text to find in the tile number
   page?: number
   pageSize?: number
 }
 
-// Filtered, paged tile list (GET /api/tiles?game=&color=&kind=&q=&page=&pageSize=).
+// Filtered, paged tile list (GET /api/tiles?game=&color=&kind=&exits=&q=&page=&pageSize=).
 export function getTiles(query: TileQuery) {
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(query)) {

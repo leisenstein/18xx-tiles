@@ -31,6 +31,11 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
 
         using var connection = db.Open();
         var rows = connection.Query<TileSummaryDto>(SearchSql, new { query.Game, query.Color, query.Kind, Pattern = pattern });
+        // Exits are counted from the definition here rather than stored, like the sorting below.
+        if (query.Exits is int exits)
+        {
+            rows = rows.Where(t => TileDefinition.ExitCount(t.DefinitionCode) == exits);
+        }
 
         // Sort in C# (numeric-part ordering is awkward in SQL). At about 2,000 tiles, loading all matches and then paging is fast enough.
         var sorted = TileSort.Apply(rows).ToList();

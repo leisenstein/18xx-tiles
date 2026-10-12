@@ -1,12 +1,13 @@
 import { useSearchParams } from 'react-router'
 import { TILE_COLORS } from '@/lib/tiles/colors'
 
-// Tile list filters, kept in the URL (?game=25&color=yellow&kind=city&q=57&page=2)
+// Tile list filters, kept in the URL (?game=25&color=yellow&kind=city&exits=2&q=57&page=2)
 // so a filtered view can be bookmarked or shared (DESIGN.md section 9.1).
 export interface TileFilters {
   game?: number
   color?: string
   kind?: 'city' | 'town'
+  exits?: number // 0 to 6: track leaves exactly this many sides; undefined = no filter
   q?: string
   page: number
 }
@@ -26,10 +27,12 @@ export function useTileFilters() {
 
   const color = params.get('color')
   const kind = params.get('kind')
+  const exits = Number(params.get('exits') ?? 'x')
   const filters: TileFilters = {
     game: positiveInt(params.get('game')),
     color: color !== null && TILE_COLORS.includes(color) ? color : undefined,
     kind: kind === 'city' || kind === 'town' ? kind : undefined,
+    exits: Number.isInteger(exits) && exits >= 0 && exits <= 6 ? exits : undefined,
     q: params.get('q') || undefined,
     page: positiveInt(params.get('page')) ?? 1,
   }
