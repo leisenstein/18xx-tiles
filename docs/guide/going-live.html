@@ -64,7 +64,7 @@
   <h1>Going live</h1>
   <div class="sub">A step-by-step guide to putting 18xx Tiles on the internet: hosting, your own address with HTTPS, email, and backups.</div>
   <div class="meta">Written for someone comfortable following instructions but new to web hosting and React.<br />
-    Version 1.2, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
+    Version 1.3, October 2026. Prices and website screens change; where this guide names a price or a button, check the provider's current page.</div>
 </section>
 
 <!-- ======================================================================================= Contents -->
@@ -505,7 +505,7 @@ cp /data/backups/tiles-20261010-030000.db /data/tiles.db</pre>
   <li>Install Docker by following Docker's official instructions for Ubuntu. Turn on automatic security updates.</li>
   <li>At your registrar, add an <b>A record</b> pointing your domain at the server's IP address.</li>
   <li>Copy the repository to the server (<code>git clone</code>), create <code>.env</code> from <code>.env.example</code>, and set
-      <code>PUBLIC_URL=https://tiles.yourdomain.com</code> plus the admin and email values.</li>
+      <code>PUBLIC_URL=https://tiles.yourdomain.com</code>, <code>SECURE_COOKIE=true</code>, plus the admin and email values.</li>
   <li>Add Caddy. Create <code>Caddyfile</code> next to <code>docker-compose.yml</code>:</li>
 </ol>
 <pre>tiles.yourdomain.com {

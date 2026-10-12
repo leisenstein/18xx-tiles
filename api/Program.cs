@@ -98,9 +98,14 @@ builder.Services
 // A4c. The sign-in cookie from step 3 above. Secure: only sent over HTTPS. SameSite=Strict: never sent when another website triggers the request, which
 //      blocks "cross-site request forgery" (a malicious site acting as the signed-in user). The cookie is also HttpOnly by default, so JavaScript in the
 //      page cannot read or steal it.
+//      Auth:SecureCookie (default true) = always HTTPS-only. false = HTTPS-only when the request came over HTTPS, so signing in also works over plain
+//      HTTP, for example Docker on a home network reached from a tablet at http://192.168.x.x:8080 (browsers drop HTTPS-only cookies sent over HTTP;
+//      only localhost is exempt). Behind a host's HTTPS proxy with ASPNETCORE_FORWARDEDHEADERS_ENABLED the request counts as HTTPS, so the cookie is
+//      still HTTPS-only there. Keep true on any public site.
+var secureCookie = builder.Configuration.GetValue("Auth:SecureCookie", true);
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SecurePolicy = secureCookie ? CookieSecurePolicy.Always : CookieSecurePolicy.SameAsRequest;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 // Re-check each signed-in cookie against the database every minute (Identity's default is 30): new roles take effect, and deleted or disabled

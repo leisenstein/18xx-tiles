@@ -495,6 +495,15 @@ docker compose up --build -d
 | Stop and **delete the database volume** | `docker compose down -v` |
 | Update after code or data changes | `docker compose up --build -d` |
 
+### Use it from a phone or tablet on your network
+
+Open `http://<this PC's address>:8080` on the other device (find the address with `ipconfig`, the "IPv4 Address" line, for example
+`http://192.168.1.20:8080`). If it does not load, allow port 8080 through Windows Firewall for private networks.
+
+Signing in works over this plain HTTP address because Docker sets `SECURE_COOKIE` to false by default: the sign-in cookie is HTTPS-only only when the
+site is reached over HTTPS. (Browsers throw away HTTPS-only cookies sent over plain HTTP, except on `localhost`, so with it on, signing in from
+another device seems to work but leaves you signed out.) On a public site set `SECURE_COOKIE=true` in `.env`.
+
 ### Back up the Docker database
 
 Stop the app (`docker compose down`, without `-v`), then copy the volume into a file in the current folder:
@@ -521,6 +530,7 @@ The volume name is the folder name plus `_tiles-data`; check it with `docker vol
 | Website on another address (CORS) | `Cors:AllowedOrigins` | `Cors__AllowedOrigins` (from `CORS_ALLOWED_ORIGINS`) | empty: no cross-site calls |
 | Docker port on your PC | | `APP_PORT` in `.env` | 8080 |
 | Behind a host's proxy | | `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` | off (needed on Railway and similar; see the going-live guide) |
+| Sign-in cookie HTTPS-only | `Auth:SecureCookie` | `Auth__SecureCookie` (from `SECURE_COOKIE` in `.env`) | true in the app; **false in docker-compose.yml**, so devices on your network can sign in over HTTP. Keep true on a public site |
 | Environment | `Development` (launch profile) | `Production` | |
 
 Website settings (`VITE_PORT`, `VITE_ALLOWED_HOSTS`, `VITE_API_PROXY_TARGET`, `VITE_API_PROXY_SECURE`, `VITE_API_BASE_URL`) are in `web/.env`; see
@@ -532,6 +542,7 @@ Keep `data/keys` private and backed up with the database. Losing it signs everyo
 
 | Problem | Likely cause | Fix |
 |---|---|---|
+| Signing in from a phone or tablet does nothing; the site still shows Sign in | The sign-in cookie is HTTPS-only and the device uses `http://<PC address>` | Set `SECURE_COOKIE=false` in `.env` (the Docker default) and run `docker compose up -d`; see "Use it from a phone or tablet" |
 | Website says "Failed to fetch" or cannot load games | The API is not running, or its certificate is not trusted | Start the API; run `dotnet dev-certs https --trust` |
 | API stops at startup: "Embedded seed file ... was not found" | The seed files were never generated (fresh clone) | `python -I tools/import/update_data.py --pinned`, then rebuild |
 | `dotnet build` fails: file locked by Tiles18xx.Api | The API is still running | Stop it, then build again |

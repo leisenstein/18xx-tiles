@@ -25,6 +25,9 @@ services:
       Admin__Password: "${ADMIN_PASSWORD:-}"
       # The site's public address, used in password-reset email links.
       App__PublicUrl: "${PUBLIC_URL:-http://localhost:8080}"
+      # true: the sign-in cookie is HTTPS-only. false (the default here): HTTPS-only only over HTTPS, so other devices on your network can sign in at
+      # http://<this PC's address>:8080. Set SECURE_COOKIE=true in .env when this runs as a public site.
+      Auth__SecureCookie: "${SECURE_COOKIE:-false}"
       # Only when the website is served from another address than this API (rare): that site's address(es), comma-separated.
       Cors__AllowedOrigins: "${CORS_ALLOWED_ORIGINS:-}"
       # Email through Resend (optional). Without a key, emails are written to the log (docker compose logs app).
