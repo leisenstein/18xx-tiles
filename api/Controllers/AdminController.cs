@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -216,29 +217,49 @@ public sealed class AdminController(
         return result.Succeeded ? Ok(gameTiles.Get(id)) : Problem(statusCode: StatusCodes.Status409Conflict, title: "Not changed", detail: result.Message);
     }
 
-    // Admin documents in docs/, embedded at build time: name in the URL -> file.
+    // Admin documents in docs/, embedded at build time: name in the URL -> file. The Markdown ones are drawn by the website's Markdown renderer; the
+    // hosting guide (docs/guide/going-live.html, the source of its PDF) is HTML, shown in a frame.
     private static readonly Dictionary<string, string> Docs = new(StringComparer.OrdinalIgnoreCase)
     {
         ["runbook"] = "RUNBOOK.md",
         ["database"] = "DATABASE.md",
+        ["guide"] = "going-live.html",
     };
 
-    // GET /api/admin/docs/runbook or /api/admin/docs/database -> the document as Markdown. Served from the API rather than bundled into the website, so
-    // only signed-in admins can read them. 404 for any other name.
+    // The guide's cover logo, a path relative to the repository (../../branding/...); replaced by the embedded file so it shows in the app.
+    private const string GuideLogoPath = "../../branding/18xx-tiles-logo-wordmark.svg";
+
+    // GET /api/admin/docs/runbook, /database, or /guide -> the document as Markdown (or HTML for the guide). Served from the API rather than bundled
+    // into the website, so only signed-in admins can read them. 404 for any other name.
     [HttpGet("docs/{name}")]
     public IActionResult Doc(string name)
     {
-        if (!Docs.TryGetValue(name, out var file))
+        if (!Docs.TryGetValue(name, out var file) || ReadDoc(file) is not { } text)
         {
             return NotFound();
         }
+        if (!file.EndsWith(".html", StringComparison.Ordinal))
+        {
+            return Content(text, "text/markdown; charset=utf-8");
+        }
+        if (ReadDoc("18xx-tiles-logo-wordmark.svg") is { } logo)
+        {
+            text = text.Replace(GuideLogoPath, "data:image/svg+xml;base64," + Convert.ToBase64String(Encoding.UTF8.GetBytes(logo)), StringComparison.Ordinal);
+        }
+        // The website shows this in a sandboxed frame; the header also keeps scripts off if someone opens the address directly.
+        Response.Headers.ContentSecurityPolicy = "sandbox; default-src 'none'; style-src 'unsafe-inline'; img-src data:";
+        return Content(text, "text/html; charset=utf-8");
+    }
+
+    private static string? ReadDoc(string file)
+    {
         using var stream = typeof(AdminController).Assembly.GetManifestResourceStream("Docs." + file);
         if (stream is null)
         {
-            return NotFound();
+            return null;
         }
         using var reader = new StreamReader(stream);
-        return Content(reader.ReadToEnd(), "text/markdown; charset=utf-8");
+        return reader.ReadToEnd();
     }
 
     // GET /api/admin/imports -> every import of the tobymao/18xx seed files, newest first, with notes about upstream changes that were not applied.

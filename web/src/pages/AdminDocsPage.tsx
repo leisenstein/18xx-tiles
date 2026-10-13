@@ -1,4 +1,4 @@
-import { BookOpen, Database, ScrollText, type LucideIcon } from 'lucide-react'
+import { BookOpen, Database, Globe, ScrollText, type LucideIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useParams } from 'react-router'
 import { getDoc } from '@/api/admin'
@@ -9,11 +9,16 @@ import { apiErrorMessages } from '@/lib/apiErrors'
 import { headingsOf, parseMarkdown } from '@/lib/markdown'
 import { cn } from '@/lib/utils'
 
-// The admin documents, as tabs: the runbook and the database guide (docs/RUNBOOK.md and docs/DATABASE.md in the repository).
-const DOCS: { name: string; label: string; icon: LucideIcon; description: string }[] = [
+// The admin documents, as tabs: the runbook and the database guide (docs/RUNBOOK.md and docs/DATABASE.md in the repository), and the hosting guide
+// (docs/guide/going-live.html, the source of its PDF). The guide is HTML with its own styles, so it is shown in a frame instead of the Markdown renderer.
+const DOCS: { name: string; label: string; icon: LucideIcon; description: string; html?: boolean }[] = [
   { name: 'runbook', label: 'Runbook', icon: ScrollText, description: 'Set up, run, update, back up, and troubleshoot the app.' },
   { name: 'database', label: 'Database', icon: Database, description: 'Tables, columns, relationships, stored JSON, and useful queries.' },
+  { name: 'guide', label: 'Going live', icon: Globe, description: 'Putting the site on the internet: hosting, your own address with HTTPS, email, and backups.', html: true },
 ]
+
+// Screen-only padding for the guide (its own styles are set up for printing the PDF).
+const GUIDE_SCREEN_STYLE = '<style>body { padding: 16px 24px; max-width: 60rem; }</style>'
 
 // Admin docs (/admin/docs/:name, admins only, DESIGN.md section 9.1). The text comes from GET /api/admin/docs/{name}, which only admins can call, so
 // the documents are not part of the website's code. A table of contents on the left links to each section.
@@ -37,7 +42,8 @@ export default function AdminDocsPage() {
     }
   }, [doc.name])
 
-  const blocks = useMemo(() => (data?.name === doc.name ? parseMarkdown(data.text) : null), [data, doc.name])
+  const text = data?.name === doc.name ? data.text : null
+  const blocks = useMemo(() => (text !== null && !doc.html ? parseMarkdown(text) : null), [text, doc.html])
   const headings = blocks ? headingsOf(blocks) : []
 
   return (
@@ -63,7 +69,16 @@ export default function AdminDocsPage() {
       </div>
 
       {error && <p className="text-destructive">Could not load the document. {error}</p>}
-      {!blocks && !error && <LoadingState />}
+      {text === null && !error && <LoadingState />}
+      {/* sandbox with no allowances: the guide is only read, so nothing in it can run scripts or reach the page around it. */}
+      {text !== null && doc.html && (
+        <iframe
+          title={doc.label}
+          sandbox=""
+          srcDoc={text.replace('</head>', `${GUIDE_SCREEN_STYLE}</head>`)}
+          className="h-[calc(100vh-16rem)] min-h-96 w-full rounded-lg border bg-white"
+        />
+      )}
       {blocks && (
         <div className="grid gap-8 lg:grid-cols-[220px_1fr]">
           {/* Table of contents: sticks beside the text on wide screens. */}

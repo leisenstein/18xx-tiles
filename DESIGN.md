@@ -450,7 +450,7 @@ Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (index
 | POST | `/api/admin/users/{id}/confirm-email` | Admin | Mark the email confirmed |
 | POST | `/api/admin/users/{id}/password-reset` | Admin | Email the reset link (same code encoding as `/api/auth/forgotPassword`) |
 | DELETE | `/api/admin/users/{id}` | Admin | Delete the account (history keeps its id). 409 for yourself, the configured admin, or the last admin |
-| GET | `/api/admin/docs/{name}` | Admin | An admin document as Markdown (`runbook`, `database`), embedded in the API at build time; 404 for other names |
+| GET | `/api/admin/docs/{name}` | Admin | An admin document, embedded in the API at build time: Markdown for `runbook` and `database`; HTML for `guide` (`docs/guide/going-live.html`, with its logo inlined and a `sandbox` Content-Security-Policy); 404 for other names |
 | GET | `/api/admin/games/{id}/tiles` | Admin | A game and every live tile it uses, with counts and notes |
 | POST | `/api/admin/games` | Admin | New game `{ title, designer, publisher }`; 201 with the game; 409 if any game (deleted included) has the title |
 | PUT | `/api/admin/games/{id}` | Admin | Edit a game's details `{ title, designer, publisher, reason }`; sets `UpdatedUtc` so imports keep them; 409 if the title is taken or nothing changed |
@@ -492,7 +492,7 @@ Notes:
 | `/admin/games/new` | New game (admins only): title, designer, publisher; then Edit game tiles. Linked from the Games page ("New game") |
 | `/admin/games/:id/edit` | Edit game (admins only): title, designer, publisher, reason; Delete game with confirmation. Linked from the game-filtered Tiles page ("Edit or delete game") |
 | `/admin/games/:id/tiles` | Edit game tiles (admins only): the game's whole tile list with counts, Unlimited, and notes; add any existing tile by number, remove tiles; saved as one change. Linked from the game-filtered Tiles page ("Edit this game's tiles") |
-| `/admin/docs/:name` | Admin docs (admins only): `runbook` and `database` tabs, rendered from `docs/RUNBOOK.md` and `docs/DATABASE.md`, with a table of contents and copy buttons on commands |
+| `/admin/docs/:name` | Admin docs (admins only): `runbook` and `database` tabs, rendered from `docs/RUNBOOK.md` and `docs/DATABASE.md`, with a table of contents and copy buttons on commands; `guide` tab (Going live), the hosting guide shown in a sandboxed frame |
 | `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/account` | My account: email, roles, and Change password (signed-in users; opened from the email in the header) |

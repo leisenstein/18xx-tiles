@@ -3,7 +3,8 @@
 How to set up, run, update, and look after the 18xx Tiles app. For admins. The design and the reasons behind it are in `DESIGN.md`; this document is the how-to.
 
 > Shown in the app at **Docs**, **Runbook** (admins only). The source is `docs/RUNBOOK.md` in the repository; edit it there, then rebuild the API. The
-> database's tables and columns are described in **Docs**, **Database** (`docs/DATABASE.md`).
+> database's tables and columns are described in **Docs**, **Database** (`docs/DATABASE.md`), and putting the site on the internet in **Docs**, **Going live**
+> (`docs/guide/going-live.html`, also as a PDF in the same folder).
 
 ## Overview
 

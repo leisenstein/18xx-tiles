@@ -18,7 +18,8 @@ data/
 
 # Folders the app does not need. From tools/, only the seed data script and its pinned commit (Dockerfile stage 2).
 reference/
-branding/
+branding/*
+!branding/18xx-tiles-logo-wordmark.svg
 tools/**
 !tools/import/update_data.py
 !tools/import/18xx-commit.txt
