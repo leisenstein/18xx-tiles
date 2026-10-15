@@ -6,7 +6,8 @@ using Tiles18xx.Api.Dtos;
 
 namespace Tiles18xx.Api.Data.Repositories;
 
-// Reads and writes change requests, and applies approved ones to Tiles and GameTiles (DESIGN.md section 7). Inputs are validated by the controllers.
+// Reads and writes change requests, and applies approved ones to Tiles and GameTiles, or for a game proposal (AddGame) to Games and GameTiles
+// (DESIGN.md section 7). Inputs are validated by the controllers.
 // Submitter and reviewer emails are read from Identity's AspNetUsers table (read-only; EF Core owns that table's schema).
 public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
 {
@@ -16,16 +17,21 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
     private const string SelectRequests = """
         SELECT cr.Id, cr.Type, cr.Status, cr.TileId, cr.ProposedJson, cr.BeforeJson, cr.Reason, cr.SubmittedUtc, cr.ReviewedUtc, cr.ReviewNote,
                su.Email AS SubmittedByEmail, ru.Email AS ReviewedByEmail,
-               t.DisplayName AS TileDisplayName, t.Number AS TileNumber, t.Color AS TileColor, t.DefinitionCode AS TileDefinitionCode
+               t.DisplayName AS TileDisplayName, t.Number AS TileNumber, t.Color AS TileColor, t.DefinitionCode AS TileDefinitionCode,
+               cr.GameId, g.Title AS GameTitle
         FROM ChangeRequests cr
         LEFT JOIN AspNetUsers su ON su.Id = cr.SubmittedBy
         LEFT JOIN AspNetUsers ru ON ru.Id = cr.ReviewedBy
         LEFT JOIN Tiles t ON t.Id = cr.TileId
+        LEFT JOIN Games g ON g.Id = cr.GameId
         """;
 
-    // Stores a new Pending request and returns its id.
-    public long Create(string type, long? tileId, TileContentDto? proposed, string? reason, string userId)
+    // Stores a new Pending request and returns its id. proposed is the tile (Add, Edit) and proposedGame the game (AddGame); at most one is set.
+    public long Create(string type, long? tileId, TileContentDto? proposed, GameProposalDto? proposedGame, string? reason, string userId)
     {
+        var proposedJson = proposedGame is not null
+            ? JsonSerializer.Serialize(StoredGame.From(proposedGame), Json)
+            : proposed is null ? null : JsonSerializer.Serialize(proposed, Json);
         using var connection = db.Open();
         return connection.ExecuteScalar<long>("""
             INSERT INTO ChangeRequests (Type, TileId, ProposedJson, Reason, Status, SubmittedBy, SubmittedUtc)
@@ -36,7 +42,7 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
             {
                 type,
                 tileId,
-                proposedJson = proposed is null ? null : JsonSerializer.Serialize(proposed, Json),
+                proposedJson,
                 reason,
                 status = ChangeRequestStatuses.Pending,
                 userId,
@@ -59,11 +65,36 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
     public IReadOnlyList<ChangeRequestDto> GetByIds(IReadOnlyCollection<long> ids) =>
         ids.Count == 0 ? [] : Read(SelectRequests + " WHERE cr.Id IN @ids;", new { ids });
 
+    // Does any game (deleted ones included) already have this title, ignoring case?
+    public bool IsGameTitleTaken(string title)
+    {
+        using var connection = db.Open();
+        return GamesRepository.TitleTaken(connection, null, title, null);
+    }
+
+    // Is a game with this title already waiting for review (a Pending AddGame request), ignoring case?
+    public bool IsGameTitlePending(string title)
+    {
+        using var connection = db.Open();
+        return connection.ExecuteScalar<long>(
+            "SELECT COUNT(*) FROM ChangeRequests WHERE Type = @addGame AND Status = @pending AND json_extract(ProposedJson, '$.title') = @title COLLATE NOCASE;",
+            new { addGame = ChangeRequestTypes.AddGame, pending = ChangeRequestStatuses.Pending, title }) > 0;
+    }
+
     // Is this tile live (exists and not deleted)?
     public bool IsLiveTile(long tileId)
     {
         using var connection = db.Open();
         return connection.ExecuteScalar<long>("SELECT COUNT(*) FROM Tiles WHERE Id = @tileId AND IsDeleted = 0;", new { tileId }) > 0;
+    }
+
+    // Tile ids that are not live tiles (missing or deleted), for checking a game proposal's tile list.
+    public IReadOnlyList<long> NotLiveTileIds(IEnumerable<long> tileIds)
+    {
+        var ids = tileIds.Distinct().ToList();
+        using var connection = db.Open();
+        var live = connection.Query<long>("SELECT Id FROM Tiles WHERE Id IN @ids AND IsDeleted = 0;", new { ids }).ToHashSet();
+        return ids.Where(id => !live.Contains(id)).ToList();
     }
 
     // Which of these game ids do not exist?
@@ -133,6 +164,10 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
         if (request.Status != ChangeRequestStatuses.Pending)
         {
             return ReviewResult.Fail($"This request is already {request.Status}.");
+        }
+        if (request.Type == ChangeRequestTypes.AddGame)
+        {
+            return ApproveGame(connection, transaction, request, reviewerId, note);
         }
 
         var proposed = request.ProposedJson is null ? null : JsonSerializer.Deserialize<TileContentDto>(request.ProposedJson, Json);
@@ -236,6 +271,32 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
             new { status = ChangeRequestStatuses.Approved, tileId, beforeJson, reviewerId, now, note, id },
             transaction);
 
+        transaction.Commit();
+        return ReviewResult.Done;
+    }
+
+    // Approve a game proposal (inside Approve's transaction): add the game as a game made in the app, link the tiles that are still live (tiles deleted
+    // since the proposal was made are left out), and mark the request Approved with the new game's id.
+    private static ReviewResult ApproveGame(IDbConnection connection, IDbTransaction transaction, StoredRequest request, string reviewerId, string? note)
+    {
+        var game = JsonSerializer.Deserialize<StoredGame>(request.ProposedJson!, Json)!;
+        // Re-check the title; a game with it may have been added or imported since the proposal was made.
+        if (GamesRepository.TitleTaken(connection, transaction, game.Title, null))
+        {
+            return ReviewResult.Fail($"A game called \"{game.Title}\" now exists (or was deleted). Reject this request instead.");
+        }
+        var now = Now();
+        var gameId = GamesRepository.InsertAppGame(connection, transaction, game.Title, game.Designer, game.Publisher, now);
+        var tileIds = game.Tiles.Select(t => t.TileId).ToList();
+        var live = connection.Query<long>("SELECT Id FROM Tiles WHERE Id IN @tileIds AND IsDeleted = 0;", new { tileIds }, transaction).ToHashSet();
+        connection.Execute(
+            "INSERT INTO GameTiles (GameId, TileId, Count, Notes) VALUES (@gameId, @TileId, @Count, @Notes);",
+            game.Tiles.Where(t => live.Contains(t.TileId)).Select(t => new { gameId, t.TileId, t.Count, t.Notes }),
+            transaction);
+        connection.Execute(
+            "UPDATE ChangeRequests SET Status = @status, GameId = @gameId, ReviewedBy = @reviewerId, ReviewedUtc = @now, ReviewNote = @note WHERE Id = @id;",
+            new { status = ChangeRequestStatuses.Approved, gameId, reviewerId, now, note, id = request.Id },
+            transaction);
         transaction.Commit();
         return ReviewResult.Done;
     }
@@ -359,9 +420,20 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
         using var connection = db.Open();
         var rows = connection.Query<RequestRow>(sql, parameters).ToList();
         var titles = connection.Query<GameTitleRow>("SELECT Id, Title FROM Games;").ToDictionary(g => g.Id, g => g.Title);
+        var games = rows.Where(r => r.Type == ChangeRequestTypes.AddGame && r.ProposedJson is not null)
+            .ToDictionary(r => r.Id, r => JsonSerializer.Deserialize<StoredGame>(r.ProposedJson!, Json)!);
+        // Every tile any game proposal names (deleted ones too), to draw them.
+        var gameTileIds = games.Values.SelectMany(g => g.Tiles.Select(t => t.TileId)).Distinct().ToList();
+        var gameTiles = connection.Query<GameTileDto>(
+                "SELECT Id AS TileId, Number, Color, DisplayName, DefinitionCode FROM Tiles WHERE Id IN @gameTileIds;", new { gameTileIds })
+            .ToDictionary(t => t.TileId);
 
         return rows.Select(row =>
         {
+            if (games.TryGetValue(row.Id, out var game))
+            {
+                return ToDto(row, null, null, null) with { ProposedGame = game.ToDto(gameTiles) };
+            }
             var proposed = row.ProposedJson is null ? null : JsonSerializer.Deserialize<TileContentDto>(row.ProposedJson, Json);
             var before = row.BeforeJson is null ? null : JsonSerializer.Deserialize<TileContentDto>(row.BeforeJson, Json);
             // Fill in game titles for display.
@@ -384,24 +456,67 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
                     Games = currentLinks,
                 };
             }
-            return new ChangeRequestDto
-            {
-                Id = row.Id,
-                Type = row.Type,
-                Status = row.Status,
-                TileId = row.TileId,
-                TileDisplayName = row.TileDisplayName,
-                Current = current,
-                Before = before,
-                Proposed = proposed,
-                Reason = row.Reason,
-                SubmittedByEmail = row.SubmittedByEmail,
-                SubmittedUtc = row.SubmittedUtc,
-                ReviewedByEmail = row.ReviewedByEmail,
-                ReviewedUtc = row.ReviewedUtc,
-                ReviewNote = row.ReviewNote,
-            };
+            return ToDto(row, current, before, proposed);
         }).ToList();
+    }
+
+    private static ChangeRequestDto ToDto(RequestRow row, TileContentDto? current, TileContentDto? before, TileContentDto? proposed) => new()
+    {
+        Id = row.Id,
+        Type = row.Type,
+        Status = row.Status,
+        TileId = row.TileId,
+        TileDisplayName = row.TileDisplayName,
+        Current = current,
+        Before = before,
+        Proposed = proposed,
+        GameId = row.GameId,
+        GameTitle = row.GameTitle,
+        Reason = row.Reason,
+        SubmittedByEmail = row.SubmittedByEmail,
+        SubmittedUtc = row.SubmittedUtc,
+        ReviewedByEmail = row.ReviewedByEmail,
+        ReviewedUtc = row.ReviewedUtc,
+        ReviewNote = row.ReviewNote,
+    };
+
+    // A game proposal as stored in ProposedJson: the details, and only each tile's id, count, and notes. The tile's drawing is read when the request is
+    // shown, so a later change to the tile shows too.
+    private sealed record StoredGame
+    {
+        public string Title { get; init; } = "";
+        public string? Designer { get; init; }
+        public string? Publisher { get; init; }
+        public List<GameTileInputDto> Tiles { get; init; } = [];
+
+        public static StoredGame From(GameProposalDto game) => new()
+        {
+            Title = game.Title,
+            Designer = game.Designer,
+            Publisher = game.Publisher,
+            Tiles = game.Tiles.Select(t => new GameTileInputDto { TileId = t.TileId, Count = t.Count, Notes = t.Notes }).ToList(),
+        };
+
+        // In the usual tile order. A tile that no longer exists at all is shown as "tile N".
+        public GameProposalDto ToDto(Dictionary<long, GameTileDto> tiles) => new()
+        {
+            Title = Title,
+            Designer = Designer,
+            Publisher = Publisher,
+            Tiles = TileSort.Apply(Tiles.Select(t => new SortableTile(tiles.GetValueOrDefault(t.TileId) is { } tile
+                    ? tile with { Count = t.Count, Notes = t.Notes }
+                    : new GameTileDto { TileId = t.TileId, Number = "?", Color = "none", DisplayName = $"tile {t.TileId}", Count = t.Count, Notes = t.Notes })))
+                .Select(s => s.Tile)
+                .ToList(),
+        };
+    }
+
+    // TileSort works on ISortableTile; this wraps a GameTileDto for it.
+    private sealed record SortableTile(GameTileDto Tile) : ISortableTile
+    {
+        public long Id => Tile.TileId;
+        public string Number => Tile.Number;
+        public string Color => Tile.Color;
     }
 
     // Row shapes for Dapper (init properties so SQLite integers convert to C# types).
@@ -446,6 +561,8 @@ public sealed class ChangeRequestsRepository(SqliteConnectionFactory db)
         public string? TileNumber { get; init; }
         public string? TileColor { get; init; }
         public string? TileDefinitionCode { get; init; }
+        public long? GameId { get; init; }
+        public string? GameTitle { get; init; }
     }
 }
 

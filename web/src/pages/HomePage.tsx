@@ -13,7 +13,8 @@ import { ADMIN_ROLE } from '@/lib/constants'
 import type { GameSummary } from '@/types/game'
 
 // Home page (DESIGN.md section 9.1): every game as a card (GameCard) linking to its tiles (/tiles?game={id}), a search box that filters the cards by
-// title, designer, or publisher, and a link to the Common Tiles page (section 9.3). Admins also get New game.
+// title, designer, or publisher, and a link to the Common Tiles page (section 9.3). Admins also get New game; other signed-in users get Propose a game,
+// which an admin reviews.
 export default function HomePage() {
   const { user } = useAuth()
   const isAdmin = user?.roles.includes(ADMIN_ROLE) ?? false
@@ -54,6 +55,14 @@ export default function HomePage() {
                 <Link to="/admin/games/new">
                   <SquarePlus aria-hidden="true" />
                   New game
+                </Link>
+              </Button>
+            )}
+            {user && !isAdmin && (
+              <Button asChild size="sm">
+                <Link to="/submit/game">
+                  <SquarePlus aria-hidden="true" />
+                  Propose a game
                 </Link>
               </Button>
             )}

@@ -22,6 +22,7 @@ const browseItems: NavItem[] = [
 ]
 const userItems: NavItem[] = [
   { to: '/submit', label: 'Submit a tile', icon: SquarePlus },
+  { to: '/submit/game', label: 'Submit a game', icon: LayoutGrid },
   { to: '/account/requests', label: 'My requests', icon: Inbox },
 ]
 const adminItems: NavItem[] = [

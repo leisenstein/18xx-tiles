@@ -68,10 +68,7 @@ public sealed class GamesRepository(SqliteConnectionFactory db)
             return null;
         }
         var now = DateTime.UtcNow.ToString("O");
-        var id = connection.ExecuteScalar<long>(
-            "INSERT INTO Games (Title, SourceKey, Designer, Publisher, CreatedUtc) VALUES (@title, @key, @designer, @publisher, @now) RETURNING Id;",
-            new { title, key = AppKeyPrefix + Guid.NewGuid().ToString("N"), designer, publisher, now },
-            transaction);
+        var id = InsertAppGame(connection, transaction, title, designer, publisher, now);
         AddChange(connection, transaction, id, userId, now, "created", null, "[]", "[]", null);
         transaction.Commit();
         return id;
@@ -128,7 +125,16 @@ public sealed class GamesRepository(SqliteConnectionFactory db)
         return ChangeOutcome.Done;
     }
 
-    private static bool TitleTaken(System.Data.IDbConnection connection, System.Data.IDbTransaction transaction, string title, long? exceptId) =>
+    // Inserts a game made in the app (New game, or an approved game proposal) and returns its id. The caller checks the title and records the change.
+    internal static long InsertAppGame(
+        System.Data.IDbConnection connection, System.Data.IDbTransaction transaction, string title, string? designer, string? publisher, string now) =>
+        connection.ExecuteScalar<long>(
+            "INSERT INTO Games (Title, SourceKey, Designer, Publisher, CreatedUtc) VALUES (@title, @key, @designer, @publisher, @now) RETURNING Id;",
+            new { title, key = AppKeyPrefix + Guid.NewGuid().ToString("N"), designer, publisher, now },
+            transaction);
+
+    // Does any game (deleted ones included, which keep their title) have this title, ignoring case? exceptId leaves out the game being edited.
+    internal static bool TitleTaken(System.Data.IDbConnection connection, System.Data.IDbTransaction? transaction, string title, long? exceptId) =>
         connection.ExecuteScalar<long>(
             "SELECT COUNT(*) FROM Games WHERE Title = @title COLLATE NOCASE AND (@exceptId IS NULL OR Id <> @exceptId);",
             new { title, exceptId },

@@ -1,8 +1,10 @@
+import type { GameTile, GameTileInput } from '@/types/gameTiles'
 import type { TileSummary } from '@/types/tile'
 
-// Change requests (DESIGN.md section 7). These match the API's TileContentDto, TileGameLinkDto, ChangeRequestDto, and ChangeRequestSubmitDto.
+// Change requests (DESIGN.md section 7). These match the API's TileContentDto, TileGameLinkDto, GameProposalDto, ChangeRequestDto, and
+// ChangeRequestSubmitDto. Add, Edit, and Delete are about one tile; AddGame proposes a new game with its tile list.
 
-export type ChangeRequestType = 'Add' | 'Edit' | 'Delete'
+export type ChangeRequestType = 'Add' | 'Edit' | 'Delete' | 'AddGame'
 export type ChangeRequestStatus = 'Pending' | 'Approved' | 'Rejected'
 
 // One game that uses a tile. count: null = unknown, 999 = unlimited. title is filled in by the API when reading.
@@ -24,6 +26,22 @@ export interface TileContent {
   displayName?: string | null // filled in for history snapshots, e.g. "#57 (Kansas City)"
 }
 
+// A proposed new game (AddGame) and the existing tiles it uses, with box counts. When read back, each tile has its drawing data.
+export interface GameProposal {
+  title: string
+  designer: string | null
+  publisher: string | null
+  tiles: GameTile[]
+}
+
+// What a game proposal sends: only each tile's id, count, and notes.
+export interface GameProposalSubmit {
+  title: string
+  designer: string | null
+  publisher: string | null
+  tiles: GameTileInput[]
+}
+
 export interface ChangeRequest {
   id: number
   type: ChangeRequestType
@@ -33,6 +51,9 @@ export interface ChangeRequest {
   current: TileContent | null // the tile now (Edit, Delete)
   proposed: TileContent | null // the proposal (Add, Edit)
   before: TileContent | null // for an approved Edit or Delete: the tile just before the change (audit trail)
+  proposedGame: GameProposal | null // AddGame only
+  gameId: number | null // AddGame: the game it created, once approved
+  gameTitle: string | null // that game's title now
   reason: string | null
   submittedByEmail: string | null
   submittedUtc: string
@@ -75,5 +96,6 @@ export interface ChangeRequestSubmit {
   type: ChangeRequestType
   tileId?: number | null
   tile?: TileContent | null
+  game?: GameProposalSubmit | null
   reason?: string | null
 }

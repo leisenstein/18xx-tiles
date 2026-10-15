@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import ChangeTypeBadge from '@/components/ChangeTypeBadge'
+import RequestChange from '@/components/RequestChange'
 import StatusBadge from '@/components/StatusBadge'
-import TileChange from '@/components/TileChange'
 import { typeAccent } from '@/lib/changeTypeStyles'
 import { cn } from '@/lib/utils'
 import type { ChangeRequest } from '@/types/changeRequest'
@@ -15,18 +15,20 @@ interface ChangeRequestEntryProps {
 }
 
 // One change request in a history list (DESIGN.md section 7, audit trail): type, status, who submitted it and when, the reason, who reviewed it and their
-// note, and before/after drawings. Used by the tile page's History section and the admin History page.
+// note, and before/after drawings (or the proposed game). Used by the tile page's History section and the admin History page.
 export default function ChangeRequestEntry({ request, showTile = false }: ChangeRequestEntryProps) {
   // The tile's name now; for an Add that was never approved there is no tile yet, so use the proposed number.
   const tileLabel = request.tileDisplayName ?? (request.proposed ? `#${request.proposed.number}` : 'tile')
+  // A game proposal names the game in GameProposalView instead.
+  const showTileLabel = showTile && request.type !== 'AddGame'
 
   return (
-    // A thick left border in the type's color (Add emerald, Edit violet, Delete rose) makes the kind of change easy to spot when scanning the list.
+    // A thick left border in the type's color (Add emerald, Edit violet, Delete rose, New game sky) makes the kind of change easy to spot when scanning the list.
     <li className={cn('space-y-2 rounded-lg border border-l-4 p-3 text-sm', typeAccent(request.type))}>
       <div className="flex flex-wrap items-center gap-2">
         <ChangeTypeBadge type={request.type} />
         <span className="font-medium">
-          {showTile &&
+          {showTileLabel &&
             (request.tileId ? (
               <Link to={`/tiles/${request.tileId}`} className="underline">
                 {tileLabel}
@@ -48,7 +50,7 @@ export default function ChangeRequestEntry({ request, showTile = false }: Change
           {request.reviewNote && `: ${request.reviewNote}`}
         </p>
       )}
-      <TileChange request={request} />
+      <RequestChange request={request} />
     </li>
   )
 }

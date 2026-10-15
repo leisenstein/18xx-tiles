@@ -4,7 +4,7 @@ namespace Tiles18xx.Api.Dtos;
 public sealed record ChangeRequestDto
 {
     public long Id { get; init; }
-    public string Type { get; init; } = "";   // Add, Edit, Delete
+    public string Type { get; init; } = "";   // Add, Edit, Delete, AddGame
     public string Status { get; init; } = ""; // Pending, Approved, Rejected
 
     // The tile the request is about. For an Add, set once it is approved.
@@ -17,6 +17,11 @@ public sealed record ChangeRequestDto
 
     // For an approved Edit or Delete: the tile just before the change (audit trail). Empty for requests approved before the audit trail existed.
     public TileContentDto? Before { get; init; }
+
+    // AddGame only: the proposed game and its tiles, and, once approved, the game it created with its title now.
+    public GameProposalDto? ProposedGame { get; init; }
+    public long? GameId { get; init; }
+    public string? GameTitle { get; init; }
 
     public string? Reason { get; init; }
     public string? SubmittedByEmail { get; init; }

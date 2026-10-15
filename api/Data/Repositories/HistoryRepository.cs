@@ -9,7 +9,7 @@ namespace Tiles18xx.Api.Data.Repositories;
 public sealed class HistoryRepository(
     SqliteConnectionFactory db, ChangeRequestsRepository requests, ImportRunsRepository imports, GameTilesRepository gameTiles)
 {
-    // Search text matches (ignoring case): for changes, the tile's number or name, the proposed number, or the submitter's or reviewer's email; for
+    // Search text matches (ignoring case): for changes, the tile's number or name, the proposed number or game title, or the submitter's or reviewer's email; for
     // imports, the start of the commit hash; for game saves, the game's title or the admin's email. instr() is used instead of LIKE so % and _ in the
     // text are not wildcards.
     private const string Entries = """
@@ -24,6 +24,7 @@ public sealed class HistoryRepository(
           AND (@q IS NULL
                OR instr(lower(t.Number), @q) > 0 OR instr(lower(t.DisplayName), @q) > 0
                OR instr(lower(json_extract(cr.ProposedJson, '$.number')), @q) > 0
+               OR instr(lower(json_extract(cr.ProposedJson, '$.title')), @q) > 0
                OR instr(lower(su.Email), @q) > 0 OR instr(lower(ru.Email), @q) > 0)
         UNION ALL
         SELECT 'import', ir.Id, ir.ImportedUtc

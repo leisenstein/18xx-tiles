@@ -14,6 +14,11 @@ export default function RequestOutcome({ request }: { request: ChangeRequest }) 
               View the tile
             </Link>
           )}
+          {request.gameId !== null && (
+            <Link to={`/tiles?game=${request.gameId}`} className="underline">
+              View the game
+            </Link>
+          )}
         </p>
       </div>
     )

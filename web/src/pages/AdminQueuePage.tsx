@@ -4,18 +4,20 @@ import { approveChangeRequest, getChangeRequests, rejectChangeRequest } from '@/
 import EmptyState from '@/components/EmptyState'
 import LoadingState from '@/components/LoadingState'
 import PageHeader from '@/components/PageHeader'
+import RequestChange from '@/components/RequestChange'
 import StatusBadge from '@/components/StatusBadge'
-import TileChange from '@/components/TileChange'
 import { Button } from '@/components/ui/button'
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Textarea } from '@/components/ui/textarea'
 import { apiErrorMessages } from '@/lib/apiErrors'
+import { typeLabel } from '@/lib/changeTypeStyles'
 import type { ChangeRequest, ChangeRequestStatus } from '@/types/changeRequest'
 
 const STATUSES: ChangeRequestStatus[] = ['Pending', 'Approved', 'Rejected']
 
-// Admin review queue (/admin/queue, DESIGN.md section 9.1): change requests with before/after drawings; approve or reject Pending ones.
+// Admin review queue (/admin/queue, DESIGN.md section 9.1): proposed tiles (before/after drawings) and proposed games (details and tiles); approve or
+// reject Pending ones. Approving a game adds it with its tiles and counts.
 // RequireRole in App.tsx keeps non-admins out, and the API checks the Admin role again on every call.
 export default function AdminQueuePage() {
   const [status, setStatus] = useState<ChangeRequestStatus>('Pending')
@@ -69,7 +71,7 @@ export default function AdminQueuePage() {
         icon={ClipboardCheck}
         area="admin"
         title="Review queue"
-        description="Proposed tiles waiting for a decision. Approve to publish, or reject with a note for the submitter."
+        description="Proposed tiles and games waiting for a decision. Approve to publish, or reject with a note for the submitter."
         actions={
           <NativeSelect aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value as ChangeRequestStatus)}>
             {STATUSES.map((s) => (
@@ -105,14 +107,15 @@ export default function AdminQueuePage() {
               <TableRow key={request.id} className="align-top">
                 <TableCell className="whitespace-normal">
                   <div className="font-medium">
-                    #{request.id} {request.type} {request.tileDisplayName && <span className="text-muted-foreground">{request.tileDisplayName}</span>}
+                    #{request.id} {typeLabel(request.type)}{' '}
+                    {request.tileDisplayName && <span className="text-muted-foreground">{request.tileDisplayName}</span>}
                   </div>
                   <div className="text-xs text-muted-foreground">{request.submittedByEmail}</div>
                   <div className="text-xs text-muted-foreground">{new Date(request.submittedUtc).toLocaleString()}</div>
                   {request.reason && <div className="mt-1 max-w-56 text-xs">{request.reason}</div>}
                 </TableCell>
                 <TableCell className="whitespace-normal">
-                  <TileChange request={request} />
+                  <RequestChange request={request} />
                 </TableCell>
                 <TableCell className="whitespace-normal">
                   {request.status === 'Pending' ? (

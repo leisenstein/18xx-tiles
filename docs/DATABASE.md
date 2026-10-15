@@ -22,6 +22,7 @@ The database's tables, columns, relationships, stored JSON, and conventions, wit
 Games 1 ──< GameTiles >── 1 Tiles          a game uses many tiles; a tile is used by many games
 Games 1 ──< GameChanges                    each save of a game's tile list
 Tiles 1 ──< ChangeRequests                 proposals and applied edits for a tile (TileId empty for an Add until approved)
+Games 1 ──< ChangeRequests                 a game proposal (AddGame) and the game it created (GameId, set when approved)
 AspNetUsers 1 ──< ChangeRequests           SubmittedBy, ReviewedBy (user ids, not enforced by a foreign key)
 AspNetUsers 1 ──< GameChanges              ChangedBy
 AspNetUsers 1 ──< Tiles                    CreatedBy (user tiles), UpdatedBy (last change)
@@ -95,14 +96,16 @@ Index: `IX_GameTiles_TileId` (a tile's games). Links to deleted tiles stay, but 
 
 ## ChangeRequests
 
-Tile proposals and applied changes, and the audit trail. A regular user's Add is Pending until an admin decides; an admin's Add, Edit, or Delete is recorded as Approved at once.
+Tile and game proposals and applied changes, and the audit trail. A regular user's Add or AddGame is Pending until an admin decides; an admin's Add, Edit,
+Delete, or AddGame is recorded as Approved at once.
 
 | Column | Type | Null | Meaning |
 |---|---|---|---|
 | `Id` | INTEGER | no | Primary key; shown as "request #12" |
-| `Type` | TEXT | no | `Add`, `Edit`, or `Delete` |
-| `TileId` | INTEGER | yes | The tile; for an Add, set when it is approved |
-| `ProposedJson` | TEXT | yes | The tile as proposed (Add, Edit); see Stored JSON |
+| `Type` | TEXT | no | `Add`, `Edit`, or `Delete` (a tile), or `AddGame` (a new game with its tiles) |
+| `TileId` | INTEGER | yes | The tile; for an Add, set when it is approved. Empty for AddGame |
+| `GameId` | INTEGER | yes | AddGame only: the game created when it was approved (schema script `0003_GameRequests.sql`) |
+| `ProposedJson` | TEXT | yes | The tile as proposed (Add, Edit), or the game (AddGame); see Stored JSON |
 | `BeforeJson` | TEXT | yes | Approved Edit or Delete: the tile and its games just before the change |
 | `Reason` | TEXT | yes | The submitter's explanation |
 | `Status` | TEXT | no | `Pending`, `Approved`, or `Rejected` |
@@ -162,6 +165,17 @@ JSON columns use camelCase names, the same as the API.
 ```
 
 `games` null in an Edit means the tile's games were not changed. `BeforeJson` also carries `displayName`.
+
+`ChangeRequests.ProposedJson` for an AddGame, the proposed game (tiles are existing tile ids; their drawings are read when the request is shown):
+
+```json
+{
+  "title": "18Example",
+  "designer": "Ann Designer",
+  "publisher": null,
+  "tiles": [{ "tileId": 12, "count": 3, "notes": null }, { "tileId": 2, "count": 999, "notes": null }]
+}
+```
 
 `GameChanges.BeforeJson` and `AfterJson`, a game's tile links:
 

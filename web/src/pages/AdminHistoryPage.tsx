@@ -17,7 +17,16 @@ import type { HistoryEntry } from '@/types/history'
 import type { PagedResult } from '@/types/paged'
 
 // 'Import' shows only data imports from tobymao/18xx; the others show only change requests of that type.
-const TYPES: (ChangeRequestType | 'Import' | 'Game')[] = ['Add', 'Edit', 'Delete', 'Import', 'Game']
+const TYPES: (ChangeRequestType | 'Import' | 'Game')[] = ['Add', 'Edit', 'Delete', 'AddGame', 'Import', 'Game']
+// Names in the Type list: AddGame is a game proposal; Game is a change an admin made to a game directly.
+const TYPE_LABELS: Record<(typeof TYPES)[number], string> = {
+  Add: 'Add tile',
+  Edit: 'Edit tile',
+  Delete: 'Delete tile',
+  AddGame: 'Game proposal',
+  Import: 'Import',
+  Game: 'Game change',
+}
 const STATUSES: ChangeRequestStatus[] = ['Pending', 'Approved', 'Rejected']
 const PAGE_SIZE = 25
 
@@ -81,14 +90,14 @@ export default function AdminHistoryPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader icon={History} area="admin" title="History" description="Every tile change, game tile list change, and data import, newest first." />
+      <PageHeader icon={History} area="admin" title="History" description="Every tile change, game proposal, game change, and data import, newest first." />
 
       <div className="flex flex-wrap items-center gap-3">
         <NativeSelect aria-label="Type" value={type} onChange={(e) => setFilter('type', e.target.value)}>
           <NativeSelectOption value="">All types</NativeSelectOption>
           {TYPES.map((t) => (
             <NativeSelectOption key={t} value={t}>
-              {t}
+              {TYPE_LABELS[t]}
             </NativeSelectOption>
           ))}
         </NativeSelect>

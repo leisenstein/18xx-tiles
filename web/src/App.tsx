@@ -23,6 +23,7 @@ import LoginPage from '@/pages/LoginPage'
 import MyRequestsPage from '@/pages/MyRequestsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import RegisterPage from '@/pages/RegisterPage'
+import ProposeGamePage from '@/pages/ProposeGamePage'
 import SubmitTilePage from '@/pages/SubmitTilePage'
 import TileDetailPage from '@/pages/TileDetailPage'
 import TilesPage from '@/pages/TilesPage'
@@ -60,6 +61,14 @@ function App() {
           element={
             <RequireRole>
               <SubmitTilePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="submit/game"
+          element={
+            <RequireRole>
+              <ProposeGamePage />
             </RequireRole>
           }
         />

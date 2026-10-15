@@ -469,7 +469,7 @@ Roles: the site has one role, **Admin**. Accounts are created by people register
 
 | Task | Where | Notes |
 |---|---|---|
-| Review proposed tiles | **Review** | Approve publishes the tile; Reject needs a note the submitter sees |
+| Review proposed tiles and games | **Review** | Approve publishes the tile, or adds the proposed game with its tiles and counts (refused if a game with that title was added since); Reject needs a note the submitter sees |
 | Edit or delete a tile | the tile's page: **Edit tile**, **Delete tile** | Applied at once; recorded in History. Delete hides the tile but keeps it |
 | Add a game | Games: **New game** | Title (unique), designer, publisher; then you go straight to Edit game tiles to add its tiles and counts |
 | Edit or delete a game | Tiles filtered to a game: **Edit or delete game** | Change the title, designer, or publisher (later imports keep your values). **Delete game** hides it everywhere and clears its tile list; the tiles stay, History keeps what it had, and imports never add it back |

@@ -76,7 +76,7 @@ public sealed class AdminController(
         if (!string.IsNullOrEmpty(query.Type) && query.Type is not (HistoryQueryDto.ImportType or HistoryQueryDto.GameType)
             && !ChangeRequestTypes.IsKnown(query.Type))
         {
-            ModelState.AddModelError("type", "Type must be Add, Edit, Delete, Import, or Game.");
+            ModelState.AddModelError("type", "Type must be Add, Edit, Delete, AddGame, Import, or Game.");
         }
         if (!string.IsNullOrEmpty(query.Status) && !ChangeRequestStatuses.IsKnown(query.Status))
         {

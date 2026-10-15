@@ -14,7 +14,13 @@ import { cn } from '@/lib/utils'
 const DOCS: { name: string; label: string; icon: LucideIcon; description: string; html?: boolean }[] = [
   { name: 'runbook', label: 'Runbook', icon: ScrollText, description: 'Set up, run, update, back up, and troubleshoot the app.' },
   { name: 'database', label: 'Database', icon: Database, description: 'Tables, columns, relationships, stored JSON, and useful queries.' },
-  { name: 'guide', label: 'Going live', icon: Globe, description: 'Putting the site on the internet: hosting, your own address with HTTPS, email, and backups.', html: true },
+  {
+    name: 'guide',
+    label: 'Going live',
+    icon: Globe,
+    description: 'Putting the site on the internet: hosting, your own address with HTTPS, email, and backups.',
+    html: true,
+  },
 ]
 
 // Screen-only padding for the guide (its own styles are set up for printing the PDF).

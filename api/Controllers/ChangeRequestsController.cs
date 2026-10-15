@@ -9,8 +9,9 @@ using Tiles18xx.Api.Dtos;
 
 namespace Tiles18xx.Api.Controllers;
 
-// Proposing changes to tiles (DESIGN.md sections 7 and 8). Any signed-in user can propose a new tile (Add); it waits for an admin (Pending). Editing and
-// deleting existing tiles is for admins only. An admin's request is applied immediately (Approved by that admin), so every change has an audit row.
+// Proposing changes (DESIGN.md sections 7 and 8). Any signed-in user can propose a new tile (Add) or a new game with its tiles (AddGame); it waits for an
+// admin (Pending). Editing and deleting existing tiles is for admins only. An admin's request is applied immediately (Approved by that admin), so every
+// change has an audit row.
 [ApiController]
 [Route("api/change-requests")]
 [Authorize]
@@ -22,7 +23,7 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
     public const int MaxReasonLength = 1000;
 
     // POST /api/change-requests -> 201 with the stored request (Pending, or Approved for an admin); 400 for invalid input; 403 for an Edit or Delete by a
-    // non-admin; 409 for a duplicate tile.
+    // non-admin; 409 for a duplicate tile, or a game title that is taken or already waiting for review.
     [HttpPost]
     [EnableRateLimiting("submissions")]
     public ActionResult<ChangeRequestDto> Submit(ChangeRequestSubmitDto body)
@@ -34,8 +35,9 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
         }
 
         var tile = Normalize(body.Tile);
+        var game = Normalize(body.Game);
         var reason = string.IsNullOrWhiteSpace(body.Reason) ? null : body.Reason.Trim();
-        Validate(body, tile, reason);
+        Validate(body, tile, game, reason);
         if (!ModelState.IsValid)
         {
             return ValidationProblem();
@@ -47,10 +49,20 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
         {
             return Problem(statusCode: StatusCodes.Status409Conflict, title: "Duplicate tile", detail: conflict);
         }
+        if (game is not null && requests.IsGameTitleTaken(game.Title))
+        {
+            return Problem(statusCode: StatusCodes.Status409Conflict, title: "Title taken",
+                detail: $"A game called \"{game.Title}\" is already on the site (or was deleted). Choose another title.");
+        }
+        if (game is not null && requests.IsGameTitlePending(game.Title))
+        {
+            return Problem(statusCode: StatusCodes.Status409Conflict, title: "Already proposed",
+                detail: $"A game called \"{game.Title}\" is already waiting for review.");
+        }
 
         // The submitter's id comes from the sign-in cookie, never from the request body.
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-        var id = requests.Create(body.Type, tileId, tile, reason, userId);
+        var id = requests.Create(body.Type, tileId, tile, game, reason, userId);
 
         if (User.IsInRole(AdminSeeder.AdminRole))
         {
@@ -94,13 +106,27 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
         Games = tile.Games?.Select(g => g with { Notes = string.IsNullOrWhiteSpace(g.Notes) ? null : g.Notes.Trim(), Title = null }).ToList(),
     };
 
+    // Trim a game proposal's text; empty designer, publisher, and notes become null. Only each tile's id, count, and notes are kept.
+    private static GameProposalDto? Normalize(GameProposalDto? game) => game is null ? null : new GameProposalDto
+    {
+        Title = game.Title.Trim(),
+        Designer = string.IsNullOrWhiteSpace(game.Designer) ? null : game.Designer.Trim(),
+        Publisher = string.IsNullOrWhiteSpace(game.Publisher) ? null : game.Publisher.Trim(),
+        Tiles = game.Tiles.Select(t => new GameTileDto { TileId = t.TileId, Count = t.Count, Notes = string.IsNullOrWhiteSpace(t.Notes) ? null : t.Notes.Trim() })
+            .ToList(),
+    };
+
     // Explicit checks for every field; all problems are reported together as a 400.
-    private void Validate(ChangeRequestSubmitDto body, TileContentDto? tile, string? reason)
+    private void Validate(ChangeRequestSubmitDto body, TileContentDto? tile, GameProposalDto? game, string? reason)
     {
         if (!ChangeRequestTypes.IsKnown(body.Type))
         {
-            ModelState.AddModelError("type", "Type must be Add, Edit, or Delete.");
+            ModelState.AddModelError("type", "Type must be Add, Edit, Delete, or AddGame.");
             return;
+        }
+        if (body.Type != ChangeRequestTypes.AddGame && game is not null)
+        {
+            ModelState.AddModelError("game", "Leave game empty unless proposing a game (AddGame).");
         }
 
         switch (body.Type)
@@ -117,6 +143,12 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
                 RequireLiveTile(body.TileId);
                 if (tile is not null) ModelState.AddModelError("tile", "Leave tile empty when deleting.");
                 break;
+            case ChangeRequestTypes.AddGame:
+                if (body.TileId is not null) ModelState.AddModelError("tileId", "Leave tileId empty when proposing a game.");
+                if (tile is not null) ModelState.AddModelError("tile", "Leave tile empty when proposing a game.");
+                if (game is null) ModelState.AddModelError("game", "Describe the game to add.");
+                else ValidateGame(game);
+                break;
         }
 
         if (tile is not null)
@@ -126,6 +158,42 @@ public sealed class ChangeRequestsController(ChangeRequestsRepository requests) 
         if (reason is { Length: > MaxReasonLength })
         {
             ModelState.AddModelError("reason", $"The reason must be {MaxReasonLength} characters or fewer.");
+        }
+    }
+
+    // The same rules as New game and Edit game tiles: a title, short text, at least one live tile, each once, with valid counts and short notes.
+    private void ValidateGame(GameProposalDto game)
+    {
+        if (game.Title.Length == 0)
+        {
+            ModelState.AddModelError("game.title", "Enter the game's title.");
+        }
+        foreach (var (field, value) in new[] { ("title", game.Title), ("designer", game.Designer), ("publisher", game.Publisher) })
+        {
+            if (value is { Length: > AdminController.MaxGameTextLength })
+            {
+                ModelState.AddModelError($"game.{field}", $"The {field} must be {AdminController.MaxGameTextLength} characters or fewer.");
+            }
+        }
+        if (game.Tiles.Count == 0)
+        {
+            ModelState.AddModelError("game.tiles", "Add at least one tile the game uses.");
+        }
+        if (game.Tiles.GroupBy(t => t.TileId).Any(g => g.Count() > 1))
+        {
+            ModelState.AddModelError("game.tiles", "Each tile can appear only once.");
+        }
+        foreach (var missing in requests.NotLiveTileIds(game.Tiles.Select(t => t.TileId)))
+        {
+            ModelState.AddModelError("game.tiles", $"Tile {missing} does not exist or has been deleted.");
+        }
+        if (game.Tiles.Any(t => !TileCounts.IsValid(t.Count)))
+        {
+            ModelState.AddModelError("game.tiles", $"A count must be empty (unknown), 1 to {TileCounts.MaxCount}, or {TileCounts.Unlimited} (unlimited).");
+        }
+        if (game.Tiles.Any(t => t.Notes is { Length: > MaxNotesLength }))
+        {
+            ModelState.AddModelError("game.tiles", $"Notes must be {MaxNotesLength} characters or fewer.");
         }
     }
 

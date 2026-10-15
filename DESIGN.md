@@ -62,7 +62,7 @@ A public web app for browsing 18xx track tiles with pictures. Users can browse t
 | Auth | ASP.NET Core Identity with its EF Core store, used only for Identity tables (`AspNet*`). All app data uses Dapper. `Admin` role seeded at startup. Endpoints: built-in `MapIdentityApi` under `/api/auth` with cookie sign-in (framework-provided Minimal API endpoints; our own endpoints stay controllers). First admin account seeded at startup from secrets (user-secrets in development, environment variables in Docker), never stored in code or the image. Emails (confirmation, password reset) are written to the API log in development; a real provider is chosen in Phase 5 |
 | Audience | Public. Email confirmation at registration, rate limiting on login and submissions |
 | Tile versions | Separate tile rows (option A). The same number with a different definition is its own tile, linked to games through GameTiles |
-| Changes | ChangeRequests table (Add, Edit, Delete). User requests wait for admin approval; admin requests apply immediately |
+| Changes | ChangeRequests table (Add, Edit, Delete for tiles; AddGame for a new game). User requests wait for admin approval; admin requests apply immediately |
 | Pictures | TSX component rendering inline SVG from the definition string |
 | Tile counts | `GameTiles.Count` = tiles included in the box; NULL = unknown; 999 = unlimited; edition differences go in `GameTiles.Notes` |
 | Containers | Runnable in Docker: one image (API serves the built React app), run with Docker Compose |
@@ -393,6 +393,12 @@ Rules:
   (`GET /api/admin/history`).
 - Permissions (decided after Phase 4): any signed-in user may propose a **new** tile (Add), which waits for an admin. Only admins may **edit or delete**
   existing tiles (the API answers 403 to anyone else); their changes apply at once. Only admins approve or reject.
+- Game proposals (5.13): any signed-in user may also propose a **new game** (type `AddGame`): title, designer, publisher, and a list of existing live
+  tiles with counts and notes. `ProposedJson` holds the game (docs/DATABASE.md, Stored JSON); `TileId` stays empty and `GameId` is set when it is
+  approved. Submitting checks the same rules as New game and Edit game tiles (title required and unique among all games, deleted ones included; at least
+  one tile; each tile once and live; valid counts), and refuses a title already waiting in another Pending proposal. Approving re-checks the title,
+  adds the game as an app game (`app:` key, like New game), and links the tiles that are still live. Tiles not on the site yet are proposed as tiles
+  first. An admin's own proposal is applied at once, like their tile changes. Editing or deleting existing games stays admin-only.
 - The API sets `Status` from the caller's role. It never reads it from the request body.
 - Delete is a soft delete (`IsDeleted = 1`).
 - Unlimited count: define one named constant (`UnlimitedTileCount = 999`) in both the API and the frontend. Display it as "Unlimited", exclude it from count totals, and reject other counts above a sensible limit so a typo cannot be mistaken for it.
@@ -433,14 +439,14 @@ Script `0009_RecordInitialImport.sql` rebuilds the table without `UNIQUE` (index
 | GET | `/api/tiles?game=&color=&kind=city\|town&exits=0..6&q=&page=` | Public | Filtered tile list. `exits`: only tiles whose paths reach exactly that many sides, counted from the definition at search time (`TileDefinition.ExitCount`), not stored |
 | GET | `/api/tiles/{id}` | Public | Tile detail, its games, other tiles with the same number (`{id:long}` constraint) |
 | GET | `/api/tiles/common?minGames=10` | Public | Tiles used by at least `minGames` games (section 9.3) |
-| POST | `/api/change-requests` | User (Add); Admin (Edit, Delete) | Propose a new tile (Pending for users); Edit and Delete are admin-only and apply at once |
+| POST | `/api/change-requests` | User (Add, AddGame); Admin (Edit, Delete) | Propose a new tile, or a new game with `game: { title, designer, publisher, tiles: [{ tileId, count, notes }] }` (Pending for users; 409 if the title is taken or already proposed); Edit and Delete are admin-only and apply at once |
 | GET | `/api/change-requests/mine` | User | My requests and their status |
 | GET | `/api/change-requests/number-check?number=&exceptTileId=` | User | Live tiles and Pending requests using a number; default display name |
 | GET | `/api/admin/change-requests?status=Pending` | Admin | Review queue |
-| POST | `/api/admin/change-requests/{id}/approve` | Admin | Apply in a transaction |
+| POST | `/api/admin/change-requests/{id}/approve` | Admin | Apply in a transaction (AddGame: create the game and its tile links; 409 if the title was taken since) |
 | POST | `/api/admin/change-requests/{id}/reject` | Admin | Reject with a note |
 | GET | `/api/admin/tiles/{id}/history` | Admin | One tile's history |
-| GET | `/api/admin/history?type=&status=&q=&page=&pageSize=` | Admin | Change requests, imports, and game tile list saves, newest first (type Add, Edit, Delete, Import, Game) |
+| GET | `/api/admin/history?type=&status=&q=&page=&pageSize=` | Admin | Change requests, imports, and game tile list saves, newest first (type Add, Edit, Delete, AddGame, Import, Game); search also matches proposed game titles |
 | GET | `/api/admin/imports` | Admin | Import runs with their reports |
 | POST | `/api/account/password` | Signed in | Change own password with `{ currentPassword, newPassword }`; 400 with reasons; rate-limited like sign-in; refreshes this session's cookie (others signed out within a minute) |
 | GET | `/api/admin/users?q=` | Admin | Accounts (email contains q): roles, state (Active, Locked, Disabled), email confirmed, request count, isYou, isConfiguredAdmin |
@@ -484,16 +490,17 @@ Notes:
 | `/tiles/common` | Common Tiles: tiles used by at least N games (section 9.3); linked from Home and the main navigation |
 | `/tiles/:id` | Detail: large drawing, number, color, definition string, games with counts and notes, other versions of the same number |
 | `/submit` | Propose a new tile, with live drawing preview |
+| `/submit/game` | Propose a new game (signed-in users): title, designer, publisher, and its tiles (search by number) with counts, Unlimited, and notes; reviewed in the queue. Linked from the header ("Submit a game"), the Games page ("Propose a game", for non-admins), and My requests |
 | `/tiles/:id/edit` | Edit or delete a tile (admins only; the tile page shows Edit and Delete buttons to admins) |
-| `/account/requests` | My change requests |
-| `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject, before/after drawings |
+| `/account/requests` | My change requests (tiles and games) |
+| `/admin/queue` | Pending requests (shadcn/ui Table), approve or reject; before/after drawings for tiles, the details and tiles for a proposed game |
 | `/about` | About and credits: data source and license, game-titles disclaimer, fonts, libraries (linked from the footer on every page) |
 | `/print/circles` | Printable tile number circles (section 9.4): `?tile=ID` or `?game=ID`; PDF sheet, SVG, PNG. Signed-in users only (any role); the links show only when signed in |
 | `/admin/games/new` | New game (admins only): title, designer, publisher; then Edit game tiles. Linked from the Games page ("New game") |
 | `/admin/games/:id/edit` | Edit game (admins only): title, designer, publisher, reason; Delete game with confirmation. Linked from the game-filtered Tiles page ("Edit or delete game") |
 | `/admin/games/:id/tiles` | Edit game tiles (admins only): the game's whole tile list with counts, Unlimited, and notes; add any existing tile by number, remove tiles; saved as one change. Linked from the game-filtered Tiles page ("Edit this game's tiles") |
 | `/admin/docs/:name` | Admin docs (admins only): `runbook` and `database` tabs, rendered from `docs/RUNBOOK.md` and `docs/DATABASE.md`, with a table of contents and copy buttons on commands; `guide` tab (Going live), the hosting guide shown in a sandboxed frame |
-| `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add, Edit, Delete, Import) and status, search by tile number, email, or commit; paged (admins only) |
+| `/admin/history` | All change requests across all tiles and every data import (initial and later), newest first; filter by type (Add tile, Edit tile, Delete tile, Game proposal, Import, Game change) and status, search by tile number, game title, email, or commit; paged (admins only) |
 | `/admin/imports` | Import history: each applied tobymao/18xx commit, what it added, and notes on upstream changes not applied (admins only) |
 | `/account` | My account: email, roles, and Change password (signed-in users; opened from the email in the header) |
 | `/admin/users` | Accounts: roles, state, request count; make or remove Admin, confirm email, send password reset, disable or enable, delete (admins only) |
@@ -703,6 +710,7 @@ Port from `reference/build_pdf.py` (`render_tile`). Behavior to keep:
 | 5.12 | Add, edit, and delete games (admins): `POST`/`PUT`/`DELETE /api/admin/games`, `GameFormPage` (New game, Edit game, Delete game), schema script `0002_GameEditing.sql` (`Games.IsDeleted`, `UpdatedUtc`, `UpdatedBy`; `GameChanges.Kind`, `DetailsJson`); History shows created, edited, and deleted games; imports keep edited details, never add deleted games or their links back, and do not report games added in the app; Games page subtitle no longer names a data source | Done (verified on a database copy: create, duplicate and blank titles refused, add tiles, edit, unchanged edit and taken title refused, delete removes it from lists and tile pages, 404 afterwards, History entries of each kind; a forced import kept an edited 1830 publisher and left a deleted 1832 deleted with no links; checked in the browser) |
 | 5.13 | Exits filter on the Tiles page: "Any exits" (default) or 0 to 6; counted from each definition at search time, nothing stored | Done (verified on a database copy: counts 7 / 23 / 283 / 392 / 726 / 227 / 364 add up to all 2,022 tiles; Billings-c under 1 exit; combines with game and color; 7 rejected; checked in the browser) |
 | 5.14 | Rotate tiles (view only): `TileSvg` `rotation` (60 degree steps, animated; text counter-rotates to stay upright); a rotate button on every tile card (beside the link, so it does not open the tile) and clockwise, counterclockwise, and reset controls on the tile page (reset when another tile opens). Also fixed: the Tiles page stayed dimmed after the Exits filter was added (loading key now shared) | Done (checked in the browser: tile 57 turned 60 then 120 degrees with upright text; a card on the 1830 list turned without opening the tile) |
+| 5.13 | Game proposals by signed-in users: change request type `AddGame`, schema script `0003_GameRequests.sql` (`ChangeRequests.GameId`), `GameProposalDto`; submit validation (title, tiles, counts; 409 for a taken or already proposed title); approval creates the game through `GamesRepository.InsertAppGame` and links live tiles; page `/submit/game` (`ProposeGamePage`), shared `TilePicker` (also on Edit game tiles), `GameProposalView` and `RequestChange` in the queue, My requests, and History; New game badge; header link and Propose a game button | Done (verified on a database copy: 401 signed out; valid proposal Pending; taken, pending-duplicate, blank, and bad-tile proposals refused; mixed tile and game refused; tile Add unaffected; player cannot approve; approve creates the game with its counts and notes; approving twice and approving after the title was taken refused; reject; admin proposal applied at once; History filter and search; checked in the browser) |
 | 5.6 | Deployment flexibility: website API address from `VITE_API_BASE_URL` (relative `/api` by default, `client.ts` `apiUrl`); Vite port, preview port, `allowedHosts`, proxy target, and proxy `secure` from `web/.env` (`web/.env.example`); API follows `PORT`; optional CORS (`Cors:AllowedOrigins`) with routing, CORS, and sign-in steps ordered explicitly; Docker `APP_PORT` and `CORS_ALLOWED_ORIGINS`; runbook (website settings, how the website finds the API, ports, troubleshooting) and guide updated | Done (verified: PORT, sign-in and admin and 401 and 404 and 429 unchanged, CORS on and off, Vite port and proxy, unknown host blocked and allowed host accepted, secure=true rejects the dev certificate, base URL only built in when set) |
 
 **Phase 4 complete.**
