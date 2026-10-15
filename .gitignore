@@ -507,3 +507,4 @@ $RECYCLE.BIN/
 # Local secrets for docker compose (see .env.example)
 .env
 
+tiles-data-backup.tgz
