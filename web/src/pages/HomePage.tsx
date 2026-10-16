@@ -103,7 +103,8 @@ export default function HomePage() {
       )}
 
       {/* One card per game: 1 column on phones, 2 on tablets, 3 on wide screens. */}
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* grid-cols-1 on phones: one column no wider than the screen, so a long designer list is cut off with "…" instead of widening the page. */}
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {shown.map((game) => (
           <li key={game.id}>
             <GameCard game={game} />

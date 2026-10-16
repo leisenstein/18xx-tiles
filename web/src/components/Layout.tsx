@@ -1,4 +1,20 @@
-import { BookOpen, ClipboardCheck, Download, Hexagon, History, Inbox, Layers, LayoutGrid, LogOut, SquarePlus, type LucideIcon, Users } from 'lucide-react'
+import { useState } from 'react'
+import {
+  BookOpen,
+  ClipboardCheck,
+  Download,
+  Hexagon,
+  History,
+  Inbox,
+  Layers,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  SquarePlus,
+  type LucideIcon,
+  Users,
+  X,
+} from 'lucide-react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router'
 import Logo from '@/components/Logo'
 import { Button } from '@/components/ui/button'
@@ -34,12 +50,14 @@ const adminItems: NavItem[] = [
 ]
 
 // One header link: icon and label; the current page gets a soft pill. end = active only on an exact URL match, so "Tiles" is not lit on /tiles/common.
-function NavItemLink({ item }: { item: NavItem }) {
+// onNavigate closes the phone menu after a link is chosen.
+function NavItemLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const Icon = item.icon
   return (
     <NavLink
       to={item.to}
       end={!item.section}
+      onClick={onNavigate}
       className={({ isActive }) =>
         cn(
           'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground',
@@ -55,18 +73,78 @@ function NavItemLink({ item }: { item: NavItem }) {
 
 // Page frame: header with navigation, then the current page (<Outlet />). Drawn once for every page; only the <Outlet /> area changes.
 // - A thin strip in the four main tile colors (yellow, green, brown, gray) runs across the top: the site's one bit of decoration.
-// - Left: the logo (a stack of tiles, the full height of the header) and "18xx Tiles". Middle: links with icons. Right: the signed-in user's initial, email, and Sign out; or Sign in
-//   and Register.
+// - Wide screens (md and up): the logo (the full height of the header) and "18xx Tiles"; the links with icons, wrapping onto a second row when needed;
+//   then the signed-in user's initial, email, and Sign out, or Sign in and Register.
+// - Phones: a slim bar with a small logo, "18xx Tiles", and a menu button. The button opens a panel under the bar with the same links, one per line,
+//   and the account buttons; choosing a link closes it. This keeps the sticky header short, so it does not cover the page while scrolling.
 // - The header stays at the top while scrolling (sticky).
 export default function Layout() {
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
   const isAdmin = user?.roles.includes(ADMIN_ROLE) ?? false
+  const [menuOpen, setMenuOpen] = useState(false)
+  const closeMenu = () => setMenuOpen(false)
 
   const onSignOut = async () => {
+    closeMenu()
     await signOut()
     navigate('/')
   }
+
+  // Every link the current visitor can use, as lines (phone menu) or as a wrapping row (wide screens).
+  const links = (vertical: boolean) => (
+    <nav className={cn('text-sm', vertical ? 'grid gap-1' : 'flex flex-wrap items-center gap-1')}>
+      {browseItems.map((item) => (
+        <NavItemLink key={item.to} item={item} onNavigate={closeMenu} />
+      ))}
+      {user && userItems.map((item) => <NavItemLink key={item.to} item={item} onNavigate={closeMenu} />)}
+      {isAdmin && (
+        <>
+          <span className={cn('bg-border', vertical ? 'my-1 h-px w-full' : 'mx-1 h-5 w-px')} aria-hidden="true" />
+          {adminItems.map((item) => (
+            <NavItemLink key={item.to} item={item} onNavigate={closeMenu} />
+          ))}
+        </>
+      )}
+    </nav>
+  )
+
+  // My account and Sign out, or Sign in and Register. Nothing shows until the first sign-in check finishes, to avoid a flicker. The email shows on
+  // large screens and in the phone menu (showEmail); in between, only the initial.
+  const account = (showEmail: boolean) =>
+    !loading &&
+    (user ? (
+      <>
+        {/* The initial and email open My account (change password). */}
+        <Link to="/account" onClick={closeMenu} className="flex min-w-0 items-center gap-2 rounded-md hover:text-foreground" title="My account">
+          <span
+            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 uppercase"
+            aria-hidden="true"
+          >
+            {user.email.charAt(0)}
+          </span>
+          <span className={cn('truncate text-muted-foreground hover:text-foreground hover:underline', !showEmail && 'hidden lg:inline')}>{user.email}</span>
+          {!showEmail && <span className="sr-only lg:hidden">My account</span>}
+        </Link>
+        <Button variant="ghost" size="sm" onClick={onSignOut}>
+          <LogOut aria-hidden="true" />
+          Sign out
+        </Button>
+      </>
+    ) : (
+      <>
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/login" onClick={closeMenu}>
+            Sign in
+          </Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link to="/register" onClick={closeMenu}>
+            Register
+          </Link>
+        </Button>
+      </>
+    ))
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -76,63 +154,39 @@ export default function Layout() {
             <span key={fill} className="flex-1" style={{ backgroundColor: fill }} />
           ))}
         </div>
-        {/* The logo runs the full height of the header; links and the account area sit to its right and wrap onto a second row when needed. */}
         <div className="mx-auto flex max-w-6xl items-center gap-x-6 px-4 py-1">
-          <NavLink to="/" className="flex shrink-0 items-center gap-2">
-            <Logo className="size-22" />
-            <span className="text-xl font-bold tracking-tight">
+          <NavLink to="/" onClick={closeMenu} className="flex shrink-0 items-center gap-2">
+            <Logo className="size-10 md:size-22" />
+            <span className="text-lg font-bold tracking-tight md:text-xl">
               18xx <span className="font-medium text-muted-foreground">Tiles</span>
             </span>
           </NavLink>
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-6 gap-y-2 py-2">
-            <nav className="flex flex-wrap items-center gap-1 text-sm">
-              {browseItems.map((item) => (
-                <NavItemLink key={item.to} item={item} />
-              ))}
-              {user && userItems.map((item) => <NavItemLink key={item.to} item={item} />)}
-              {isAdmin && (
-                <>
-                  <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-                  {adminItems.map((item) => (
-                    <NavItemLink key={item.to} item={item} />
-                  ))}
-                </>
-              )}
-            </nav>
-            {/* ml-auto pushes this group to the right. Nothing shows until the first sign-in check finishes, to avoid a flicker. */}
-            <div className="ml-auto flex items-center gap-2 text-sm">
-              {!loading &&
-                (user ? (
-                  <>
-                    {/* The initial and email open My account (change password). */}
-                    <Link to="/account" className="flex items-center gap-2 rounded-md hover:text-foreground" title="My account">
-                      <span
-                        className="flex size-7 items-center justify-center rounded-full bg-amber-100 text-xs font-semibold text-amber-900 uppercase"
-                        aria-hidden="true"
-                      >
-                        {user.email.charAt(0)}
-                      </span>
-                      <span className="hidden text-muted-foreground hover:text-foreground hover:underline lg:inline">{user.email}</span>
-                      <span className="sr-only lg:hidden">My account</span>
-                    </Link>
-                    <Button variant="ghost" size="sm" onClick={onSignOut}>
-                      <LogOut aria-hidden="true" />
-                      Sign out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link to="/login">Sign in</Link>
-                    </Button>
-                    <Button asChild size="sm">
-                      <Link to="/register">Register</Link>
-                    </Button>
-                  </>
-                ))}
-            </div>
+          {/* Wide screens: links and the account area to the right of the logo, wrapping onto a second row when needed. */}
+          <div className="hidden min-w-0 flex-1 flex-wrap items-center gap-x-6 gap-y-2 py-2 md:flex">
+            {links(false)}
+            {/* ml-auto pushes this group to the right. */}
+            <div className="ml-auto flex items-center gap-2 text-sm">{account(false)}</div>
           </div>
+          {/* Phones: the menu button. */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto md:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="phone-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+          </Button>
         </div>
+        {/* Phones: the open menu, under the bar. Scrolls on its own if it is taller than the screen. */}
+        {menuOpen && (
+          <div id="phone-menu" className="max-h-[calc(100dvh-4rem)] space-y-3 overflow-y-auto border-t px-4 py-3 md:hidden">
+            {links(true)}
+            <div className="flex items-center justify-between gap-2 border-t pt-3 text-sm">{account(true)}</div>
+          </div>
+        )}
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Outlet />
