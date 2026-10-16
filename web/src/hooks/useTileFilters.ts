@@ -1,13 +1,15 @@
 import { useSearchParams } from 'react-router'
 import { TILE_COLORS } from '@/lib/tiles/colors'
 
-// Tile list filters, kept in the URL (?game=25&color=yellow&kind=city&exits=2&q=57&page=2)
+// Tile list filters, kept in the URL (?game=25&color=yellow&kind=city&exits=2&revenue=40&minGames=10&q=57&page=2)
 // so a filtered view can be bookmarked or shared (DESIGN.md section 9.1).
 export interface TileFilters {
   game?: number
   color?: string
-  kind?: 'city' | 'town'
+  kind?: 'city' | 'town' | 'none' // none: neither a city nor a town
   exits?: number // 0 to 6: track leaves exactly this many sides; undefined = no filter
+  revenue?: number // 0 or more: tiles that can pay this amount
+  minGames?: number // 1 or more: tiles used by at least this many games
   q?: string
   page: number
 }
@@ -28,11 +30,14 @@ export function useTileFilters() {
   const color = params.get('color')
   const kind = params.get('kind')
   const exits = Number(params.get('exits') ?? 'x')
+  const revenue = Number(params.get('revenue') ?? 'x')
   const filters: TileFilters = {
     game: positiveInt(params.get('game')),
     color: color !== null && TILE_COLORS.includes(color) ? color : undefined,
-    kind: kind === 'city' || kind === 'town' ? kind : undefined,
+    kind: kind === 'city' || kind === 'town' || kind === 'none' ? kind : undefined,
     exits: Number.isInteger(exits) && exits >= 0 && exits <= 6 ? exits : undefined,
+    revenue: Number.isInteger(revenue) && revenue >= 0 ? revenue : undefined,
+    minGames: positiveInt(params.get('minGames')),
     q: params.get('q') || undefined,
     page: positiveInt(params.get('page')) ?? 1,
   }
@@ -47,8 +52,8 @@ export function useTileFilters() {
         if (key !== 'page') next.delete('page')
         return next
       },
-      // Typing in the search box replaces the history entry, so Back skips each keystroke.
-      { replace: key === 'q' },
+      // Typing in the search or minimum-games box replaces the history entry, so Back skips each keystroke.
+      { replace: key === 'q' || key === 'minGames' },
     )
   }
 

@@ -10,7 +10,7 @@ namespace Tiles18xx.Api.Controllers;
 [Route("api/tiles")]
 public sealed class TilesController(TilesRepository tiles, GamesRepository games) : ControllerBase
 {
-    // GET /api/tiles?game=&color=&kind=city|town&exits=0..6&q=&page=&pageSize=
+    // GET /api/tiles?game=&color=&kind=city|town|none&exits=0..6&revenue=&minGames=&q=&page=&pageSize=
     [HttpGet]
     public ActionResult<PagedResultDto<TileSummaryDto>> Search([FromQuery] TileQueryDto query)
     {
@@ -19,9 +19,17 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
         {
             ModelState.AddModelError("color", $"Unknown color '{query.Color}'.");
         }
-        if (query.Kind is not null && query.Kind is not ("city" or "town"))
+        if (query.Kind is not null && query.Kind is not ("city" or "town" or "none"))
         {
-            ModelState.AddModelError("kind", "Kind must be 'city' or 'town'.");
+            ModelState.AddModelError("kind", "Kind must be 'city', 'town', or 'none'.");
+        }
+        if (query.Revenue is < 0)
+        {
+            ModelState.AddModelError("revenue", "Revenue must be 0 or more.");
+        }
+        if (query.MinGames is < 1 or > TileQueryDto.MaxMinGames)
+        {
+            ModelState.AddModelError("minGames", $"Minimum games must be from 1 to {TileQueryDto.MaxMinGames}.");
         }
         if (query.Exits is < 0 or > TileDefinition.MaxExits)
         {
@@ -50,6 +58,10 @@ public sealed class TilesController(TilesRepository tiles, GamesRepository games
 
         return Ok(tiles.Search(query));
     }
+
+    // GET /api/tiles/revenues -> every revenue amount any live tile can pay, lowest first (the Revenue filter's choices).
+    [HttpGet("revenues")]
+    public ActionResult<IReadOnlyList<int>> GetRevenues() => Ok(tiles.GetRevenues());
 
     // Allowed range for minGames on the Common Tiles page (DESIGN.md 9.3).
     public const int MinGamesLowest = 2;

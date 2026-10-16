@@ -8,22 +8,24 @@ import type { GameSummary } from '@/types/game'
 interface FilterBarProps {
   filters: TileFilters
   games: GameSummary[]
+  revenues: number[] // the Revenue filter's choices (GET /api/tiles/revenues)
   onChange: (key: TileFilterKey, value: string | number | undefined) => void
 }
 
-// The three "kind" choices; undefined means no filter.
-const KINDS: { value: 'city' | 'town' | undefined; label: string }[] = [
+// The "kind" choices; undefined means no filter. none: plain track, neither a city nor a town (off-board areas count here too).
+const KINDS: { value: 'city' | 'town' | 'none' | undefined; label: string }[] = [
   { value: undefined, label: 'All' },
   { value: 'city', label: 'Cities' },
   { value: 'town', label: 'Towns' },
+  { value: 'none', label: 'No city/town' },
 ]
 
 // Exits choices: how many of the hex's sides track leaves from.
 const EXITS = [0, 1, 2, 3, 4, 5, 6]
 
-// Filters for the tile list: game, color, city/town, exits, and number search.
+// Filters for the tile list: game, color, exits, revenue, minimum games, city/town, and number search.
 // It only shows the current filters and reports changes; useTileFilters stores them in the URL.
-export default function FilterBar({ filters, games, onChange }: FilterBarProps) {
+export default function FilterBar({ filters, games, revenues, onChange }: FilterBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <NativeSelect aria-label="Game" value={filters.game ?? ''} onChange={(e) => onChange('game', e.target.value ? Number(e.target.value) : undefined)}>
@@ -56,6 +58,39 @@ export default function FilterBar({ filters, games, onChange }: FilterBarProps) 
           </NativeSelectOption>
         ))}
       </NativeSelect>
+
+      <NativeSelect
+        aria-label="Revenue"
+        value={filters.revenue ?? ''}
+        onChange={(e) => onChange('revenue', e.target.value === '' ? undefined : Number(e.target.value))}
+      >
+        <NativeSelectOption value="">Any revenue</NativeSelectOption>
+        {revenues.map((n) => (
+          <NativeSelectOption key={n} value={n}>
+            Revenue {n}
+          </NativeSelectOption>
+        ))}
+      </NativeSelect>
+
+      {/* Minimum games: empty = no filter. Anything that is not a whole number from 1 up is ignored. */}
+      <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
+        In at least
+        <Input
+          type="number"
+          inputMode="numeric"
+          min={1}
+          max={1000}
+          aria-label="Minimum number of games"
+          placeholder="any"
+          className="w-20"
+          value={filters.minGames ?? ''}
+          onChange={(e) => {
+            const n = Number(e.target.value)
+            onChange('minGames', e.target.value !== '' && Number.isInteger(n) && n >= 1 && n <= 1000 ? n : undefined)
+          }}
+        />
+        games
+      </label>
 
       {/* City/town toggle: the selected choice uses the filled button style. */}
       <div className="flex gap-1" role="group" aria-label="Cities or towns">

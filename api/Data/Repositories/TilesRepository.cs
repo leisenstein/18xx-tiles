@@ -19,7 +19,9 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
           AND (@Color IS NULL OR t.Color = @Color)
           AND (@Kind IS NULL
                OR (@Kind = 'city' AND t.HasCity = 1)
-               OR (@Kind = 'town' AND t.HasTown = 1))
+               OR (@Kind = 'town' AND t.HasTown = 1)
+               OR (@Kind = 'none' AND t.HasCity = 0 AND t.HasTown = 0))
+          AND (@MinGames IS NULL OR (SELECT COUNT(*) FROM GameTiles x WHERE x.TileId = t.Id) >= @MinGames)
           AND (@Pattern IS NULL OR t.Number LIKE @Pattern ESCAPE '\');
         """;
 
@@ -30,11 +32,15 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
         var pattern = search is null ? null : "%" + EscapeLike(search) + "%";
 
         using var connection = db.Open();
-        var rows = connection.Query<TileSummaryDto>(SearchSql, new { query.Game, query.Color, query.Kind, Pattern = pattern });
-        // Exits are counted from the definition here rather than stored, like the sorting below.
+        var rows = connection.Query<TileSummaryDto>(SearchSql, new { query.Game, query.Color, query.Kind, query.MinGames, Pattern = pattern });
+        // Exits and revenues are read from the definition here rather than stored, like the sorting below.
         if (query.Exits is int exits)
         {
             rows = rows.Where(t => TileDefinition.ExitCount(t.DefinitionCode) == exits);
+        }
+        if (query.Revenue is int revenue)
+        {
+            rows = rows.Where(t => TileDefinition.Revenues(t.DefinitionCode).Contains(revenue));
         }
 
         // Sort in C# (numeric-part ordering is awkward in SQL). At about 2,000 tiles, loading all matches and then paging is fast enough.
@@ -42,6 +48,17 @@ public sealed class TilesRepository(SqliteConnectionFactory db)
         var items = sorted.Skip((query.Page - 1) * query.PageSize).Take(query.PageSize).ToList();
 
         return new PagedResultDto<TileSummaryDto>(items, query.Page, query.PageSize, sorted.Count);
+    }
+
+    // Every revenue amount any live tile can pay, lowest first: the choices for the Revenue filter.
+    public IReadOnlyList<int> GetRevenues()
+    {
+        using var connection = db.Open();
+        return connection.Query<string>("SELECT DefinitionCode FROM Tiles WHERE IsDeleted = 0;")
+            .SelectMany(TileDefinition.Revenues)
+            .Distinct()
+            .Order()
+            .ToList();
     }
 
     // Live tiles used by at least minGames games, in the shared tile sort order (DESIGN.md 9.3). Input is already validated by the controller.

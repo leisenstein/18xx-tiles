@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { Hexagon, ListChecks, Pencil, Printer, SearchX } from 'lucide-react'
 import { getGames } from '@/api/games'
-import { getTiles } from '@/api/tiles'
+import { getTileRevenues, getTiles } from '@/api/tiles'
 import EmptyState from '@/components/EmptyState'
 import FilterBar from '@/components/FilterBar'
 import LoadingState from '@/components/LoadingState'
@@ -21,10 +21,11 @@ import type { TileSummary } from '@/types/tile'
 // Filters live in the URL, so /tiles?game=25 opens already filtered to 1830.
 export default function TilesPage() {
   const { filters, setFilter } = useTileFilters()
-  const { game, color, kind, exits, q, page } = filters
+  const { game, color, kind, exits, revenue, minGames, q, page } = filters
   const { user } = useAuth()
 
   const [games, setGames] = useState<GameSummary[]>([])
+  const [revenues, setRevenues] = useState<number[]>([])
   // The last result, tagged with the filters it was loaded for.
   const [data, setData] = useState<{
     key: string
@@ -33,15 +34,22 @@ export default function TilesPage() {
   const [error, setError] = useState<string | null>(null)
 
   // The filters as one string; when it differs from data.key, new results are loading.
-  const key = JSON.stringify([game, color, kind, exits, q, page])
+  const key = JSON.stringify([game, color, kind, exits, revenue, minGames, q, page])
   const loading = data?.key !== key
 
-  // Games for the game filter, loaded once.
+  // Games for the game filter and amounts for the revenue filter, loaded once.
   useEffect(() => {
     let ignore = false
     getGames()
       .then((list) => {
         if (!ignore) setGames(list)
+      })
+      .catch((err: unknown) => {
+        if (!ignore) setError(err instanceof Error ? err.message : String(err))
+      })
+    getTileRevenues()
+      .then((list) => {
+        if (!ignore) setRevenues(list)
       })
       .catch((err: unknown) => {
         if (!ignore) setError(err instanceof Error ? err.message : String(err))
@@ -54,7 +62,7 @@ export default function TilesPage() {
   // Tiles, reloaded whenever a filter or the page changes.
   useEffect(() => {
     let ignore = false
-    getTiles({ game, color, kind, exits, q, page, pageSize: TILES_PAGE_SIZE })
+    getTiles({ game, color, kind, exits, revenue, minGames, q, page, pageSize: TILES_PAGE_SIZE })
       .then((result) => {
         if (ignore) return
         setData({ key, result })
@@ -67,7 +75,7 @@ export default function TilesPage() {
     return () => {
       ignore = true
     }
-  }, [key, game, color, kind, exits, q, page])
+  }, [key, game, color, kind, exits, revenue, minGames, q, page])
 
   const result = data?.result
   const selectedGame = games.find((g) => g.id === game)
@@ -83,9 +91,9 @@ export default function TilesPage() {
       <PageHeader
         icon={Hexagon}
         title="Tiles"
-        description="Every tile from every game. Filter by game, color, city and town, or number of exits, or search by number."
+        description="Every tile from every game. Filter by game, color, exits, revenue, how many games use it, or cities and towns, or search by number."
       />
-      <FilterBar filters={filters} games={games} onChange={setFilter} />
+      <FilterBar filters={filters} games={games} revenues={revenues} onChange={setFilter} />
       {/* Filtered to one game: how many tiles come in its box. */}
       {selectedGame && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">

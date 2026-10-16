@@ -79,6 +79,21 @@ public static class TileDefinition
 
     public const int MaxExits = 6;
 
+    // Parts that can pay revenue: cities, towns, and the off-board, halt, and pass nodes.
+    private static readonly HashSet<string> RevenueTypes = new(StringComparer.Ordinal) { "city", "town", "offboard", "halt", "pass" };
+
+    // Every revenue amount the tile can pay, for the Revenue filter on the Tiles page. "revenue:20" -> 20. Phase revenues such as
+    // "yellow_30|green_40|brown_50" give each phase's amount (30, 40, 50); the text before the last "_" is a color, sometimes written as "#cb7743",
+    // so only the number after it counts. A tile with no city, town, or off-board area has none.
+    public static IReadOnlySet<int> Revenues(string code) =>
+        Split(code)
+            .Where(p => RevenueTypes.Contains(p.Type) && p.Values.ContainsKey("revenue"))
+            .SelectMany(p => p.Values["revenue"].Split('|'))
+            .Select(phase => phase[(phase.LastIndexOf('_') + 1)..])
+            .Select(text => int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out var amount) ? amount : -1)
+            .Where(amount => amount >= 0)
+            .ToHashSet();
+
     private sealed record Part(string Type, Dictionary<string, string> Values);
 
     // "city=revenue:20,slots:2" -> Part("city", { revenue: "20", slots: "2" }). Same rules as the frontend's parse.ts.
