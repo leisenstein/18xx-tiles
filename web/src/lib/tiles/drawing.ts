@@ -1,6 +1,8 @@
 // Turns a tile definition into a list of shapes to draw (DESIGN.md section 10).
 // Ported from render_tile in reference/build_pdf.py, restyled as "deep print" (style B, after Phase 4): deeper fills (colors.ts), a bold dark edge
 // with a light inner ring, track with a light casing, bolder cities, and revenue in black circles.
+// Order of work: place the nodes; lay out every track; then place what must avoid the track (town bars, unconnected markers such as the coal and
+// oil triangles); then draw the track, re-inking where tracks merge into one side so they read as one line; then nodes, revenue, labels, outline.
 //
 // The math works in "y up" coordinates like the prototype (angle 0 = right,
 // angles grow counterclockwise). SVG's y axis points down, so every point is
@@ -235,10 +237,16 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   }
 
   // Place nodes (the definition language leaves this to the renderer).
-  const realNodes = nodes.filter((n) => n.kind !== 'junction')
+  // A node with no track at all and no loc (for example the coal and oil markers on 1817-style tiles) is placed later, in the clearest spot left by
+  // the track, so it never sits on top of it.
+  const isLoose = (node: TileNode) =>
+    paths.length > 0 && node.kind !== 'junction' && node.edges.length === 0 && node.neighbors.length === 0 && (node.loc === undefined || node.loc === '')
+  const realNodes = nodes.filter((n) => n.kind !== 'junction' && !isLoose(n))
   for (const node of nodes) {
     const loc = node.loc
-    if (node.kind === 'junction' || loc === 'center') {
+    if (isLoose(node)) {
+      continue
+    } else if (node.kind === 'junction' || loc === 'center') {
       node.pos = [cx, cy]
     } else if (loc !== undefined && loc !== '') {
       // Integer loc: toward that edge. "x.5": toward that corner.
@@ -265,8 +273,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
     }
   }
 
-  // Nodes with no edges and no loc: spread opposite the placed ones.
-  const unplaced = nodes.filter((n) => n.pos === null)
+  // Nodes with no edges and no loc that do connect to other nodes: spread opposite the placed ones.
+  const unplaced = nodes.filter((n) => n.pos === null && !isLoose(n))
   if (unplaced.length > 0) {
     const placed = nodes.map((n) => n.pos).filter((p): p is Point => p !== null && (p[0] !== cx || p[1] !== cy))
     let base = rad(90)
@@ -284,7 +292,8 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   // Nudge nodes that landed on exactly the same spot.
   const seen = new Set<string>()
   for (const node of nodes) {
-    const [x, y] = node.pos!
+    if (node.pos === null) continue
+    const [x, y] = node.pos
     const key = `${x.toFixed(1)},${y.toFixed(1)}`
     if (seen.has(key) && node.kind !== 'junction') node.pos = [x, y - 0.45 * a]
     seen.add(key)
@@ -294,36 +303,21 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   // Track. Styles: broad = solid; narrow/thin = thinner dashed; dual = black with white dashed center.
   const occupied: Point[] = []
   const lw = 0.13 * a
-  // Each track gets a light casing first, so it stands out from the deeper fills; where tracks cross, the later one's casing leaves a small gap.
-  const drawTrack = (points: Point[], track: string) => {
-    if (track === 'narrow' || track === 'thin') {
-      add({ kind: 'polyline', points, stroke: CASING, strokeWidth: lw })
-      add({
-        kind: 'polyline',
-        points,
-        stroke: INK,
-        strokeWidth: lw * 0.55,
-        dash: [lw * 0.9, lw * 0.6],
-      })
-    } else {
-      add({ kind: 'polyline', points, stroke: CASING, strokeWidth: lw * 1.55 })
-      add({ kind: 'polyline', points, stroke: INK, strokeWidth: lw })
-      if (track === 'dual') {
-        add({
-          kind: 'polyline',
-          points,
-          stroke: 'white',
-          strokeWidth: lw * 0.3,
-          dash: [lw * 0.6, lw * 0.6],
-        })
-      }
-    }
-    occupied.push(...points)
+  const casingWidth = lw * 1.55
+
+  // 1. Lay out every track as a line of points, remembering which sides it runs to (ends), and for a town's through-curve, the town (so the town's
+  //    bar can avoid the other track).
+  interface Track {
+    points: Point[]
+    track: string
+    ends: number[] // sides the track starts or ends at
+    town: TileNode | null
   }
+  const tracks: Track[] = []
   const curvePoints = (curve: [Point, Point, Point, Point], segments = 24): Point[] =>
     Array.from({ length: segments + 1 }, (_, i) => bezier(curve, i / segments))
 
-  const drawnThrough = new Set<TileNode>()
+  const laidThrough = new Set<TileNode>()
   for (const path of paths) {
     const A = path.a ?? ''
     const B = path.b ?? ''
@@ -332,27 +326,137 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
       // Edge to edge: a curve pulled toward the center.
       const p0 = edgeMidpoint(edgeOf(A))
       const p3 = edgeMidpoint(edgeOf(B))
-      drawTrack(curvePoints([p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]), track)
+      tracks.push({ points: curvePoints([p0, inward(p0, 0.5 * a), inward(p3, 0.5 * a), p3]), track, ends: [edgeOf(A), edgeOf(B)], town: null })
     } else if (isNodeRef(A) && isNodeRef(B)) {
       // Node to node: straight.
       const n1 = nodeAt(A)
       const n2 = nodeAt(B)
-      if (n1 && n2) drawTrack([posOf(n1), posOf(n2)], track)
+      if (n1?.pos && n2?.pos) tracks.push({ points: [n1.pos, n2.pos], track, ends: [], town: null })
     } else {
-      // Edge to node: curve into the node (or the town's through-curve, drawn once).
+      // Edge to node: curve into the node (or the town's through-curve, laid once).
       const node = nodeAt(isNodeRef(A) ? A : B)
-      if (!node) continue
+      if (!node?.pos) continue
+      const edge = edgeOf(isNodeRef(A) ? B : A)
       if (node.through) {
-        if (!drawnThrough.has(node)) {
-          drawnThrough.add(node)
-          drawTrack(curvePoints(node.through.curve), track)
+        if (!laidThrough.has(node)) {
+          laidThrough.add(node)
+          tracks.push({ points: curvePoints(node.through.curve), track, ends: node.edges.slice(0, 2), town: node })
         }
         continue
       }
-      const p0 = edgeMidpoint(edgeOf(isNodeRef(A) ? B : A))
-      const q = posOf(node)
+      const p0 = edgeMidpoint(edge)
+      const q = node.pos
       const distance = Math.hypot(q[0] - p0[0], q[1] - p0[1])
-      drawTrack(curvePoints([p0, inward(p0, Math.min(0.45 * a, distance * 0.5)), q, q]), track)
+      tracks.push({ points: curvePoints([p0, inward(p0, Math.min(0.45 * a, distance * 0.5)), q, q]), track, ends: [edge], town: null })
+    }
+  }
+
+  // Shortest distance from a point to a line of points (segment by segment).
+  const distanceToLine = ([px, py]: Point, line: Point[]) => {
+    let best = Infinity
+    for (let i = 0; i + 1 < line.length; i++) {
+      const [x1, y1] = line[i]
+      const [x2, y2] = line[i + 1]
+      const dx = x2 - x1
+      const dy = y2 - y1
+      const length2 = dx * dx + dy * dy
+      const t = length2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / length2))
+      best = Math.min(best, Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy)))
+    }
+    return line.length === 1 ? Math.hypot(px - line[0][0], py - line[0][1]) : best
+  }
+
+  // 2. Towns on a through-curve: slide each one along its curve to the spot where its bar (drawn across the track, at right angles to it) stays
+  //    clearest of every other track and of the other towns' bars. The middle of the curve wins whenever it is clear.
+  const townBarHalf = 0.2 * a
+  const townBarWidth = 0.065 * a
+  const placedBars: Point[][] = []
+  for (const own of tracks.filter((t) => t.town !== null)) {
+    const node = own.town!
+    const curve = node.through!.curve
+    const others = tracks.filter((t) => t !== own).map((t) => t.points)
+    const need = casingWidth / 2 + townBarWidth
+    let choice: { t: number; clear: number } | null = null
+    for (const t of [0.5, 0.44, 0.56, 0.38, 0.62, 0.32, 0.68, 0.26, 0.74]) {
+      const at = bezier(curve, t)
+      const ahead = bezier(curve, Math.min(1, t + 0.01))
+      const behind = bezier(curve, Math.max(0, t - 0.01))
+      const across = Math.atan2(ahead[1] - behind[1], ahead[0] - behind[0]) + Math.PI / 2
+      const bar: Point[] = [-1, -0.5, 0, 0.5, 1].map((k) => [at[0] + k * townBarHalf * Math.cos(across), at[1] + k * townBarHalf * Math.sin(across)])
+      const clear = Math.min(...bar.map((p) => Math.min(...others.map((line) => distanceToLine(p, line)), ...placedBars.map((b) => distanceToLine(p, b)))))
+      if (choice === null || clear > choice.clear + 0.01 * a) choice = { t, clear }
+      if (clear >= need && t === 0.5) break
+    }
+    const t = choice!.t
+    const at = bezier(curve, t)
+    const ahead = bezier(curve, Math.min(1, t + 0.01))
+    const behind = bezier(curve, Math.max(0, t - 0.01))
+    node.pos = at
+    node.through = { curve, angle: Math.atan2(ahead[1] - behind[1], ahead[0] - behind[0]) }
+    const across = node.through.angle + Math.PI / 2
+    placedBars.push([-1, 1].map((k) => [at[0] + k * townBarHalf * Math.cos(across), at[1] + k * townBarHalf * Math.sin(across)]))
+  }
+
+  // 3. Loose nodes (no track, no loc): the clearest spot inside the hex, away from the track, the other nodes, and the tile number's corner.
+  const numberCorner: Point = [cx + 0.78 * R * Math.cos(rad(-60)), cy + 0.78 * R * Math.sin(rad(-60))]
+  for (const node of nodes.filter(isLoose)) {
+    const avoid: Point[] = [numberCorner, ...nodes.filter((n) => n !== node && n.pos !== null).map((n) => n.pos as Point)]
+    let best: Point = [cx, cy]
+    let bestClear = -1
+    for (const r of [0.3, 0.42, 0.54, 0.64]) {
+      for (let deg = 0; deg < 360; deg += 15) {
+        const p: Point = [cx + r * a * Math.cos(rad(deg)), cy + r * a * Math.sin(rad(deg))]
+        const clear = Math.min(...tracks.map((t) => distanceToLine(p, t.points)), ...avoid.map((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) - 0.15 * a))
+        if (clear > bestClear) {
+          bestClear = clear
+          best = p
+        }
+      }
+    }
+    node.pos = best
+  }
+
+  // 4. Draw. Each track gets a light casing first, so it stands out from the deeper fills; where tracks cross, the later one is drawn over the
+  //    earlier one, its casing leaving a small gap.
+  const inkTrack = (points: Point[], track: string) => {
+    if (track === 'narrow' || track === 'thin') {
+      add({ kind: 'polyline', points, stroke: INK, strokeWidth: lw * 0.55, dash: [lw * 0.9, lw * 0.6] })
+    } else {
+      add({ kind: 'polyline', points, stroke: INK, strokeWidth: lw })
+      if (track === 'dual') add({ kind: 'polyline', points, stroke: 'white', strokeWidth: lw * 0.3, dash: [lw * 0.6, lw * 0.6] })
+    }
+  }
+  for (const { points, track } of tracks) {
+    add({ kind: 'polyline', points, stroke: CASING, strokeWidth: track === 'narrow' || track === 'thin' ? lw : casingWidth })
+    inkTrack(points, track)
+    occupied.push(...points)
+  }
+
+  // 5. Tracks that run into the same side leave it as one line and then split. Drawn one after another, the later one's casing would cut a light
+  //    seam into the earlier one where they still overlap, so the shared stretch of each is inked again on top: from the side until the tracks are
+  //    a full casing width apart. Crossings away from the sides are left as drawn above.
+  for (let edge = 0; edge < 6; edge++) {
+    const atEdge = tracks.filter((t) => t.ends.includes(edge))
+    if (atEdge.length < 2) continue
+    const start = edgeMidpoint(edge)
+    // Each track's points, starting from this side.
+    const fromSide = atEdge.map((t) => {
+      const first = t.points[0]
+      const startsHere = Math.hypot(first[0] - start[0], first[1] - start[1]) < 0.01 * a
+      return { track: t.track, points: startsHere ? t.points : [...t.points].reverse() }
+    })
+    // Tracks that do not use this side: the re-inked stretch stops before it reaches one, so a crossing keeps its over-and-under look.
+    const crossers = tracks.filter((t) => !t.ends.includes(edge)).map((t) => t.points)
+    for (const own of fromSide) {
+      const others = fromSide.filter((o) => o !== own).map((o) => o.points)
+      let last = 0
+      for (let i = 0; i < own.points.length; i++) {
+        const p = own.points[i]
+        if (crossers.some((line) => distanceToLine(p, line) < casingWidth)) break
+        if (Math.min(...others.map((line) => distanceToLine(p, line))) < casingWidth) last = i
+        else break
+      }
+      if (last > 0) inkTrack(own.points.slice(0, last + 2), own.track)
     }
   }
 
@@ -369,7 +473,7 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
   }
 
   // Nodes. "badges" are nodes that may show a revenue circle, with their size.
-  const cr = 0.19 * a // city slot radius
+  const cr = 0.23 * a // city slot radius
   const badges: { node: TileNode; extent: number }[] = []
   for (const node of nodes) {
     const [x, y] = posOf(node)
@@ -432,14 +536,19 @@ export function buildTileDrawing(code: string, color: string, size: number, numb
         occupied.push([x + extent * Math.cos(rad(deg)), y + extent * Math.sin(rad(deg))])
       }
       occupied.push([x, y])
+      // Each space's center and rim too, so a label or revenue circle never lands inside a space of a large city.
+      for (const [ox, oy] of offsets) {
+        occupied.push([x + ox, y + oy])
+        for (let deg = 0; deg < 360; deg += 45) occupied.push([x + ox + cr * Math.cos(rad(deg)), y + oy + cr * Math.sin(rad(deg))])
+      }
       badges.push({ node, extent })
     } else if (node.kind === 'town') {
       let extent: number
       if (node.through) {
         // A bar across the track.
         const angle = node.through.angle + Math.PI / 2
-        const hl = 0.2 * a
-        const hw = 0.065 * a
+        const hl = townBarHalf
+        const hw = townBarWidth
         const dx = Math.cos(angle)
         const dy = Math.sin(angle)
         const px = -dy
