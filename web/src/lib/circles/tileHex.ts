@@ -2,13 +2,15 @@ import { buildTileDrawing, type Point } from '@/lib/tiles/drawing'
 import { tileFills } from '@/lib/tiles/colors'
 import { UNIT_RADIUS, type CircleArt, type CircleShape } from './crossingSign'
 import type { NumberFont } from './numberFont'
+import { symbolShapes } from './symbols'
 
 // The "tile picture" sticker (DESIGN.md section 9.4): the tile itself, drawn exactly as on the site (buildTileDrawing), on a hex-shaped sticker for
 // tile trays. Offered at 3/4 and 1 inch; the page warns that very busy tiles may look jumbled, especially at 3/4 inch.
 //
 // Same coordinate system as the circles: centered on (0, 0), y grows downward, and 100 units = the chosen size. Here the size is measured across the
 // hex's flat sides (top to bottom), so a 1 inch sticker is 1 inch tall and about 1.15 inches from corner to corner. Text (revenues, the tile number)
-// becomes outlines in the number font, so the preview, SVG, PNG, and PDF are identical and need no installed fonts.
+// becomes outlines in the number font, so the preview, SVG, PNG, and PDF are identical and need no installed fonts. Labels made of symbols the font
+// does not have (★, ⚓, ⚒, ⛏, 🛢) are drawn as small icons instead (symbols.ts).
 
 // Half the corner-to-corner width, for a hex whose flat-to-flat height is 2 * UNIT_RADIUS.
 export const HEX_CORNER = (2 * UNIT_RADIUS) / Math.sqrt(3)
@@ -62,7 +64,9 @@ export function tileHex(font: NumberFont, code: string, color: string, number: s
         break
       case 'text': {
         const [x, y] = move(s.at)
-        shapes.push({ d: font.textPath(s.text, x, y, s.size), fill: s.fill })
+        const symbols = symbolShapes(s.text, x, y, s.size, s.fill)
+        if (symbols) shapes.push(...symbols)
+        else shapes.push({ d: font.textPath(s.text, x, y, s.size), fill: s.fill })
         if (s.text === number) numberPoints = (s.size / (2 * UNIT_RADIUS)) * sizeInches * 72
         break
       }
